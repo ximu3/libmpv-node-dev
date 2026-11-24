@@ -2,8 +2,8 @@ import { execFileSync } from 'node:child_process'
 import { copyFile, mkdir, readFile, writeFile, readdir } from 'node:fs/promises'
 import { availableParallelism } from 'node:os'
 import { basename, join } from 'node:path'
-import inputs from '../../engine/windows-x64/inputs.json' with { type: 'json' }
-import settings from '../../engine/windows-x64/configuration.json' with { type: 'json' }
+import { inputs, target } from './settings.ts'
+import settings from '../../../engine/windows/configuration.json' with { type: 'json' }
 
 export function msysPath(path: string) {
   return '/' + path[0]!.toLowerCase() + path.slice(2).replaceAll('\\', '/')
@@ -51,17 +51,25 @@ export function engineCommand(root: string, prefix: string, cwd: string, args: s
     'set -eu',
     'prefix="$1"',
     'shift',
-    'export PATH="$prefix/bin:/ucrt64/bin:/usr/bin:/c/Windows/System32"',
-    'export PKG_CONFIG_LIBDIR="$prefix/lib/pkgconfig:/ucrt64/lib/pkgconfig:/ucrt64/share/pkgconfig"',
+    'environment="$1"',
+    'shift',
+    'export PATH="$prefix/bin:/${environment}/bin:/usr/bin:/c/Windows/System32"',
+    'export PKG_CONFIG_LIBDIR="$prefix/lib/pkgconfig:/${environment}/lib/pkgconfig:/${environment}/share/pkgconfig"',
     'unset PKG_CONFIG_PATH',
     'exec "$@"',
   ].join('\n')
   execFileSync(
     join(root, 'usr/bin/bash.exe'),
-    ['--noprofile', '--norc', '-c', script, 'build', msysPath(prefix), ...args],
+    ['--noprofile', '--norc', '-c', script, 'build', msysPath(prefix), target.environment, ...args],
     {
       cwd,
-      env: { ...process.env, MSYSTEM: 'UCRT64', CHERE_INVOKING: '1' },
+      env: {
+        ...process.env,
+        MSYSTEM: target.environment.toUpperCase(),
+        CC: target.compiler,
+        CXX: target.compiler === 'clang' ? 'clang++' : 'g++',
+        CHERE_INVOKING: '1',
+      },
       stdio: 'inherit',
       windowsHide: true,
     },
@@ -93,7 +101,7 @@ export async function buildDependencies(work: string, root: string) {
   const packagePath = msysPath(prefix)
   engineCommand(root, prefix, source, ['make', 'one.c', 'astnames.h', 'opnames.h'])
   engineCommand(root, prefix, source, [
-    'gcc',
+    target.compiler,
     '-O2',
     '-std=c99',
     '-shared',
@@ -119,8 +127,8 @@ export async function buildDependencies(work: string, root: string) {
     msysPath(join(work, 'sources', 'ffmpeg-' + ffmpeg.version, 'configure')),
     '--prefix=' + packagePath,
     '--target-os=mingw32',
-    '--arch=x86_64',
-    '--cc=gcc',
+    '--arch=' + target.arch,
+    '--cc=' + target.compiler,
     ...settings.ffmpegOptions,
   ])
   engineCommand(root, prefix, directory, ['make', '-j', parallelism])

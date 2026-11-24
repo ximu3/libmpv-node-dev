@@ -1,0 +1,510 @@
+[
+  {
+    "file": "bash-5.3.20-2-x86_64.pkg.tar.zst",
+    "sha256": "0951e809c552dd7dd2835df1b2d590822187f14e717d809e942e4eb677d0adfd"
+  },
+  {
+    "file": "bsdtar-3.8.10-1-x86_64.pkg.tar.zst",
+    "sha256": "d6519b1e0c62a868abf8c1cc5982be69f8d92cfa6badbf4f7de6102c72bcb009"
+  },
+  {
+    "file": "curl-8.23.0-1-x86_64.pkg.tar.zst",
+    "sha256": "6f21e0187e3f309199e01f729d415ccfeb304cc9f8a27365c8aa9c216351022e"
+  },
+  {
+    "file": "dash-0.5.13.5-1-x86_64.pkg.tar.zst",
+    "sha256": "842aa48bae2fe394ab0587ad3405d3ac4c70c367c676a47c1049f62ef7f0fbcc"
+  },
+  {
+    "file": "db-6.2.32-6-x86_64.pkg.tar.zst",
+    "sha256": "41bc94acad3b53eaa92227ec34412305f648848ffbc963bcad88274517e13e8d"
+  },
+  {
+    "file": "diffutils-3.12-1-x86_64.pkg.tar.zst",
+    "sha256": "7902c8ce3d4dd69a0f5e98dc9d5c83c17b23314ba486169db57ef6e2835ce3b6"
+  },
+  {
+    "file": "gdbm-1.26-1-x86_64.pkg.tar.zst",
+    "sha256": "1f8e949be2bbe488c5644132db78ecda288c9945922e7ed2447384734e2adba2"
+  },
+  {
+    "file": "git-2.56.0-1-x86_64.pkg.tar.zst",
+    "sha256": "051fc526cba4a5c732acde867cddec9dbd54653d781be3009546c611bfd82638"
+  },
+  {
+    "file": "heimdal-7.8.0-7-x86_64.pkg.tar.zst",
+    "sha256": "c1e9dc49b6eaffd145abd73c8b516acca89eac64fa90031e116ac93c3b493a1e"
+  },
+  {
+    "file": "heimdal-libs-7.8.0-7-x86_64.pkg.tar.zst",
+    "sha256": "badbf9d464fe8498668451b8d53cf84c7ec3bd0e7bcc0ea158bf6339a30a2416"
+  },
+  {
+    "file": "libcbor-0.14.0-2-x86_64.pkg.tar.zst",
+    "sha256": "a661826edc2d452f8d74bae2cd5974dfbcd84e23bfbfa7ea3db38ee010d7b004"
+  },
+  {
+    "file": "libcurl-8.23.0-1-x86_64.pkg.tar.zst",
+    "sha256": "3034aae7fb58e129c7af62a7e7d2ae12e0a3475a5310d7fdad38fe9a3c672c9d"
+  },
+  {
+    "file": "libdb-6.2.32-6-x86_64.pkg.tar.zst",
+    "sha256": "27a35786f3aab14e625c02df7bcd8a9dda0da782ce4f0549a427a21316b4d179"
+  },
+  {
+    "file": "libedit-20240808_3.1-1-x86_64.pkg.tar.zst",
+    "sha256": "aada8ba7dfe41fdcac28d3706c0dc7c621b7667035a5e629cb5f3af7fb3f7de0"
+  },
+  {
+    "file": "libexpat-2.9.0-1-x86_64.pkg.tar.zst",
+    "sha256": "3021e1119cbe6a384977914c1dc099a98ce861505cc07229a842e8e1253597e5"
+  },
+  {
+    "file": "libfido2-1.17.0-1-x86_64.pkg.tar.zst",
+    "sha256": "30794db36fa21af67c7126a221e2cb95b177be08845bb38720a8c9f28c39cdbb"
+  },
+  {
+    "file": "libgdbm-1.26-1-x86_64.pkg.tar.zst",
+    "sha256": "bb4b08b720dd3194db010589812e9c63bec3d29b32545e7cbd07b6443e51c5ed"
+  },
+  {
+    "file": "libopenssl-3.6.5-1-x86_64.pkg.tar.zst",
+    "sha256": "05f6cc946f0dde3aecc3632007fa1d874e40720226117b750327bc2a01846325"
+  },
+  {
+    "file": "libpcre2_8-10.49-1-x86_64.pkg.tar.zst",
+    "sha256": "2de42bf4656e3952a72809663e85899be76c7020e016687055ac0acd05145a3b"
+  },
+  {
+    "file": "libsqlite-3.54.0-1-x86_64.pkg.tar.zst",
+    "sha256": "089e17fe8647da22b790dc2d5629d56cf53b5da5685d6555cb172400f32fe70f"
+  },
+  {
+    "file": "make-4.4.1-3-x86_64.pkg.tar.zst",
+    "sha256": "af0bdba17f06fe037f0194069adaa31a8fe45f1a11381501896aea1fae37bd5d"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-brotli-1.2.0-1-any.pkg.tar.zst",
+    "sha256": "34acb6ac828721c972c99eedb37e098b9e30321ff00103a70b26170bca221afb"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-bzip2-1.0.8-4-any.pkg.tar.zst",
+    "sha256": "0e684014d7ad49bffe845b33e5bd34944497bbfbed411fe485174b823379d664"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-clang-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "a14b860e61c9ca0a5643f16c9c83a9f05173e6625909a4c4a584d9a4f59a70e1"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-clang-libs-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "5f3a19b9fb9693163bde603d6cfefed096578094f570a45e24f3399fd4db406b"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-compiler-rt-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "87ea55f51adfff96317b2ac7c711f4dce8e282676dadea43086f4c37c43deed6"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-crt-14.0.0.r495.g63ebe6cdb-1-any.pkg.tar.zst",
+    "sha256": "4cb96613bc90cedc7736022237f1359ee7a62789ba2998c25f8faaca4971426e"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-dav1d-1.5.4-1-any.pkg.tar.zst",
+    "sha256": "e26ad96c17918cda05f137f06d4eb0eaadcabbfd4b5a3e318290d0050e17f3b2"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-expat-2.9.0-1-any.pkg.tar.zst",
+    "sha256": "3a5898c105e0b3e011c015f93701c6951fadddd56828a1ef965dc0ac6ecd3b7e"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-freetype-2.15.0-1-any.pkg.tar.zst",
+    "sha256": "59dd69f6c6fd708ee8cdda14ec49ca8586719dc82ab5d20785da06d3f7884658"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-fribidi-1.0.17-1-any.pkg.tar.zst",
+    "sha256": "85e3a9d74124676618081c2d8a57548342d83a76ac8e4f7daaa0263d0caecbef"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-gettext-runtime-1.0-1-any.pkg.tar.zst",
+    "sha256": "b5364a7c78cc4b73273a4a28e07e3c6d9cc8ec0ce269527409d944ab1c8f5a70"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-giflib-6.1.3-1-any.pkg.tar.zst",
+    "sha256": "13ffbb7fdc9cb7b6ded845b55d9e576c719fda7532cdd6a6217969c6a47e54f8"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-glib2-2.90.1-1-any.pkg.tar.zst",
+    "sha256": "88fd4d41048ca769147612f539758d7cb88b2ac22baad46c686444c534df11f7"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-glslang-16.6.0-1-any.pkg.tar.zst",
+    "sha256": "f73a434d77680a18f5aa464c07f9d494aba66aac62fcc428729ba775de8eaee5"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-graphite2-1.3.15-1-any.pkg.tar.zst",
+    "sha256": "28490fe4773d50cde27bd5ce5186cb78620afdbdb9665bab01ca89fbd039aaa9"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-harfbuzz-14.6.0-1-any.pkg.tar.zst",
+    "sha256": "c9db8a2684074c175ad6865a131c9be4586b92b308387688f40ca6db355c83bc"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-headers-14.0.0.r495.g63ebe6cdb-1-any.pkg.tar.zst",
+    "sha256": "5ec16a71b8af37453c3079532fe89a96fd1fcdedce9775f75ac9178ab70d3664"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-jbigkit-2.1-6-any.pkg.tar.zst",
+    "sha256": "032761178920b78d051b7b3ecfec0b9a772e2e9a447bd03a77825cc3fb1b3f71"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-lcms2-2.19.1-1-any.pkg.tar.zst",
+    "sha256": "c389449ff940d73d24f8d6254c0f84bfa54a493d0e31d696d4e360a4a8a2fb8b"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-lerc-4.1.1-1-any.pkg.tar.zst",
+    "sha256": "be89e9e4fc90672a31fa555d34e2f7aa42723976bfc1ce29835798c999ac09f0"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libb2-0.98.1-3-any.pkg.tar.zst",
+    "sha256": "8e2f1a6a3d8a53d1b6fdcb2d9df090c3c162aa1f36084b4f023d4315c52ea545"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libc++-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "47c0c7892af756dcdf4f8a53ef5d1c823003c21c9f47a633d4973b0e1c1ff167"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libdeflate-1.26-1-any.pkg.tar.zst",
+    "sha256": "b08ef23423d085c7ac7bd862bee57e51487cfb57886dda934b2c05a65f2b8a69"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libdovi-3.4.0-1-any.pkg.tar.zst",
+    "sha256": "fe40bf1085b5904d1e16d2c66ac36aa2169a729083e03312e66c990a4146226a"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libffi-3.8.0-1-any.pkg.tar.zst",
+    "sha256": "6382d1708eff02e0af00d04bdc43d2b8cb74086382052861b1a63963c8e0489a"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libiconv-1.19-1-any.pkg.tar.zst",
+    "sha256": "955499bc5cb73d86ea2850ece9bbdbbfd66b213e272e032f28147ecd42897e21"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libjpeg-turbo-3.2.0-1-any.pkg.tar.zst",
+    "sha256": "92206cd729d1bc495427ae056fc622d58726f38b462885b0244a4588d63eb986"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libogg-1.3.6-1-any.pkg.tar.zst",
+    "sha256": "8e983cb41ab76985709b00871469fd9116c05751e0b72abe37c00b364238c74a"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libplacebo-7.387.0-1-any.pkg.tar.zst",
+    "sha256": "164806d84c8c9d5c6c1cf4311af1911b01abeee82fb6bb12f2ad392e19764794"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libpng-1.6.59-1-any.pkg.tar.zst",
+    "sha256": "369828bf983803958f2774d3514db8276be0abf7f613ce7f4d0706c0766e5909"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libsoxr-0.1.3-6-any.pkg.tar.zst",
+    "sha256": "b3080a9d779e1c42e916f783d9c4049adea7539308a0a364df0c740cf8bd50ed"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libsystre-1.0.2-3-any.pkg.tar.zst",
+    "sha256": "732f53a5976ab9a6f33c1087e449d84f6f244dbf9c656c2ebfb5617dcb2e1832"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libtiff-4.7.2-2-any.pkg.tar.zst",
+    "sha256": "8abf454be55c847ae40c9943cd0858dd4e0d301da7a02e39ed94dc882b74bdbd"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libtre-0.9.0-2-any.pkg.tar.zst",
+    "sha256": "ced17adfcbeb9c13daa4f91ad43b5569e715a3ee68c970bb1a5565d464a79bf9"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libunibreak-7.0-1-any.pkg.tar.zst",
+    "sha256": "4c329600e698c62514b8276edbc3071721b5927cdcbec47adff242ec016effe1"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libunwind-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "5e183d2216ee3617aa908b27d44cf42316163730007bfe1d99056b5ef6a1dbbd"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libvorbis-1.3.7-3-any.pkg.tar.zst",
+    "sha256": "5bff7f473b2086a48f7159bd7bd3b39b00ab1fdaaac3f5bef9363a702eba7d5b"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libvpx-1.17.0-1-any.pkg.tar.zst",
+    "sha256": "56c3fe8d0c88464e3d1b766c93c2984e85dd691fb34846b553f5e5b1bf8fe7e9"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libwebp-1.6.0-1-any.pkg.tar.zst",
+    "sha256": "f3be91d8a5c290828c69ad867216229b85c2aafc489807abe9a6bda7f7ffd1cb"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libwinpthread-14.0.0.r495.g63ebe6cdb-1-any.pkg.tar.zst",
+    "sha256": "036f9f078d4b8030519e11627ef0d387ab9d037194b7f82c298cd73c65e8de4b"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-libxml2-2.15.4-2-any.pkg.tar.zst",
+    "sha256": "c167b57f015cd91ef718e6bf1adc116ced1e865e9e2bb10a6beb90daf7332c21"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-lld-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "5ade0c19bb8508854cfc1a05055fb1aaa1586bfbb8c890c1b01854b2b2d9ac50"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-llvm-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "d44d9c36de586b4255b878c08a91384830db0bfc5cd556be64fc8a666a5895e2"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-llvm-libs-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "798f077fc16fbb62579757b25fcc7ebd9104a7353b8d6d9351cdf59633376f8c"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-llvm-openmp-23.1.3-2-any.pkg.tar.zst",
+    "sha256": "fc74b3331fab294a787811d922bea91cc4ace1eee9e2b351afebfae56f28618e"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-llvm-tools-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "3d5746ff88a0da1fcdaf8ab8a9665af43f93a561ae78b21ac9dac99c91ae29d7"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-luajit-2.1.1791988261-1-any.pkg.tar.zst",
+    "sha256": "273e7903600926bd7cf7d7588980b766c08e2807a642bd50c557fc38e9389978"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-meson-1.12.1-1-any.pkg.tar.zst",
+    "sha256": "670060760651f0b6f78c5ba77ef1caf8d91425dcb201feae8d3812dc953e142e"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-mpdecimal-4.0.1-3-any.pkg.tar.zst",
+    "sha256": "18fbd49a24113a23717f6290091491d28ddc8f1be4a3069c277d003140101e21"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-ncurses-6.6-4-any.pkg.tar.zst",
+    "sha256": "912e96d800df0574db7ca8213cefa595b4335f0a85c1d4af19b0832de3103063"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-ninja-1.13.2-1-any.pkg.tar.zst",
+    "sha256": "75480c4077f29c68c86962d6f69b147cdf93ba57f375b997d44c0c3d41eca32e"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-openssl-3.6.5-1-any.pkg.tar.zst",
+    "sha256": "40978ba522b2e2d663029d6a5df7ad6e0e408d334a3590930229167bbc5a5edb"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-opus-1.6.1-2-any.pkg.tar.zst",
+    "sha256": "bca99279b9b39ca8c2e3283781d5e0ff05be8cb338fe4e12b7f67160fd7918ec"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-pcre2-10.49-1-any.pkg.tar.zst",
+    "sha256": "ef4d0222966b68d0c1e2fbc345ad00f1cec73235006ee29983225584d0cb69b8"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-pkgconf-1~3.0.9-1-any.pkg.tar.zst",
+    "sha256": "3e22873654a92e750f11e761f8665030aeb8bb259c330407c00f62472459bb3e"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-python-3.14.8-1-any.pkg.tar.zst",
+    "sha256": "cc134642e8f03407077482ed10c887aff37c86125e68b01d88f1fe72cc20640b"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-python-packaging-26.3-1-any.pkg.tar.zst",
+    "sha256": "0ec02e5fbbd209ade0fa917f59137f6ae2fa4d1f3511b3c7af52dadadd349d71"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-shaderc-2026.4-1-any.pkg.tar.zst",
+    "sha256": "b3e6a9f82fe0924a0100c65612799849c3091464c59e2cc22be618d7906ecd08"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-spirv-cross-1~1.4.363.0-1-any.pkg.tar.zst",
+    "sha256": "89ba5094d3884bd93231064aa1666a9e0fec6afa31fc894a1684148d06deb1c7"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-spirv-tools-3~1.4.363.0-1-any.pkg.tar.zst",
+    "sha256": "d2afb9b82dc0f41041f0a7853d5902de62689646e80d66972614c71995a93296"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-sqlite3-3.54.0-1-any.pkg.tar.zst",
+    "sha256": "fda7c2cc68aad03f562ff053af20b2056500b8b25e5cad2226c9d5aa48dcdf0d"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-tcl-8.6.18-1-any.pkg.tar.zst",
+    "sha256": "0b0115a42fc2624c993f6f217e1430e9990155671e37b71e58bf5320924d43d1"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-tk-8.6.18-1-any.pkg.tar.zst",
+    "sha256": "8d2567fff7df027b127333dd27e43827311f4fc36d1ee0e34bb302b5a900c870"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-tzdata-2026e-1-any.pkg.tar.zst",
+    "sha256": "d0292421b466bd68a13a52163eed54e278a3a346243fd869851accfbecefd0e4"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-vulkan-headers-1~1.4.363.0-1-any.pkg.tar.zst",
+    "sha256": "07b433d8eb80fbea2e2e6ad0b2aba820f56e810990c71bca36f694d4b50c12ee"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-vulkan-loader-1~1.4.363.0-1-any.pkg.tar.zst",
+    "sha256": "8b8c7b6ef8e8a3e6baa331900f2e97cbd509ae1ed0723b63377ae62589725750"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-wineditline-2.208-1-any.pkg.tar.zst",
+    "sha256": "5c3716e113766072758855f9a2f74f18165dce036e949e8a0e04c2766125fa5a"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-winpthreads-14.0.0.r495.g63ebe6cdb-1-any.pkg.tar.zst",
+    "sha256": "fe525054e77c1611fe63a86ccf3ce9f53c2ca90fdc9c1d15abe4f2c621c57db6"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-xz-5.8.4-1-any.pkg.tar.zst",
+    "sha256": "3a9cad5162492a7c2e3dd215cc20e3432f68ffa453e130954cd9fa9bbecf349a"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-zimg-3.0.6-3-any.pkg.tar.zst",
+    "sha256": "cf1ba977e252564faf7a7109e13f06b784e6a297183f327000655e7d3df5702b"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-zlib-1.3.2-2-any.pkg.tar.zst",
+    "sha256": "28c111cc05d923ac56faa33aa5d7618c9dc16ac2d7c9e43a87f875403517894a"
+  },
+  {
+    "file": "mingw-w64-clang-aarch64-zstd-1.5.7-2-any.pkg.tar.zst",
+    "sha256": "f1444d0e664c6e60b324453ca3158ea159b1e880ba57ea229fbdc58e7ba5d9d2"
+  },
+  {
+    "file": "msys2-runtime-3.6.11-4-x86_64.pkg.tar.zst",
+    "sha256": "7b1c4b625483ceff9a87f2dfcf3659704dc3da655a0ad414ecb7d9175e7d3ba0"
+  },
+  {
+    "file": "openssh-10.6p1-1-x86_64.pkg.tar.zst",
+    "sha256": "40694d9506e733f55262c4123cf6107dd28d27457a2b320f2866cdbde454c448"
+  },
+  {
+    "file": "openssl-3.6.5-1-x86_64.pkg.tar.zst",
+    "sha256": "4dc7c1199010b26d6382c59d8b16a9dbc857d314d76d9668f0f333bc5fecdd38"
+  },
+  {
+    "file": "perl-5.42.3-3-x86_64.pkg.tar.zst",
+    "sha256": "6a4dbc38cdcc53d16239904b5c87d2277cffc49ed92c6a7796f8bf6b49517d5b"
+  },
+  {
+    "file": "perl-authen-sasl-2.2100-2-any.pkg.tar.zst",
+    "sha256": "98cdd396f65df318ca777de7f4166485ad7815c5000399e4aa6843f59e00e55b"
+  },
+  {
+    "file": "perl-clone-0.51-1-x86_64.pkg.tar.zst",
+    "sha256": "39ee27b8a2ff4062e0aa1d3cdf334e59a1a726916daaa0c4bc13d31d1788a49a"
+  },
+  {
+    "file": "perl-convert-binhex-1.125-3-any.pkg.tar.zst",
+    "sha256": "96d9418550129e569a69b17682654f71754c92bbe97515f2f255d6aa9ad4d1bc"
+  },
+  {
+    "file": "perl-encode-locale-1.05-3-any.pkg.tar.zst",
+    "sha256": "e02957a3468521d6a35fec39327ee9ecf024b00261fb4c496339cb5428decd8f"
+  },
+  {
+    "file": "perl-error-0.17030-3-any.pkg.tar.zst",
+    "sha256": "c5c183196a4803c0b427fc174e446cc530e80833fce7405719bc46a33d3c61fd"
+  },
+  {
+    "file": "perl-file-listing-6.16-2-any.pkg.tar.zst",
+    "sha256": "15e00cd7923ec76c8127576bb64e0cb159a48ea87efefc35f64493bcd1e8a95e"
+  },
+  {
+    "file": "perl-html-parser-3.86-2-x86_64.pkg.tar.zst",
+    "sha256": "18a6097593b08689f3923bfe948356c645e486929af5fee6e9d661a1285c060c"
+  },
+  {
+    "file": "perl-html-tagset-3.24-2-any.pkg.tar.zst",
+    "sha256": "cf9adccdaaa6b5b1307365afed083daa126d4230ef812f35ec65eb5f6e472c92"
+  },
+  {
+    "file": "perl-http-cookiejar-0.014-2-any.pkg.tar.zst",
+    "sha256": "70fdf1d4bdbab078765e7200436f614cf995007f2329f487baafc1841e8d66a9"
+  },
+  {
+    "file": "perl-http-cookies-6.12-2-any.pkg.tar.zst",
+    "sha256": "902e3d2ac5564536bafd113f42d49df7ecf8c4808c793369ba7bb413a12546d1"
+  },
+  {
+    "file": "perl-http-daemon-6.17-2-any.pkg.tar.zst",
+    "sha256": "77d6fd31b6e1a1db66237a97da8a99c7a0eff8297ca1d5b75acfcb38a86251ca"
+  },
+  {
+    "file": "perl-http-date-6.08-2-any.pkg.tar.zst",
+    "sha256": "c26c4e9655557e7c9ec8b74c39d32e31ec5640552f5371b221d59bc22bfa520a"
+  },
+  {
+    "file": "perl-http-message-7.04-2-any.pkg.tar.zst",
+    "sha256": "526c89268f0489c37d950fbd8fdbdbb745dbe61ec2d2bd2871c6c8646d01792d"
+  },
+  {
+    "file": "perl-http-negotiate-6.01-4-any.pkg.tar.zst",
+    "sha256": "0cb00eb507d51b5fb9446827acc7d7f0629381f7d7bf8548fa3e0ba64704dd5e"
+  },
+  {
+    "file": "perl-io-html-1.004-3-any.pkg.tar.zst",
+    "sha256": "3d42f5fe05b06fda5cbe94c79f98c9a1f32d0b0361b93839f9244af3676620f0"
+  },
+  {
+    "file": "perl-io-socket-ssl-2.099-2-any.pkg.tar.zst",
+    "sha256": "d9d0adc2c9435a50d573869031f893babbceef8ddbc8039efe01a7ee598ac35f"
+  },
+  {
+    "file": "perl-io-stringy-2.113-4-any.pkg.tar.zst",
+    "sha256": "35664d5b4b6e6c569984f4901d7d57b56869b5a41b9ab35674f938186a50b7e2"
+  },
+  {
+    "file": "perl-libwww-6.83-3-any.pkg.tar.zst",
+    "sha256": "adbc8538af75c6d9d37ec3c05cbda27843ad35c6b9fc6de8de64e016bb4c27b1"
+  },
+  {
+    "file": "perl-lwp-mediatypes-6.05-2-any.pkg.tar.zst",
+    "sha256": "4afde66f5a53366fbed27779345b3f7fd782feffa00613a5d5482b5d207f6358"
+  },
+  {
+    "file": "perl-mailtools-2.22-2-any.pkg.tar.zst",
+    "sha256": "53cba8b2bc2042518d83a88d562a9ee0d1ceae3d581ac4896baec0ac25bfc91c"
+  },
+  {
+    "file": "perl-mime-tools-5.518-2-any.pkg.tar.zst",
+    "sha256": "05d3cb6d53c943ce4481f67a04e7b9272e383577ea84672f2ff390d7dab95766"
+  },
+  {
+    "file": "perl-net-http-6.24-2-any.pkg.tar.zst",
+    "sha256": "8f45b20264525e3c5788f2b12a1c15ae8a27ef2904030bd598aa7fc9d10fda36"
+  },
+  {
+    "file": "perl-net-smtp-ssl-1.04-3-any.pkg.tar.zst",
+    "sha256": "d553221db395c227c93643800af42d39049b055f2630e39b1c4cd78a7d3745c1"
+  },
+  {
+    "file": "perl-net-ssleay-1.96-2-x86_64.pkg.tar.zst",
+    "sha256": "63b534ee973831d01b9c9e64fd8891925e9cf0c8923326b63f3c9d4582fee820"
+  },
+  {
+    "file": "perl-termreadkey-2.38-9-x86_64.pkg.tar.zst",
+    "sha256": "584029cb544e78f46d7cc2040d22d144bc26657d0584452d2119dc67f1cf747d"
+  },
+  {
+    "file": "perl-timedate-2.35-2-any.pkg.tar.zst",
+    "sha256": "ddd3cd5bb07f6c1cc2a6315233e48002d904a492901134d6f1f4139d21f31625"
+  },
+  {
+    "file": "perl-try-tiny-0.32-2-any.pkg.tar.zst",
+    "sha256": "3d36d2b776c6aa8d4313b3b08eea81ad58002783c5f95c4ad8ca718cd84b9c8c"
+  },
+  {
+    "file": "perl-uri-5.37-2-any.pkg.tar.zst",
+    "sha256": "80c66674e48c53b56561fe76d39a739a80fd0796644d535a70a3117bba52add2"
+  },
+  {
+    "file": "perl-www-robotrules-6.03-2-any.pkg.tar.zst",
+    "sha256": "c4b720d8a7e5973d524de6b53d798db49e6f3697252da1ea68a680ca0861c4d5"
+  },
+  {
+    "file": "tzcode-2026e-1-x86_64.pkg.tar.zst",
+    "sha256": "8dbce9e8ff470b36ec7666fba6cf86c56384a618da9568a192b79f0008d55df1"
+  }
+]

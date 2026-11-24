@@ -1,11 +1,11 @@
 import { mkdir, mkdtempDisposable, rename } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { parseArgs } from 'node:util'
-import settings from '../../engine/windows-x64/configuration.json' with { type: 'json' }
-import { requiredPath, requireNewDirectory } from '../files.ts'
+import settings from '../../../engine/windows/configuration.json' with { type: 'json' }
+import { requiredPath, requireNewDirectory } from '../../files.ts'
 import { prepareArchives } from './archives.ts'
 import { collectRuntime } from './runtime.ts'
-import { prepareSource } from './source.ts'
+import { prepareSource } from '../source.ts'
 import { buildDependencies, engineCommand, prepareToolchain } from './toolchain.ts'
 
 export async function buildEngine(destination: string, cache: string, repository?: string) {
