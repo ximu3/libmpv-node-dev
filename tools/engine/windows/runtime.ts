@@ -1,10 +1,10 @@
 import { collectMaterials } from './materials.ts'
 import { copyFile, mkdir, readFile, readdir } from 'node:fs/promises'
 import { basename, join } from 'node:path'
-import settings from '../../engine/windows-x64/configuration.json' with { type: 'json' }
-import inputs from '../../engine/windows-x64/inputs.json' with { type: 'json' }
-import upstream from '../../engine/mpv/source.json' with { type: 'json' }
-import { digest, verifyDigest, writeJson } from '../files.ts'
+import settings from '../../../engine/windows/configuration.json' with { type: 'json' }
+import { inputs, target, tuple } from './settings.ts'
+import upstream from '../../../engine/mpv/source.json' with { type: 'json' }
+import { digest, verifyDigest, writeJson } from '../../files.ts'
 import { imports } from './pe.ts'
 
 function componentName(name: string) {
@@ -27,7 +27,7 @@ export async function collectRuntime(
   cache: string,
 ) {
   const mpv = join(work, 'obj/libmpv-2.dll')
-  const directories = [join(toolchain, 'ucrt64/bin'), join(prefix, 'bin')]
+  const directories = [join(toolchain, target.environment, 'bin'), join(prefix, 'bin')]
   const candidates = new Map<string, string>()
   for (const directory of directories) {
     for (const file of await readdir(directory)) {
@@ -59,7 +59,7 @@ export async function collectRuntime(
   }
 
   const files: Record<string, { sha256: string; imports: string[]; source: string }> = {}
-  const known: Record<string, { sha256: string; archive: string }> = settings.dependencies
+  const known: Record<string, { sha256: string; archive: string }> = target.dependencies
   const pending = [mpv]
   await mkdir(output, { recursive: true })
   for (let path = pending.pop(); path; path = pending.pop()) {
@@ -78,7 +78,7 @@ export async function collectRuntime(
       await verifyDigest(path, expected.sha256)
       source = expected.archive
     }
-    const dependencies = imports(await readFile(path))
+    const dependencies = imports(await readFile(path), target.machine)
     for (const dependency of dependencies) {
       const installed = candidates.get(dependency)
       if (installed) {
@@ -97,7 +97,7 @@ export async function collectRuntime(
   )
   await collectMaterials(work, cache, output, archives)
   await writeJson(join(output, 'engine.json'), {
-    target: 'win32-x64',
+    target: tuple,
     mpvCommit: upstream.commit,
     patches: upstream.patches.map((patch) => patch.sha256),
     files,

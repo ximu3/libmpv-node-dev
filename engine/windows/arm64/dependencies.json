@@ -1,0 +1,214 @@
+{
+  "libasprintf-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-gettext-runtime-1.0-1-any.pkg.tar.zst",
+    "sha256": "fd3729b173ba8a46e0da171fc67e6b60733545d85c7f5548633e49303c70c9d4"
+  },
+  "libbrotlicommon.dll": {
+    "archive": "mingw-w64-clang-aarch64-brotli-1.2.0-1-any.pkg.tar.zst",
+    "sha256": "6f2ab8fa291bfa9b3c8fd335a68c17094ee1f72db313e4ffe1f598a375126a7e"
+  },
+  "libbrotlidec.dll": {
+    "archive": "mingw-w64-clang-aarch64-brotli-1.2.0-1-any.pkg.tar.zst",
+    "sha256": "916b14535c4cedd0edb53c6a3dc883f1223b8a378ec4838353b37f36cbf23822"
+  },
+  "libbrotlienc.dll": {
+    "archive": "mingw-w64-clang-aarch64-brotli-1.2.0-1-any.pkg.tar.zst",
+    "sha256": "1bda85bb404c34879bced21a14004156471a5524a9a442791bb56f606fe52bc6"
+  },
+  "libbz2-1.dll": {
+    "archive": "mingw-w64-clang-aarch64-bzip2-1.0.8-4-any.pkg.tar.zst",
+    "sha256": "2ea55932ca4f70229c9bdb756faef51fb007d49a1681d448b0ad5256f4ff6141"
+  },
+  "libc++.dll": {
+    "archive": "mingw-w64-clang-aarch64-libc++-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "df1d3a966b6d2f8274f1e7db2be23c000ef0b71e424ff887521ad8971b30217c"
+  },
+  "libcharset-1.dll": {
+    "archive": "mingw-w64-clang-aarch64-libiconv-1.19-1-any.pkg.tar.zst",
+    "sha256": "4a956422125f64b91621be5331f365d66ff8e88044ace0c2178b3200071ac515"
+  },
+  "libdav1d-7.dll": {
+    "archive": "mingw-w64-clang-aarch64-dav1d-1.5.4-1-any.pkg.tar.zst",
+    "sha256": "4336bde484a7b4cf2f80c145e6d4b2154aaefa89b2ccb8e8e10a5e74eca91f80"
+  },
+  "libdovi.dll": {
+    "archive": "mingw-w64-clang-aarch64-libdovi-3.4.0-1-any.pkg.tar.zst",
+    "sha256": "36727400bce7bda19fc27655046abebe6d3dbacf15726339d80490559975b1c5"
+  },
+  "libfreetype-6.dll": {
+    "archive": "mingw-w64-clang-aarch64-freetype-2.15.0-1-any.pkg.tar.zst",
+    "sha256": "ce6691aede7cbd351a82482514a01611b7228f1346ad5ae42d03b5b31777a31a"
+  },
+  "libfribidi-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-fribidi-1.0.17-1-any.pkg.tar.zst",
+    "sha256": "fed055acf8c1334d743f64561b9a92b045e401f1a69b27e15636deb272007b22"
+  },
+  "libgio-2.0-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-glib2-2.90.1-1-any.pkg.tar.zst",
+    "sha256": "d9b5beaa7af88d98bd2614df02f5e89e6291f997650728c74dfbcd13ce2ba0f7"
+  },
+  "libgirepository-2.0-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-glib2-2.90.1-1-any.pkg.tar.zst",
+    "sha256": "be6e8ddbc5a474824b780ab9d199850cb725051b002edb9df78f092a3a0afe6a"
+  },
+  "libglib-2.0-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-glib2-2.90.1-1-any.pkg.tar.zst",
+    "sha256": "ad0e4705dada443d9139421d42b08e3f87ff64ec63274c26a8ffe4e591f50935"
+  },
+  "libgmodule-2.0-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-glib2-2.90.1-1-any.pkg.tar.zst",
+    "sha256": "3ba40c305776bfe4c041669a29f2f0f9876892f0116374df5800b03acb9e2cf9"
+  },
+  "libgobject-2.0-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-glib2-2.90.1-1-any.pkg.tar.zst",
+    "sha256": "104a054e1b43fdf13cd0418c77bf8d34debb57a10b254e89ed66f37f40101177"
+  },
+  "libgraphite2.dll": {
+    "archive": "mingw-w64-clang-aarch64-graphite2-1.3.15-1-any.pkg.tar.zst",
+    "sha256": "a7ff3ca8cf8a41599a452d4229fe39b75b583dd7b2971ced082ecbe3bb36fd89"
+  },
+  "libgthread-2.0-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-glib2-2.90.1-1-any.pkg.tar.zst",
+    "sha256": "2f7ddfc764ee83956e1d2000b7daf250de14f7476fd98639f66886926deb19fc"
+  },
+  "libharfbuzz-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-harfbuzz-14.6.0-1-any.pkg.tar.zst",
+    "sha256": "60f1ce6d5090216d5509e7f804b105025559ea7ad0f92771f195e5a3145a1c76"
+  },
+  "libharfbuzz-gobject-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-harfbuzz-14.6.0-1-any.pkg.tar.zst",
+    "sha256": "a4bdd6e404a9ff0c880fd93c57afbd1a188967d6dfef0fbcbdf83b66472e1601"
+  },
+  "libharfbuzz-raster-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-harfbuzz-14.6.0-1-any.pkg.tar.zst",
+    "sha256": "4fc388fa1d07b6c5df87af9d65a1726c2fae9afd6800d66df4a107488a478716"
+  },
+  "libharfbuzz-subset-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-harfbuzz-14.6.0-1-any.pkg.tar.zst",
+    "sha256": "0dc8e6496fb4618ba94183b8d3370fa20f3338ba2f39c1831ddf3e60a8859651"
+  },
+  "libharfbuzz-vector-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-harfbuzz-14.6.0-1-any.pkg.tar.zst",
+    "sha256": "73373b4518d45b6d80cc99a22c1dc73570bd5bff2996ceeac597972125b19797"
+  },
+  "libiconv-2.dll": {
+    "archive": "mingw-w64-clang-aarch64-libiconv-1.19-1-any.pkg.tar.zst",
+    "sha256": "5eb3e024adbeb40e990530b64498fa5305b4ebeaa34db971196f92317f70a35d"
+  },
+  "libintl-8.dll": {
+    "archive": "mingw-w64-clang-aarch64-gettext-runtime-1.0-1-any.pkg.tar.zst",
+    "sha256": "31db0d0e7780cf28dca1309a894cb775b2ab130c4ba777c546a206970ca47320"
+  },
+  "liblcms2-2.dll": {
+    "archive": "mingw-w64-clang-aarch64-lcms2-2.19.1-1-any.pkg.tar.zst",
+    "sha256": "e30b3dba2d494f14a3105918c288f9d35c366a75f57c7469549d6278d9b30a7d"
+  },
+  "liblcms2_fast_float-2.dll": {
+    "archive": "mingw-w64-clang-aarch64-lcms2-2.19.1-1-any.pkg.tar.zst",
+    "sha256": "46ea76e4df4d3f7eb5d36f79f283ee4e92aacec213a1000e34f7b2b368591293"
+  },
+  "liblzma-5.dll": {
+    "archive": "mingw-w64-clang-aarch64-xz-5.8.4-1-any.pkg.tar.zst",
+    "sha256": "6500583e493cf182e75f8a067bcdfc61f57a7291c22e7fe8bd019fbcaa306c96"
+  },
+  "libogg-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-libogg-1.3.6-1-any.pkg.tar.zst",
+    "sha256": "5c10fad3bc0c5e6e464f4b78fce07e7778749c7b57e7bbfd9ae730f41936fcef"
+  },
+  "libomp.dll": {
+    "archive": "mingw-w64-clang-aarch64-llvm-openmp-23.1.3-2-any.pkg.tar.zst",
+    "sha256": "266c8db2631c67f8f18c34990510e4dfd972b889576affe85283b9e6bfb746f1"
+  },
+  "libopus-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-opus-1.6.1-2-any.pkg.tar.zst",
+    "sha256": "38bc125719c86e73a4120e33fba812492035508d89c80e7c483af8304d0902dd"
+  },
+  "libpcre2-16-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-pcre2-10.49-1-any.pkg.tar.zst",
+    "sha256": "9aebc76fdc76e7b0e809f4b9e07391642060fc15f16215d6816dabd4ca866750"
+  },
+  "libpcre2-32-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-pcre2-10.49-1-any.pkg.tar.zst",
+    "sha256": "bcc55b8afc708e3b4c26eca9a758a38ab5f8ae478a3c5f4c7e1da5c43cb6618e"
+  },
+  "libpcre2-8-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-pcre2-10.49-1-any.pkg.tar.zst",
+    "sha256": "502f29e009b367c9e141b1ab5244474fd1cf268115b33f4e87449307ae40f236"
+  },
+  "libpcre2-posix-3.dll": {
+    "archive": "mingw-w64-clang-aarch64-pcre2-10.49-1-any.pkg.tar.zst",
+    "sha256": "586feddae0186f675a7d6183427819ed00f6c83c03874712c27e0115c0df302a"
+  },
+  "libplacebo-360.dll": {
+    "archive": "mingw-w64-clang-aarch64-libplacebo-7.360.1-2-any.pkg.tar.zst",
+    "sha256": "f2e89eb67a6d40bf7e6047e472f00b4769ba7492894e2617077075da6eba82d2"
+  },
+  "libpng16-16.dll": {
+    "archive": "mingw-w64-clang-aarch64-libpng-1.6.59-1-any.pkg.tar.zst",
+    "sha256": "6ae06374c5d9e77b4a9e4d9f3677a8e1da588048fb51df3e1a10d6c6055e6018"
+  },
+  "libshaderc_shared.dll": {
+    "archive": "mingw-w64-clang-aarch64-shaderc-2026.4-1-any.pkg.tar.zst",
+    "sha256": "e89d3ce18f2bac135c2d658e571435bab7dfe75c68b297c445aebfe1b0d28294"
+  },
+  "libsoxr-lsr.dll": {
+    "archive": "mingw-w64-clang-aarch64-libsoxr-0.1.3-6-any.pkg.tar.zst",
+    "sha256": "d81879bff2e59d6a01086c9867cb2ed7f6814489a1146d42bf1f76e33ad0c7ea"
+  },
+  "libsoxr.dll": {
+    "archive": "mingw-w64-clang-aarch64-libsoxr-0.1.3-6-any.pkg.tar.zst",
+    "sha256": "456c2405b3532b3be68abc8c25ad26fbaa36896801f43931daac89c311bd5e3e"
+  },
+  "libspirv-cross-c-shared.dll": {
+    "archive": "mingw-w64-clang-aarch64-spirv-cross-1~1.4.363.0-1-any.pkg.tar.zst",
+    "sha256": "ca0918708993c1f612917339f2779d0e2df8b1116de5931b9c5c04c6a0eb90f4"
+  },
+  "libunibreak-7.dll": {
+    "archive": "mingw-w64-clang-aarch64-libunibreak-7.0-1-any.pkg.tar.zst",
+    "sha256": "4bc67926a4a449971014663dee7af83b9c8a88d7d52dbbf559e6cf1cd8990d3b"
+  },
+  "libunwind.dll": {
+    "archive": "mingw-w64-clang-aarch64-libunwind-23.1.3-1-any.pkg.tar.zst",
+    "sha256": "e49accafb8332aaf7dcf5c34b6189bdf78e77cb07dae62b98b2a89b6f32635f4"
+  },
+  "libvorbis-0.dll": {
+    "archive": "mingw-w64-clang-aarch64-libvorbis-1.3.7-3-any.pkg.tar.zst",
+    "sha256": "b5f0a63093075102cf3a4ee27db7e5e72a33e0f612d3346f1ff81f286245c76c"
+  },
+  "libvorbisenc-2.dll": {
+    "archive": "mingw-w64-clang-aarch64-libvorbis-1.3.7-3-any.pkg.tar.zst",
+    "sha256": "5725c07f45244183edbefeae11b2982827f4c8f89df4b5f0c903ca5d8d0a242b"
+  },
+  "libvorbisfile-3.dll": {
+    "archive": "mingw-w64-clang-aarch64-libvorbis-1.3.7-3-any.pkg.tar.zst",
+    "sha256": "a91e1653f432dff7d7ff8be854155021145b4ea0c327245947ac3a35fa759667"
+  },
+  "libvpx-1.dll": {
+    "archive": "mingw-w64-clang-aarch64-libvpx-1.17.0-1-any.pkg.tar.zst",
+    "sha256": "b83adf064b6a45899388fa236c0e29ace34e81a2f95d74f177a0fed5d6346d91"
+  },
+  "libwinpthread-1.dll": {
+    "archive": "mingw-w64-clang-aarch64-libwinpthread-14.0.0.r495.g63ebe6cdb-1-any.pkg.tar.zst",
+    "sha256": "7f402c4b8d8ca8bfb60aee91c8cf95ed00b599a933c2cff3f2d773d914531558"
+  },
+  "libxml2-16.dll": {
+    "archive": "mingw-w64-clang-aarch64-libxml2-2.15.4-2-any.pkg.tar.zst",
+    "sha256": "411da3c1de4a1f6ad7891a3684d382c51175ec037fd74abdf25a591553f86f62"
+  },
+  "libzimg-2.dll": {
+    "archive": "mingw-w64-clang-aarch64-zimg-3.0.6-3-any.pkg.tar.zst",
+    "sha256": "af36f2d740609ab45e380bd3d8681eb4c03a0e3c2478a0b5393869b871c0cec1"
+  },
+  "lua51.dll": {
+    "archive": "mingw-w64-clang-aarch64-luajit-2.1.1791988261-1-any.pkg.tar.zst",
+    "sha256": "6085abd5b14c9315bae76b0dd32c3fb1ed03905c8e7c2c23b130e68a9770237b"
+  },
+  "vulkan-1.dll": {
+    "archive": "mingw-w64-clang-aarch64-vulkan-loader-1~1.4.363.0-1-any.pkg.tar.zst",
+    "sha256": "36f0288dce9ca0b692fa0da91cbd18ef45c39ca84782bd44916f48e3b4d4e891"
+  },
+  "zlib1.dll": {
+    "archive": "mingw-w64-clang-aarch64-zlib-1.3.2-2-any.pkg.tar.zst",
+    "sha256": "fed18d2fda0a1b0252787fd59e7c01ed900f5c90eeb131f30a9992abb328c7ca"
+  }
+}
