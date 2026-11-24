@@ -53,6 +53,7 @@ export default defineConfig({
       'pack:platform': { command: 'node tools/package/platform.ts', cache: false },
       'check:package': { command: 'node tools/package/check.ts', cache: false },
       'pack:sources': { command: 'node tools/package/materials.ts', cache: false },
+      'pack:all-sources': { command: 'node tools/package/assemble-sources.ts', cache: false },
       'pack:all': { command: 'node tools/package/assemble.ts', cache: false },
       'test:prepare-tone-engines': {
         command: 'node tests/engine/tone-map/engines.ts',

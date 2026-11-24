@@ -14,11 +14,14 @@ import { downloadSources } from '../engine/posix/sources.ts'
 
 const { values, positionals } = parseArgs({
   allowPositionals: true,
-  options: { runtime: { type: 'string' }, cache: { type: 'string' } },
+  options: {
+    runtime: { type: 'string' },
+    cache: { type: 'string' },
+    'inputs-only': { type: 'boolean' },
+  },
 })
 const output = requiredPath(positionals[0], 'destination')
 const runtime = requiredPath(values.runtime, '--runtime')
-const cache = requiredPath(values.cache, '--cache')
 await requireNewDirectory(output)
 await mkdir(dirname(output), { recursive: true })
 await using work = await mkdtempDisposable(join(dirname(output), 'libmpv-sources-'))
@@ -31,8 +34,9 @@ const original = JSON.parse(await readFile(join(kit, 'checksums.json'), 'utf8'))
 for (const [relative, sha] of Object.entries(original)) {
   await verifyDigest(join(kit, relative), sha)
 }
-if (process.platform !== 'win32') {
-  await downloadSources(kit, cache)
+const complete = process.platform === 'win32' || !values['inputs-only']
+if (complete && process.platform !== 'win32') {
+  await downloadSources(kit, requiredPath(values.cache, '--cache'))
 }
 await cp(join(runtime, 'third-party'), join(kit, 'third-party'), { recursive: true })
 await copyFile(join(projectRoot, 'engine/RELINK.md'), join(kit, 'RELINK.md'))
@@ -69,6 +73,7 @@ execFileSync('tar', ['-cf', join('output', name), 'source-materials'], {
 await writeJson(join(staging, 'checksums.json'), {
   target,
   commit,
+  complete,
   files: { [name]: await digest(path) },
 })
 await rename(staging, output)

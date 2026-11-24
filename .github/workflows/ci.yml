@@ -182,12 +182,12 @@ jobs:
         run: |
           runtime="$RUNNER_TEMP/libmpv-runtime"
           if [[ "$RUNNER_OS" == Windows ]]; then runtime="$RUNNER_TEMP/libmpv-engine"; fi
-          pnpm exec vp run pack:sources "$RUNNER_TEMP/verified-sources" --runtime "$runtime" --cache "$RUNNER_TEMP/upstream-archives"
+          pnpm exec vp run pack:sources "$RUNNER_TEMP/verified-sources" --runtime "$runtime" --cache "$RUNNER_TEMP/upstream-archives" --inputs-only
       - name: Retain corresponding source
         if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
-          name: sources-${{ matrix.target }}
+          name: source-inputs-${{ matrix.target }}
           path: ${{ runner.temp }}/verified-sources
           compression-level: 0
           if-no-files-found: error
@@ -219,6 +219,37 @@ jobs:
           path: |
             ${{ runner.temp }}/assembled/ximu3-libmpv-node-0*.tgz
             ${{ runner.temp }}/assembled/checksums.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+
+  sources:
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: source-inputs-*
+          path: ${{ runner.temp }}/source-inputs
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ runner.temp }}/upstream-archives
+          key: source-v1-${{ hashFiles('engine/posix/locks/**', 'tools/engine/posix/sources.ts') }}
+      - run: pnpm exec vp run pack:all-sources "$RUNNER_TEMP/candidate-sources" --inputs "$RUNNER_TEMP/source-inputs" --cache "$RUNNER_TEMP/upstream-archives"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: corresponding-sources
+          path: ${{ runner.temp }}/candidate-sources
           compression-level: 0
           if-no-files-found: error
           retention-days: 1
@@ -259,7 +290,7 @@ jobs:
   gate:
     name: ${{ github.event_name == 'workflow_dispatch' && 'Requested checks' || 'Required checks' }}
     runs-on: ubuntu-22.04
-    needs: [plan, workspace, build, assemble, consume]
+    needs: [plan, workspace, build, assemble, sources, consume]
     if: always()
     steps:
       - env:
@@ -270,11 +301,12 @@ jobs:
           BUILD: ${{ needs.build.result }}
           FULL_CANDIDATE: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'all' }}
           ASSEMBLY: ${{ needs.assemble.result }}
+          SOURCES: ${{ needs.sources.result }}
           CONSUMERS: ${{ needs.consume.result }}
         run: |
           [[ "$PLAN" == success ]]
           if [[ "$FULL_CANDIDATE" == true ]]; then
-            [[ "$ASSEMBLY" == success && "$CONSUMERS" == success ]]
+            [[ "$ASSEMBLY" == success && "$SOURCES" == success && "$CONSUMERS" == success ]]
           fi
           if [[ "$REUSED" == true ]]; then
             [[ "$WORKSPACE" == skipped && "$BUILD" == skipped ]]

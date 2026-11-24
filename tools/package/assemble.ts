@@ -9,16 +9,8 @@ import type { Catalog } from '../catalog/collect.ts'
 import { declarations } from '../catalog/generate.ts'
 import { digest, requiredPath, requireNewDirectory, writeJson } from '../files.ts'
 import { runPnpm } from '../pnpm.ts'
-import { stageMain } from './main.ts'
+import { stageMain, packageTargets } from './main.ts'
 
-const targets = [
-  'darwin-arm64',
-  'darwin-x64',
-  'linux-arm64',
-  'linux-x64',
-  'win32-arm64',
-  'win32-x64',
-] as const
 function content(archive: string, file: string): Buffer {
   return execFileSync('tar', ['-xOf', basename(archive), 'package/' + file], {
     cwd: dirname(archive),
@@ -42,7 +34,7 @@ export async function assemble(destination: string, inputs: string) {
     name.endsWith('.tgz'),
   )
   const commit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
-  for (const target of targets) {
+  for (const target of packageTargets) {
     const name = metadata.name + '-' + target
     const archiveName = name.slice(1).replace('/', '-') + '-' + metadata.version + '.tgz'
     const matches = archives.filter((file) => basename(file) === archiveName)
