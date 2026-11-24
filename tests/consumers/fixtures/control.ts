@@ -2,6 +2,7 @@ import { checkSubtitleFonts } from './subtitle-fonts.js'
 import { checkColorOutput } from './colors.js'
 import { checkGpuVideo } from './gpu.js'
 import { checkSoftwareVideo } from './software.js'
+import { checkControlLoad } from './pressure.js'
 import { checkStreams } from './streams.js'
 import { Worker } from 'node:worker_threads'
 import { once } from 'node:events'
@@ -288,6 +289,7 @@ await assert.rejects(
 
 await checkSubtitleFonts()
 await checkSoftwareVideo()
+await checkControlLoad()
 if (process.env.LIBMPV_TEST_GRAPHICS === '1') {
   await checkGpuVideo()
   await checkColorOutput()

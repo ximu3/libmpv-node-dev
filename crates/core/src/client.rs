@@ -604,36 +604,25 @@ impl OwnedClient {
                     shared.finish(id, Ok(Value::None));
                 }
             }
-            if shared.lock().closing {
-                break;
-            }
-            // Only this thread advances the event queue; event data is copied before the next wait.
-            let event = unsafe { &*(self.api.wait_event)(self.handle.0.as_ptr(), 0.0) };
+            let timeout = {
+                let state = shared.lock();
+                if state.closing {
+                    break;
+                }
+                if state.requests.values().any(|request| !request.submitted) {
+                    0.0
+                } else {
+                    -1.0
+                }
+            };
+            // A submission or shutdown after this check wakes this very wait.
+            let event = unsafe { &*(self.api.wait_event)(self.handle.0.as_ptr(), timeout) };
             if event.id == 1 {
                 shared.publish(event);
                 break;
             }
-            if event.id == 0 {
-                // Work submissions wake the blocking wait even if they occur immediately before it.
-                let queued = shared
-                    .lock()
-                    .requests
-                    .values()
-                    .any(|request| !request.submitted);
-                if queued {
-                    continue;
-                }
-                let event = unsafe { &*(self.api.wait_event)(self.handle.0.as_ptr(), -1.0) };
-                if event.id == 1 {
-                    shared.publish(event);
-                    break;
-                }
-                self.deliver(&shared, event);
-            } else {
-                self.deliver(&shared, event);
-            }
+            self.deliver(&shared, event);
         }
-
         let (children, hook, protocols) = {
             let mut state = shared.lock();
             state.closing = true;
