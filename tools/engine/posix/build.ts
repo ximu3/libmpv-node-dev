@@ -290,6 +290,7 @@ export async function buildUnix(work: string, cache: string) {
           '-Dvideotoolbox-gl=enabled',
           '-Dcoreaudio=enabled',
           '-Dswift-build=enabled',
+          '-Dvulkan=enabled',
         ]
       : [
           '-Dplain-gl=enabled',

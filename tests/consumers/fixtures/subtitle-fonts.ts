@@ -27,15 +27,45 @@ async function pixels(provider: 'auto' | 'none', attachments: boolean) {
     ],
   })
   console.log('Checking subtitle fonts', provider, attachments)
+  const trace: string[] = []
+  await using diagnostics = await player.observeLogs(
+    {
+      next(record) {
+        if (record.type === 'log-message') {
+          trace.push(record.prefix + ': ' + record.text.trimEnd())
+          if (trace.length > 35) {
+            trace.shift()
+          }
+        }
+      },
+      error(cause) {
+        console.error(cause)
+      },
+    },
+    { level: 'v' },
+  )
+  async function playback(promise: Promise<void>, stage: string) {
+    const timeout = Promise.withResolvers<never>()
+    const timer = setTimeout(
+      () => timeout.reject(new Error('Timed out waiting for ' + stage + '\n' + trace.join('\n'))),
+      10000,
+    )
+    try {
+      await Promise.race([promise, timeout.promise])
+    } finally {
+      clearTimeout(timer)
+    }
+  }
   const ready = Promise.withResolvers<void>()
   const observations = await player.observeEvents(
     {
       next(event) {
+        trace.push('event ' + event.type)
         if (event.type === 'playback-restart') {
           ready.resolve()
         }
         if (event.type === 'end-file' && event.reason === 'error') {
-          ready.reject(new Error('Test media could not be decoded'))
+          ready.reject(new Error('Test media could not be decoded: ' + trace.join('\n')))
         }
       },
       error: ready.reject,
@@ -43,7 +73,7 @@ async function pixels(provider: 'auto' | 'none', attachments: boolean) {
     { events: ['playback-restart', 'end-file'] },
   )
   await player.command(['loadfile', media, 'replace'])
-  await ready.promise
+  await playback(ready.promise, 'initial video frame')
   const afterSeek = Promise.withResolvers<void>()
   const seekEvents = await player.observeEvents(
     {
@@ -55,7 +85,7 @@ async function pixels(provider: 'auto' | 'none', attachments: boolean) {
     { events: ['playback-restart'] },
   )
   await player.command(['seek', 1, 'absolute+exact'])
-  await afterSeek.promise
+  await playback(afterSeek.promise, 'accurate seek')
   await seekEvents.dispose()
   await observations.dispose()
   const shot = await player.command(['screenshot-raw', 'subtitles', 'bgra'])
