@@ -1,3 +1,4 @@
+import { mediaSymbols } from './elf.ts'
 import { materials, type Package } from './materials.ts'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
@@ -101,6 +102,10 @@ export async function assembleUnix(
     return name === engine ? engine : 'mpv-node-' + id + '-' + name
   }
   await mkdir(runtime, { recursive: true })
+  const symbols = join(dirname(runtime), 'media-symbols.txt')
+  if (!mac) {
+    await mediaSymbols(entries.values(), id, symbols)
+  }
   const files: Record<string, { sha256: string; source: string; input: string }> = {}
   for (const entry of entries.values()) {
     const name = outputName(entry.name)
@@ -128,6 +133,7 @@ export async function assembleUnix(
         }
       }
       run(patch, [...args, file])
+      run(patch, ['--rename-dynamic-symbols', symbols, file])
     }
     files[name] = { sha256: await digest(file), source: entry.owner, input: entry.input }
   }
@@ -137,7 +143,7 @@ export async function assembleUnix(
     const hash = await digest(config)
     files['fonts.conf'] = { sha256: hash, input: hash, source: 'libmpv-node' }
   }
-  await materials(build, runtime, used.values())
+  await materials(build, runtime, used.values(), mac ? undefined : symbols)
   await writeJson(join(runtime, 'engine.json'), {
     target: build.platform,
     mpvCommit: upstream.commit,

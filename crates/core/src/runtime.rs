@@ -39,21 +39,14 @@ fn open(path: &Path) -> Result<Library, LoadError> {
     .map_err(|_| LoadError::LibraryLoadFailed)
 }
 
-#[cfg(all(target_os = "linux", target_env = "gnu"))]
+#[cfg(unix)]
 fn open(path: &Path) -> Result<Library, LoadError> {
     use libloading::os::unix::{Library as UnixLibrary, RTLD_LOCAL, RTLD_NOW};
-    // Electron exports a second set of FFmpeg symbols. Resolve against the complete private media group first.
-    unsafe { UnixLibrary::open(Some(path), RTLD_NOW | RTLD_LOCAL | libc::RTLD_DEEPBIND) }
+    // The installed graph uses private media names and resolves the process allocator normally.
+    unsafe { UnixLibrary::open(Some(path), RTLD_NOW | RTLD_LOCAL) }
         .map(Into::into)
         .map_err(|_| LoadError::LibraryLoadFailed)
 }
-
-#[cfg(all(unix, not(all(target_os = "linux", target_env = "gnu"))))]
-fn open(path: &Path) -> Result<Library, LoadError> {
-    // The package loader verified the file against its paired manifest before calling into core.
-    unsafe { Library::new(path) }.map_err(|_| LoadError::LibraryLoadFailed)
-}
-
 const ENGINE: &str = if cfg!(windows) {
     "libmpv-2.dll"
 } else if cfg!(target_os = "macos") {

@@ -50,6 +50,7 @@ export async function materials(
   build: { sources: string; cache: string },
   runtime: string,
   packages: Iterable<Package>,
+  symbolMap?: string,
 ) {
   const notices = join(runtime, 'third-party')
   const kit = join(runtime, 'source-materials')
@@ -136,6 +137,9 @@ export async function materials(
   }
   await writeJson(join(notices, 'components.json'), manifest)
   await writeJson(join(kit, 'components.json'), manifest)
+  if (symbolMap) {
+    await copyFile(symbolMap, join(kit, 'media-symbols.txt'))
+  }
   const hashes: Record<string, string> = {}
   for (const file of await readdir(kit, { recursive: true, withFileTypes: true })) {
     if (!file.isFile()) {
