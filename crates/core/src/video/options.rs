@@ -39,8 +39,8 @@ pub(crate) const GPU_OPTIONS: &[(&CStr, &CStr)] = &[
     (c"icc-profile-auto", c"no"),
     (c"background", c"color"),
 ];
-pub(crate) const OBSERVED: &[&CStr] = &[
-    c"vo",
+const COMMON: &[&CStr] = &[c"vo", c"wid"];
+const GPU: &[&CStr] = &[
     c"target-prim",
     c"target-trc",
     c"target-peak",
@@ -49,20 +49,71 @@ pub(crate) const OBSERVED: &[&CStr] = &[
     c"icc-profile-auto",
     c"background",
     c"background-color",
+    c"gpu-api",
+    c"gpu-context",
+    #[cfg(unix)]
+    c"opengl-es",
 ];
+pub(crate) fn observed(gpu: bool) -> impl Iterator<Item = &'static CStr> {
+    COMMON.iter().chain(if gpu { GPU } else { &[] }).copied()
+}
 pub(crate) fn observer_id(index: usize) -> u64 {
     u64::MAX - 1 - index as u64
 }
 pub(crate) fn observer_name(id: u64) -> Option<&'static CStr> {
-    OBSERVED
-        .get(usize::try_from(u64::MAX.checked_sub(1)?.checked_sub(id)?).ok()?)
-        .copied()
+    observed(true).nth(usize::try_from(u64::MAX.checked_sub(1)?.checked_sub(id)?).ok()?)
 }
 
 fn property(name: &[u8]) -> &[u8] {
     name.strip_prefix(b"options/")
         .or_else(|| name.strip_prefix(b"file-local-options/"))
         .unwrap_or(name)
+}
+fn selector(value: &Value, api: bool) -> bool {
+    let accepted = |name: &[u8]| {
+        name.is_empty()
+            || name == b"auto"
+            || (cfg!(windows) && name == b"d3d11")
+            || (api && cfg!(unix) && name == b"opengl")
+    };
+    let entry = |v: &Value| {
+        if matches!(member(v, b"enabled"), Some(Value::Flag(false))) {
+            return true;
+        }
+        text(v)
+            .or_else(|| member(v, b"name").and_then(text))
+            .is_some_and(accepted)
+    };
+    match value {
+        Value::Array(list) => list.iter().all(entry),
+        Value::String(s) => s.as_bytes().split(|b| *b == b',').all(accepted),
+        _ => false,
+    }
+}
+
+fn gpu_selector(name: &[u8]) -> Option<(bool, &[u8])> {
+    for (base, api) in [
+        (b"gpu-api".as_slice(), true),
+        (b"gpu-context".as_slice(), false),
+    ] {
+        if let Some(action) = name.strip_prefix(base)
+            && matches!(
+                action,
+                b"" | b"-set"
+                    | b"-add"
+                    | b"-append"
+                    | b"-pre"
+                    | b"-del"
+                    | b"-remove"
+                    | b"-clr"
+                    | b"-clear"
+                    | b"-toggle"
+            )
+        {
+            return Some((api, action));
+        }
+    }
+    None
 }
 fn vo_property(name: &[u8]) -> bool {
     matches!(
@@ -71,6 +122,8 @@ fn vo_property(name: &[u8]) -> bool {
             | b"vo-add"
             | b"vo-append"
             | b"vo-clear"
+            | b"vo-clr"
+            | b"vo-del"
             | b"vo-remove"
             | b"vo-set"
             | b"vo-pre"
@@ -104,8 +157,26 @@ pub(crate) fn compatible(
     if vo_property(name) {
         return matches!(name, b"vo" | b"vo-set") && compatible_vo(value);
     }
+    if name == b"wid" {
+        return matches!(value, Value::Integer(-1)) || text(value) == Some(b"-1");
+    }
     let Some(color) = color else { return true };
+    if let Some((api, action)) = gpu_selector(name) {
+        return match action {
+            b"-clr" | b"-clear" | b"-del" | b"-remove" => true,
+            _ => selector(value, api),
+        };
+    }
     match name {
+        #[cfg(unix)]
+        b"opengl-es" => {
+            text(value) == Some(b"auto")
+                || if cfg!(target_os = "linux") {
+                    matches!(value, Value::Flag(true)) || text(value) == Some(b"yes")
+                } else {
+                    matches!(value, Value::Flag(false)) || text(value) == Some(b"no")
+                }
+        }
         b"target-prim" => text(value) == Some(color.primaries().to_bytes()),
         b"target-trc" => text(value) == Some(b"srgb"),
         b"target-peak" => {
@@ -122,7 +193,9 @@ pub(crate) fn compatible(
 }
 fn reserved(name: &[u8], gpu: bool) -> bool {
     let name = property(name);
-    vo_property(name) || (gpu && OBSERVED.iter().any(|key| key.to_bytes() == name))
+    vo_property(name)
+        || (gpu && gpu_selector(name).is_some())
+        || observed(gpu).any(|key| key.to_bytes() == name)
 }
 
 pub(crate) fn conflict(operation: &Operation, color: Option<super::gpu::ColorSpace>) -> bool {

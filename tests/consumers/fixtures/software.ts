@@ -45,6 +45,11 @@ export async function checkSoftwareVideo() {
     (reason) =>
       reason instanceof MpvBindingError && reason.code === 'renderConflict' && !reason.submitted,
   )
+  await assert.rejects(
+    channel.setProperty('wid', 5n),
+    (reason) =>
+      reason instanceof MpvBindingError && reason.code === 'renderConflict' && !reason.submitted,
+  )
   const formats = ['bgr0', 'rgb0', '0rgb', '0bgr', 'rgb24'] as const
   let first: SoftwareFrame | undefined
   for (const [index, format] of formats.entries()) {

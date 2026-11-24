@@ -25,6 +25,11 @@ export async function checkGpuVideo() {
   const resized = Promise.withResolvers<NativeFrame>()
   let first = true
   try {
+    await assert.rejects(
+      player.command({ _name: 'set', name: 'gpu-api', value: 'vulkan' }),
+      (reason) =>
+        reason instanceof MpvBindingError && reason.code === 'renderConflict' && !reason.submitted,
+    )
     assert.equal(output.renderer, 'gpu')
     assert.equal(output.frameCapacity, 2)
     assert.equal(output.device.selection.platform, process.platform)
