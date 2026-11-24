@@ -1,3 +1,4 @@
+import type { MpvNativeLogMessage } from './logs.js'
 import type { MpvNativeEvent } from './subscriptions.js'
 import type { MpvNode } from './values.js'
 
@@ -11,6 +12,7 @@ export type MpvOperation =
   | 'observeProperty'
   | 'observePropertyText'
   | 'observeEvents'
+  | 'observeLogs'
   | 'setProperty'
   | 'loadConfigFile'
   | 'getTimeNs'
@@ -30,7 +32,9 @@ export type MpvBindingErrorCode =
   | 'observationInterrupted'
   | 'notificationConversion'
 export type Creation =
-  | { readonly stage: 'input' | 'library' | 'core' | 'initialize' | 'publish' }
+  | {
+      readonly stage: 'input' | 'library' | 'core' | 'initializationLogs' | 'initialize' | 'publish'
+    }
   | { readonly stage: 'options'; readonly optionIndex: number }
 const names: Readonly<Record<number, string>> = {
   '-1': 'MPV_ERROR_EVENT_QUEUE_FULL',
@@ -143,8 +147,8 @@ export class MpvObservationError extends MpvBindingError {
 export class MpvNotificationConversionError extends MpvBindingError {
   declare readonly code: 'notificationConversion'
   readonly reason = 'invalidUtf8' as const
-  #notification: MpvNativeEvent
-  constructor(operation: MpvOperation, notification: MpvNativeEvent) {
+  #notification: MpvNativeEvent | MpvNativeLogMessage
+  constructor(operation: MpvOperation, notification: MpvNativeEvent | MpvNativeLogMessage) {
     super('notificationConversion', operation, true)
     this.#notification = notification
   }

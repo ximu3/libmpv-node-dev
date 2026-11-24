@@ -31,6 +31,10 @@ impl NativeWatch {
                 item.set_named_property("value", event_record(env, Arc::unwrap_or_clone(event))?)?;
                 "value"
             }
+            Notice::Log(record) => {
+                item.set_named_property("value", crate::logs::write_log(env, record)?)?;
+                "value"
+            }
             Notice::Unavailable => "unavailable",
             Notice::End => "end",
             Notice::Interrupted(reason) => {
@@ -68,6 +72,37 @@ impl NativeWatch {
 
 #[napi]
 impl NativeClient {
+    #[napi]
+    pub fn observe_logs<'a>(
+        &self,
+        env: &'a Env,
+        level: String,
+        wake: Wake,
+        gate: &NativeCreation,
+    ) -> Result<PromiseRaw<'a, Object<'a>>> {
+        let level = std::ffi::CString::new(level)?;
+        let client = self.client.clone();
+        let creation = gate.0.clone();
+        env.spawn_future_with_callback(
+            async move {
+                tokio::task::spawn_blocking(move || {
+                    client.observe_logs(level, &creation, move || {
+                        wake.call((), ThreadsafeFunctionCallMode::NonBlocking);
+                    })
+                })
+                .await
+                .map_err(|_| Error::from_reason("Log registration worker failed"))
+            },
+            |env, result| match result {
+                Ok(watch) => {
+                    let mut item = Object::new(env)?;
+                    item.set_named_property("watch", NativeWatch(Arc::new(watch)))?;
+                    Ok(item)
+                }
+                Err(failure) => error(env, failure),
+            },
+        )
+    }
     #[napi]
     pub fn observe<'a>(
         &self,

@@ -61,11 +61,14 @@ pub fn create_client_core<'a>(
     options: Vec<(Uint8Array, Object<'_>)>,
     keep_alive: KeepAlive,
     creation: &NativeCreation,
+    log_level: Option<String>,
 ) -> Result<PromiseRaw<'a, Object<'a>>> {
     let options = options
         .into_iter()
         .map(|(name, value)| Ok((values::string(name)?, values::read(value, 0)?)))
         .collect::<Result<_>>()?;
+    let mut diagnostics =
+        libmpv_core::client::Diagnostics::new(log_level.map(std::ffi::CString::new).transpose()?);
     let creation = creation.0.clone();
     let opening = crate::environment::Opening::begin(env)?;
     let keep_alive = Arc::new(Mutex::new(Some(keep_alive)));
@@ -75,44 +78,55 @@ pub fn create_client_core<'a>(
             tokio::task::spawn_blocking(move || {
                 let runtime = Runtime::load(&PathBuf::from(directory))
                     .map_err(|_| Error::from_reason("Runtime pairing failed"))?;
-                let result = Client::create(runtime, options, &creation, move || {
-                    stop.lock().unwrap().take();
-                });
+                let result =
+                    Client::create(runtime, options, &creation, &mut diagnostics, move || {
+                        stop.lock().unwrap().take();
+                    });
                 if let Ok(client) = &result {
                     opening.register(client);
                 }
-                Ok(result)
+                Ok((result, diagnostics))
             })
             .await
             .map_err(|_| Error::from_reason("Initialization worker failed"))?
         },
-        move |env, result| match result {
-            Ok(client) => {
-                let mut result = Object::new(env)?;
-                result.set_named_property(
-                    "client",
-                    NativeClient {
-                        client: Arc::new(client),
-                        keep_alive,
-                        referenced: true,
-                    },
-                )?;
-                Ok(result)
-            }
-            Err(failure) => {
-                let mut result = error(
-                    env,
-                    CallError {
-                        reason: failure.reason,
-                        submitted: failure.submitted,
-                    },
-                )?;
-                result.set_named_property("stage", failure.stage)?;
-                if let Some(index) = failure.index {
-                    result.set_named_property("optionIndex", index as u32)?;
+        move |env, (result, diagnostics)| {
+            let mut response = match result {
+                Ok(client) => {
+                    let mut result = Object::new(env)?;
+                    result.set_named_property(
+                        "client",
+                        NativeClient {
+                            client: Arc::new(client),
+                            keep_alive,
+                            referenced: true,
+                        },
+                    )?;
+                    result
                 }
-                Ok(result)
+                Err(failure) => {
+                    let mut result = error(
+                        env,
+                        CallError {
+                            reason: failure.reason,
+                            submitted: failure.submitted,
+                        },
+                    )?;
+                    result.set_named_property("stage", failure.stage)?;
+                    if let Some(index) = failure.index {
+                        result.set_named_property("optionIndex", index as u32)?;
+                    }
+                    result
+                }
+            };
+            if diagnostics.registered {
+                let records = diagnostics
+                    .records
+                    .map(|record| crate::logs::write_log(env, record))
+                    .collect::<Result<Vec<_>>>()?;
+                response.set_named_property("logs", records)?;
             }
+            Ok(response)
         },
     )
 }

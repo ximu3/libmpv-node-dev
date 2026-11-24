@@ -19,3 +19,12 @@ export type {
   PropertyState,
 } from './subscriptions.js'
 export { MpvObservationError, MpvNotificationConversionError } from './errors.js'
+
+export type {
+  MpvLogLevel,
+  MpvLogRecord,
+  MpvLogMessage,
+  MpvLogGap,
+  MpvNativeLogRecord,
+  MpvNativeLogMessage,
+} from './logs.js'

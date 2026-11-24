@@ -1,4 +1,7 @@
+mod initialization;
+pub use initialization::Diagnostics;
 mod events;
+pub mod logs;
 pub use events::{EngineEvent, Notice, Selection, Watch};
 mod creation;
 pub use creation::Creation;
@@ -193,6 +196,7 @@ impl Client {
         runtime: &'static Runtime,
         options: Vec<(CString, Value)>,
         creation: &Creation,
+        diagnostics: &mut Diagnostics,
         on_close: impl FnOnce() + Send + 'static,
     ) -> Result<Self, CreateError> {
         let api = &runtime.api;
@@ -206,6 +210,7 @@ impl Client {
             api,
         };
         let handle = raw.as_ptr();
+        let registration = diagnostics.register(api, handle, creation)?;
         for (index, (name, value)) in options.iter().enumerate() {
             creation.enter("options", Some(index))?;
             let status = NodeInput::with(value, |node| {
@@ -224,7 +229,11 @@ impl Client {
         if status < 0 {
             return Err(creation.stop(Failure::Native(status)));
         }
+        drop(registration);
         creation.enter("publish", None)?;
+        if diagnostics.shutdown() {
+            return Err(creation.stop(Failure::Closed));
+        }
         Self::start(native, on_close).map_err(|reason| creation.stop(reason))
     }
 
