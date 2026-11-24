@@ -52,6 +52,7 @@ export default defineConfig({
       },
       'engine:source': { command: 'node tools/engine/source.ts', cache: false },
       'engine:windows': { command: 'node tools/engine/windows/index.ts', cache: false },
+      'catalog:generate': { command: 'node tools/catalog/generate.ts', cache: false },
       'pack:windows': { command: 'node tools/package/windows.ts', cache: false },
       'test:consumers': { command: 'node tests/consumers/run.ts', cache: false },
     },
