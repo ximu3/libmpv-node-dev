@@ -71,6 +71,53 @@ try {
     (error) => error instanceof MpvAbortError && error.cause === 'test' && !error.submitted,
   )
   assert.equal(await player.command(['ignore']), null)
+  const channel = await player.createClient({ name: 'control-test' })
+  const firstValue = Promise.withResolvers<boolean>()
+  let watchPublished = false
+  let notices = 0
+  const propertyWatch = await channel.observeProperty('pause', {
+    next(state) {
+      assert.ok(watchPublished)
+      if (state.status === 'available') {
+        firstValue.resolve(state.value)
+      }
+      notices++
+    },
+    error: firstValue.reject,
+  })
+  watchPublished = true
+  assert.equal(await firstValue.promise, false)
+  await propertyWatch.dispose()
+  await player.setProperty('pause', true)
+  assert.equal(await channel.getProperty('pause'), true)
+  assert.equal(notices, 1)
+
+  const message = Promise.withResolvers<readonly string[]>()
+  let completed = 0
+  const subscription = await channel.observeEvents(
+    {
+      next(event) {
+        if (event.type === 'client-message') {
+          message.resolve(event.args)
+        }
+      },
+      error: message.reject,
+      complete() {
+        completed++
+      },
+    },
+    { events: ['client-message'] },
+  )
+  await player.command(['script-message-to', channel.clientName, 'hello', ''])
+  assert.deepEqual(await message.promise, ['hello', ''])
+  await channel.dispose()
+  assert.equal(subscription.closed, true)
+  assert.equal(completed, 0)
+  await assert.rejects(
+    channel.getProperty('pause'),
+    (error) => error instanceof MpvBindingError && error.code === 'closed',
+  )
+  await player.setProperty('pause', false)
   const worker = new Worker(new URL('./worker.js', import.meta.url))
   await once(worker, 'message')
   await worker.terminate()
@@ -115,6 +162,25 @@ try {
   const slow = player.command(['loadfile', media, 'replace'], { signal: abort.signal })
   abort.abort('cancel')
   await assert.rejects(slow, (error) => error instanceof MpvAbortError)
+  const activeChild = await player.createClient()
+  let childCompleted = false
+  await activeChild.observeEvents(
+    {
+      next() {
+        assert.fail('Empty event selection received an event')
+      },
+      error(error) {
+        throw error
+      },
+      complete() {
+        childCompleted = true
+      },
+    },
+    { events: [] },
+  )
+  await player.close()
+  assert.equal(childCompleted, true)
+  await activeChild.dispose()
 } finally {
   await Promise.all([player.close(), player.close()])
 }

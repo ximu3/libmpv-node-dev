@@ -1,3 +1,4 @@
+import type { MpvNativeEvent, NativeWatch } from './subscriptions.js'
 import type { MpvNode } from './values.js'
 import type { MpvBindingErrorCode } from './errors.js'
 export interface NativeFailure {
@@ -11,6 +12,24 @@ export interface NativeClient {
   readonly clientId: bigint
   readonly closing: boolean
   readonly hasRef: boolean
+  createChild(
+    name: Uint8Array | null,
+    gate: { abort(): void },
+  ): Promise<{ client: NativeClient } | NativeFailure>
+  observe(
+    name: Uint8Array,
+    format: number,
+    events: number[],
+    wake: () => void,
+    gate: { abort(): void },
+  ): Promise<{ watch: NativeWatch<MpvNode> } | NativeFailure>
+  observe(
+    name: null,
+    format: number,
+    events: number[],
+    wake: () => void,
+    gate: { abort(): void },
+  ): Promise<{ watch: NativeWatch<MpvNativeEvent> } | NativeFailure>
   setReferenced(value: boolean): void
   time(): bigint | null
   request(
