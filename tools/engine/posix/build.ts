@@ -126,9 +126,11 @@ export async function buildUnix(work: string, cache: string) {
   }
   if (!mac) {
     const tuple = execFileSync('gcc', ['-print-multiarch'], { encoding: 'utf8' }).trim()
-    await symlink('/usr/include/va', join(prefix, 'include/va'), 'dir')
+    for (const header of ['va', 'libdrm', 'xf86drm.h', 'xf86drmMode.h']) {
+      await symlink(join('/usr/include', header), join(prefix, 'include', header))
+    }
     const nativeLib = '/usr/lib/' + tuple
-    for (const name of ['libva', 'libva-drm']) {
+    for (const name of ['libdrm', 'libva', 'libva-drm']) {
       await symlink(join(nativeLib, name + '.so'), join(prefix, 'lib', name + '.so'))
       await symlink(
         join(nativeLib, 'pkgconfig', name + '.pc'),
@@ -138,6 +140,13 @@ export async function buildUnix(work: string, cache: string) {
     env.PKG_CONFIG_PATH += ':/usr/lib/' + tuple + '/pkgconfig:/usr/share/pkgconfig'
   } else {
     env.LDFLAGS += ' -Wl,-headerpad_max_install_names'
+    // mpv passes libplacebo's includedir straight to Swift. Expose just those headers beside FFmpeg's.
+    await symlink(join(deps, 'include/libplacebo'), join(prefix, 'include/libplacebo'), 'dir')
+    const placebo = await readFile(join(deps, 'lib/pkgconfig/libplacebo.pc'), 'utf8')
+    await writeFile(
+      join(prefix, 'lib/pkgconfig/libplacebo.pc'),
+      placebo.replace(/^includedir=.*$/m, 'includedir=' + join(prefix, 'include')),
+    )
   }
   const cc = mac ? 'clang' : 'gcc'
   const jobs = String(Math.min(12, availableParallelism()))
