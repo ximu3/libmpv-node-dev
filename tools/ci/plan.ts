@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { appendFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { setTimeout } from 'node:timers/promises'
+import metadata from '../../package.json' with { type: 'json' }
 
 const runners = {
   'linux-x64': 'ubuntu-22.04',
@@ -10,6 +11,39 @@ const runners = {
   'windows-arm64': 'windows-11-arm',
   'macos-x64': 'macos-15-intel',
   'macos-arm64': 'macos-15',
+}
+
+export function selectChecks(files: readonly string[] | undefined) {
+  if (
+    !files ||
+    files.some(
+      (file) =>
+        file.startsWith('engine/') ||
+        file.startsWith('tools/engine/') ||
+        file.startsWith('tools/package/') ||
+        [
+          'tools/files.ts',
+          'tools/pnpm.ts',
+          '.github/workflows/ci.yml',
+          '.node-version',
+          'rust-toolchain.toml',
+          'LICENSE',
+          'package.json',
+          'pnpm-lock.yaml',
+        ].includes(file),
+    )
+  ) {
+    return 'sources'
+  }
+  if (
+    files.some(
+      (file) =>
+        !file.endsWith('.md') || file.startsWith('release-notes/') || file.startsWith('docs/'),
+    )
+  ) {
+    return 'code'
+  }
+  return 'docs'
 }
 
 function gh(path: string, filter: string) {
@@ -74,28 +108,35 @@ async function plan() {
     }
   }
 
-  let code = true
+  let files: string[] | undefined
   if (base && !/^0+$/.test(base)) {
-    const files = execFileSync('git', ['diff', '--name-only', '--no-renames', '-z', base, head], {
+    files = execFileSync('git', ['diff', '--name-only', '--no-renames', '-z', base, head], {
       encoding: 'utf8',
     })
       .split('\0')
       .filter(Boolean)
-    code = files.some(
-      (file) =>
-        !file.endsWith('.md') || file.startsWith('release-notes/') || file.startsWith('docs/'),
-    )
   }
   const target = process.env.REQUEST_TARGET
+  let scope = selectChecks(files)
+  if (target) {
+    scope = target === 'all' ? 'sources' : 'code'
+  }
   const selected = Object.entries(runners).filter(
     ([name]) => !target || target === 'all' || name === target,
   )
   if (!selected.length) {
     throw new Error('Unknown verification target')
   }
-  outputs.code = String(code)
+  outputs.code = String(scope !== 'docs')
+  outputs.sources = String(scope === 'sources')
   outputs.matrix = JSON.stringify({
-    include: selected.map(([target, runner]) => ({ target, runner })),
+    include: selected.map(([target, runner]) => ({
+      target,
+      runner,
+      macosDeploymentTarget: target.startsWith('macos-')
+        ? metadata.config.macosDeploymentTarget
+        : undefined,
+    })),
   })
   await appendFile(
     process.env.GITHUB_OUTPUT!,

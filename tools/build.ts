@@ -2,6 +2,7 @@ import { copyFileSync, mkdirSync, rmSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import compiler from 'typescript/package.json' with { type: 'json' }
+import metadata from '../package.json' with { type: 'json' }
 import { execFileSync } from 'node:child_process'
 
 const compilerRoot = dirname(fileURLToPath(import.meta.resolve('typescript/package.json')))
@@ -12,6 +13,10 @@ execFileSync(
   { stdio: 'inherit' },
 )
 execFileSync('cargo', ['build', '--release', '--locked', '-p', 'libmpv-binding'], {
+  env:
+    process.platform === 'darwin'
+      ? { ...process.env, MACOSX_DEPLOYMENT_TARGET: metadata.config.macosDeploymentTarget }
+      : process.env,
   stdio: 'inherit',
 })
 const name = {

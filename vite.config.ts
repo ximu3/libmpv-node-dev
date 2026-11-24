@@ -97,7 +97,7 @@ export default defineConfig({
     },
   },
   staged: {
-    '*.{ts,tsx}': [
+    '*.{ts,tsx,cts}': [
       'vp fmt --check --no-error-on-unmatched-pattern',
       'vp lint --no-error-on-unmatched-pattern',
     ],

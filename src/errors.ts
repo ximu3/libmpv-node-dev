@@ -1,3 +1,4 @@
+import type { NativeFailure } from './native.js'
 import type { MpvNativeLogMessage } from './logs.js'
 import type { MpvNativeEvent } from './subscriptions.js'
 import type { MpvNode } from './values.js'
@@ -190,4 +191,24 @@ export class MpvNotificationConversionError extends MpvBindingError {
   getNativeNotification() {
     return structuredClone(this.#notification)
   }
+}
+
+export function throwNativeFailure(
+  error: NativeFailure,
+  operation: MpvOperation,
+  signal?: AbortSignal,
+): never {
+  let creation: Creation | undefined
+  if (error.stage === 'options') {
+    creation = { stage: 'options', optionIndex: error.optionIndex! }
+  } else if (error.stage) {
+    creation = { stage: error.stage }
+  }
+  if (typeof error.error === 'number') {
+    throw new MpvNativeError(error.error, operation, creation)
+  }
+  if (error.error === 'ABORT_ERR') {
+    throw new MpvAbortError(operation, error.submitted, signal?.reason, creation)
+  }
+  throw new MpvBindingError(error.error, operation, error.submitted, creation)
 }

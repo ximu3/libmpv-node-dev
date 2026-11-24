@@ -4,6 +4,9 @@
   "description": "Node.js bindings for libmpv",
   "license": "MIT",
   "type": "module",
+  "config": {
+    "macosDeploymentTarget": "13.0"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

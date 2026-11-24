@@ -65,6 +65,7 @@ if (packages.size !== packageTargets.length) {
   throw new Error('Expected six source kits')
 }
 const files: Record<string, string> = {}
+const relink = await readFile(join(projectRoot, 'engine/RELINK.md'))
 for (const target of packageTargets) {
   const kit = packages.get(target)
   if (!kit) {
@@ -84,6 +85,12 @@ for (const target of packageTargets) {
     await downloadSources(join(extract.path, 'source-materials'), cache)
     execFileSync('tar', ['-cf', name, 'source-materials'], { cwd: extract.path, stdio: 'inherit' })
     await rename(join(extract.path, name), archive)
+  }
+  const instructions = execFileSync('tar', ['-xOf', name, 'source-materials/RELINK.md'], {
+    cwd: staging,
+  })
+  if (!instructions.equals(relink)) {
+    throw new Error('Rebuilding instructions do not match the source revision for ' + target)
   }
   files[name] = await digest(archive)
 }
