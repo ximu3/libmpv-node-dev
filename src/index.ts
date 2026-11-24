@@ -30,3 +30,9 @@ export type {
 } from './logs.js'
 
 export type { MpvHookHandler, MpvHookOptions, MpvHookContext } from './hooks.js'
+
+export {
+  getVideoDevices,
+  type VideoDeviceInfo,
+  type VideoDeviceSelection,
+} from './video/devices.js'

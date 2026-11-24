@@ -35,3 +35,5 @@ Use `observeLogs(observer, { level, output })` to receive diagnostics on an inde
 Pass `initializationLogs: { observer, level, output }` to the factory to receive startup diagnostics. Completion ends the logging interval. The factory separately reports initialization errors after cleanup. Native output returns the original prefix and message bytes.
 
 `addHook(name, handler, { priority, signal })` registers an asynchronous hook on a dedicated client. The hook resumes once the value returned by `handler.run({ signal })` settles. Disposing the registration aborts the active signal and releases the native wait. A late handler rejection remains consumed. A handler failure is delivered to `handler.error` after registration cleanup, preserving the original reason.
+
+Use `getVideoDevices({ signal })` to enumerate device names and platform selection values before creating a player. Windows returns DXGI adapter LUIDs, macOS returns accelerated CGL renderer IDs, and Linux returns DRM render node paths. The device list reflects the current host environment.

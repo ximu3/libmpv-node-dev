@@ -4,8 +4,13 @@ import { writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { setTimeout } from 'node:timers/promises'
 import assert from 'node:assert/strict'
-import { getClientApiVersion } from '@ximu3/libmpv-node'
+import { getClientApiVersion, getVideoDevices } from '@ximu3/libmpv-node'
 
+const devices = await getVideoDevices()
+for (const device of devices) {
+  assert.equal(device.selection.platform, process.platform)
+  assert.ok(device.name.length)
+}
 const versions = await Promise.all([getClientApiVersion(), getClientApiVersion()])
 assert.deepEqual(versions, [
   { major: 2, minor: 6 },
