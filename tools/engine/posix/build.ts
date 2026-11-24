@@ -115,6 +115,12 @@ export async function buildUnix(work: string, cache: string) {
   } else {
     env.LD_LIBRARY_PATH = join(prefix, 'lib') + ':' + join(deps, 'lib')
   }
+  if (!mac) {
+    const tuple = execFileSync('gcc', ['-print-multiarch'], { encoding: 'utf8' }).trim()
+    env.PKG_CONFIG_PATH += ':/usr/lib/' + tuple + '/pkgconfig:/usr/share/pkgconfig'
+  } else {
+    env.LDFLAGS += ' -Wl,-headerpad_max_install_names'
+  }
   const cc = mac ? 'clang' : 'gcc'
   const jobs = String(Math.min(12, availableParallelism()))
   function run(cwd: string, command: string, args: string[]) {
@@ -205,7 +211,7 @@ export async function buildUnix(work: string, cache: string) {
       '--prefix=' + prefix,
       '--cc=' + cc,
       '--extra-cflags=' + env.CPPFLAGS,
-      '--extra-ldflags=' + env.LDFLAGS,
+      '--extra-libs=-liconv',
       ...codecFlags,
       ...(mac
         ? ['--enable-securetransport', '--enable-videotoolbox', '--enable-audiotoolbox']
