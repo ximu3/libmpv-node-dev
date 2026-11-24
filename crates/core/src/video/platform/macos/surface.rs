@@ -62,7 +62,7 @@ impl Display for Cgl {
     fn device(&self) -> &Device {
         &self.device
     }
-    fn function(name: &CStr) -> Handle {
+    fn function(&self, name: &CStr) -> Handle {
         unsafe { libmpv_gl_function(name.as_ptr()) }
     }
     fn attach(&self, width: u32, height: u32) -> Result<Arc<dyn FrameSurface>, Failure> {

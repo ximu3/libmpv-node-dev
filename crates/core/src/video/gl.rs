@@ -12,7 +12,7 @@ pub(crate) trait Display: Sized {
     const TEXTURE: u32;
     fn open(choice: Option<&DeviceSelection>) -> Result<Self, Failure>;
     fn device(&self) -> &Device;
-    fn function(name: &CStr) -> Handle;
+    fn function(&self, name: &CStr) -> Handle;
     fn render_fd(&self) -> i32 {
         -1
     }
@@ -45,7 +45,7 @@ impl<P: Display> OpenGl<P> {
     pub(crate) fn new(choice: Option<&DeviceSelection>) -> Result<Self, Failure> {
         let display = P::open(choice)?;
         let gl = unsafe {
-            glow::Context::from_loader_function_cstr(|name| P::function(name).cast_const())
+            glow::Context::from_loader_function_cstr(|name| display.function(name).cast_const())
         };
         Ok(Self {
             display,
@@ -105,8 +105,8 @@ struct InitParams {
     resolve: unsafe extern "C" fn(Handle, *const c_char) -> Handle,
     context: Handle,
 }
-unsafe extern "C" fn resolve<P: Display>(_: Handle, name: *const c_char) -> Handle {
-    P::function(unsafe { CStr::from_ptr(name) })
+unsafe extern "C" fn resolve<P: Display>(context: Handle, name: *const c_char) -> Handle {
+    unsafe { (&*context.cast::<P>()).function(CStr::from_ptr(name)) }
 }
 #[repr(C)]
 struct DrmDisplay {
@@ -133,7 +133,7 @@ impl<P: Display> Graphics for OpenGl<P> {
     fn context(&self, api: &Api, core: Handle) -> Result<Handle, Failure> {
         let mut init = InitParams {
             resolve: resolve::<P>,
-            context: ptr::null_mut(),
+            context: ptr::from_ref(&self.display).cast_mut().cast(),
         };
         let mut advanced = 1_i32;
         let mut drm = DrmDisplay {

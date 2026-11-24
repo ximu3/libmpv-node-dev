@@ -3,7 +3,7 @@ use crate::ffi::Handle;
 use crate::video::gl::Display;
 use crate::video::gpu::{FrameSurface, SurfaceDescriptor};
 use crate::video::{Device, DeviceSelection, devices};
-use std::ffi::{CStr, c_char};
+use std::ffi::CStr;
 use std::fs::{File, OpenOptions};
 use std::io::{Seek, SeekFrom};
 use std::os::fd::{AsRawFd, FromRawFd};
@@ -11,66 +11,35 @@ use std::ptr;
 use std::sync::Arc;
 
 const ARGB8888: u32 = u32::from_le_bytes(*b"AR24");
+const EGL_PLATFORM_GBM: u32 = 0x31d7;
+const EGL_EXTENSIONS: i32 = 0x3055;
+const EGL_OPENGL_API: u32 = 0x30a2;
+const EGL_SURFACE_TYPE: i32 = 0x3033;
+const EGL_RENDERABLE_TYPE: i32 = 0x3040;
+const EGL_RED_SIZE: i32 = 0x3024;
+const EGL_GREEN_SIZE: i32 = 0x3023;
+const EGL_BLUE_SIZE: i32 = 0x3022;
+const EGL_CONTEXT_MAJOR_VERSION: i32 = 0x3098;
+const EGL_CONTEXT_MINOR_VERSION: i32 = 0x30fb;
+const EGL_CONTEXT_OPENGL_PROFILE_MASK: i32 = 0x30fd;
+const EGL_WIDTH: isize = 0x3057;
+const EGL_HEIGHT: isize = 0x3056;
+const EGL_LINUX_DRM_FOURCC_EXT: isize = 0x3271;
+const EGL_DMA_BUF_PLANE0_FD_EXT: isize = 0x3272;
+const EGL_DMA_BUF_PLANE0_OFFSET_EXT: isize = 0x3273;
+const EGL_DMA_BUF_PLANE0_PITCH_EXT: isize = 0x3274;
+const EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT: isize = 0x3443;
+const EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT: isize = 0x3444;
+const EGL_LINUX_DMA_BUF_EXT: u32 = 0x3270;
 const EGL_NONE: i32 = 0x3038;
 
-#[link(name = "libgbm.so.1", kind = "dylib", modifiers = "+verbatim")]
-unsafe extern "C" {
-    fn gbm_create_device(fd: i32) -> Handle;
-    fn gbm_device_destroy(device: Handle);
-    fn gbm_bo_create_with_modifiers2(
-        device: Handle,
-        width: u32,
-        height: u32,
-        format: u32,
-        modifiers: *const u64,
-        count: u32,
-        flags: u32,
-    ) -> Handle;
-    fn gbm_bo_destroy(buffer: Handle);
-    fn gbm_bo_get_fd_for_plane(buffer: Handle, plane: i32) -> i32;
-    fn gbm_bo_get_format(buffer: Handle) -> u32;
-    fn gbm_bo_get_modifier(buffer: Handle) -> u64;
-    fn gbm_bo_get_plane_count(buffer: Handle) -> i32;
-    fn gbm_bo_get_stride_for_plane(buffer: Handle, plane: i32) -> u32;
-    fn gbm_bo_get_offset(buffer: Handle, plane: i32) -> u32;
-}
-#[link(name = "libEGL.so.1", kind = "dylib", modifiers = "+verbatim")]
-unsafe extern "C" {
-    fn eglGetPlatformDisplay(platform: u32, native: Handle, attributes: *const isize) -> Handle;
-    fn eglInitialize(display: Handle, major: *mut i32, minor: *mut i32) -> u32;
-    fn eglTerminate(display: Handle) -> u32;
-    fn eglBindAPI(api: u32) -> u32;
-    fn eglChooseConfig(
-        display: Handle,
-        attributes: *const i32,
-        config: *mut Handle,
-        count: i32,
-        found: *mut i32,
-    ) -> u32;
-    fn eglCreateContext(
-        display: Handle,
-        config: Handle,
-        shared: Handle,
-        attributes: *const i32,
-    ) -> Handle;
-    fn eglDestroyContext(display: Handle, context: Handle) -> u32;
-    fn eglMakeCurrent(display: Handle, draw: Handle, read: Handle, context: Handle) -> u32;
-    fn eglGetProcAddress(name: *const c_char) -> Handle;
-    fn eglQueryString(display: Handle, name: i32) -> *const c_char;
-    fn eglCreateImage(
-        display: Handle,
-        ctx: Handle,
-        target: u32,
-        buffer: Handle,
-        attribs: *const isize,
-    ) -> Handle;
-    fn eglDestroyImage(display: Handle, image: Handle) -> u32;
-}
-
-struct Buffer(Handle);
-impl Drop for Buffer {
+#[path = "api.rs"]
+mod api;
+use api::{EglApi, Gbm};
+struct Buffer<'a>(Handle, &'a Gbm);
+impl Drop for Buffer<'_> {
     fn drop(&mut self) {
-        unsafe { gbm_bo_destroy(self.0) }
+        unsafe { (self.1.gbm_bo_destroy)(self.0) }
     }
 }
 
@@ -96,6 +65,8 @@ impl FrameSurface for Surface {
 }
 
 pub(crate) struct Egl {
+    gbm_api: Gbm,
+    egl: EglApi,
     device: Device,
     node: File,
     gbm: Handle,
@@ -107,18 +78,18 @@ impl Drop for Egl {
     fn drop(&mut self) {
         unsafe {
             if !self.context.is_null() {
-                eglMakeCurrent(
+                (self.egl.eglMakeCurrent)(
                     self.display,
                     ptr::null_mut(),
                     ptr::null_mut(),
                     ptr::null_mut(),
                 );
-                eglDestroyContext(self.display, self.context);
+                (self.egl.eglDestroyContext)(self.display, self.context);
             }
             if !self.display.is_null() {
-                eglTerminate(self.display);
+                (self.egl.eglTerminate)(self.display);
             }
-            gbm_device_destroy(self.gbm);
+            (self.gbm_api.gbm_device_destroy)(self.gbm);
         }
     }
 }
@@ -134,15 +105,19 @@ impl Egl {
             .open(path)
             .map_err(|_| Failure::Creation)?;
         unsafe {
-            let bind = eglGetProcAddress(c"glEGLImageTargetTexture2DOES".as_ptr());
+            let gbm_api = Gbm::load()?;
+            let egl = EglApi::load()?;
+            let bind = (egl.eglGetProcAddress)(c"glEGLImageTargetTexture2DOES".as_ptr());
             if bind.is_null() {
                 return Err(Failure::UnsupportedCapability);
             }
-            let gbm = gbm_create_device(node.as_raw_fd());
+            let gbm = (gbm_api.gbm_create_device)(node.as_raw_fd());
             if gbm.is_null() {
                 return Err(Failure::Creation);
             }
             let mut result = Self {
+                gbm_api,
+                egl,
                 device,
                 node,
                 gbm,
@@ -150,12 +125,14 @@ impl Egl {
                 context: ptr::null_mut(),
                 bind_image: std::mem::transmute::<Handle, unsafe extern "C" fn(u32, Handle)>(bind),
             };
-            let display = eglGetPlatformDisplay(0x31d7, gbm, ptr::null());
-            if display.is_null() || eglInitialize(display, ptr::null_mut(), ptr::null_mut()) == 0 {
+            let display = (result.egl.eglGetPlatformDisplay)(EGL_PLATFORM_GBM, gbm, ptr::null());
+            if display.is_null()
+                || (result.egl.eglInitialize)(display, ptr::null_mut(), ptr::null_mut()) == 0
+            {
                 return Err(Failure::Creation);
             }
             result.display = display;
-            let names = eglQueryString(display, 0x3055);
+            let names = (result.egl.eglQueryString)(display, EGL_EXTENSIONS);
             if names.is_null()
                 || !CStr::from_ptr(names)
                     .to_bytes()
@@ -164,23 +141,48 @@ impl Egl {
             {
                 return Err(Failure::UnsupportedCapability);
             }
-            if eglBindAPI(0x30a2) == 0 {
+            if (result.egl.eglBindAPI)(EGL_OPENGL_API) == 0 {
                 return Err(Failure::UnsupportedCapability);
             }
             let attrs = [
-                0x3033, 0, 0x3040, 8, 0x3024, 8, 0x3023, 8, 0x3022, 8, EGL_NONE,
+                EGL_SURFACE_TYPE,
+                0,
+                EGL_RENDERABLE_TYPE,
+                8,
+                EGL_RED_SIZE,
+                8,
+                EGL_GREEN_SIZE,
+                8,
+                EGL_BLUE_SIZE,
+                8,
+                EGL_NONE,
             ];
             let mut config = ptr::null_mut();
             let mut found = 0;
-            if eglChooseConfig(display, attrs.as_ptr(), &mut config, 1, &mut found) == 0
+            if (result.egl.eglChooseConfig)(display, attrs.as_ptr(), &mut config, 1, &mut found)
+                == 0
                 || found == 0
             {
                 return Err(Failure::UnsupportedCapability);
             }
-            let attrs = [0x3098, 3, 0x30fb, 2, 0x30fd, 1, EGL_NONE];
-            result.context = eglCreateContext(display, config, ptr::null_mut(), attrs.as_ptr());
+            let attrs = [
+                EGL_CONTEXT_MAJOR_VERSION,
+                3,
+                EGL_CONTEXT_MINOR_VERSION,
+                2,
+                EGL_CONTEXT_OPENGL_PROFILE_MASK,
+                1,
+                EGL_NONE,
+            ];
+            result.context =
+                (result.egl.eglCreateContext)(display, config, ptr::null_mut(), attrs.as_ptr());
             if result.context.is_null()
-                || eglMakeCurrent(display, ptr::null_mut(), ptr::null_mut(), result.context) == 0
+                || (result.egl.eglMakeCurrent)(
+                    display,
+                    ptr::null_mut(),
+                    ptr::null_mut(),
+                    result.context,
+                ) == 0
             {
                 return Err(Failure::Creation);
             }
@@ -203,8 +205,8 @@ impl Display for Egl {
         }
         Err(failure)
     }
-    fn function(name: &CStr) -> Handle {
-        unsafe { eglGetProcAddress(name.as_ptr()) }
+    fn function(&self, name: &CStr) -> Handle {
+        unsafe { (self.egl.eglGetProcAddress)(name.as_ptr()) }
     }
     fn device(&self) -> &Device {
         &self.device
@@ -215,7 +217,7 @@ impl Display for Egl {
     fn attach(&self, width: u32, height: u32) -> Result<Arc<dyn FrameSurface>, Failure> {
         let linear = 0_u64;
         unsafe {
-            let bo = gbm_bo_create_with_modifiers2(
+            let bo = (self.gbm_api.gbm_bo_create_with_modifiers2)(
                 self.gbm,
                 width,
                 height,
@@ -227,20 +229,23 @@ impl Display for Egl {
             if bo.is_null() {
                 return Err(Failure::UnsupportedCapability);
             }
-            let bo = Buffer(bo);
-            let modifier = gbm_bo_get_modifier(bo.0);
-            let format = gbm_bo_get_format(bo.0);
-            if gbm_bo_get_plane_count(bo.0) != 1 || format != ARGB8888 || modifier != linear {
+            let bo = Buffer(bo, &self.gbm_api);
+            let modifier = (self.gbm_api.gbm_bo_get_modifier)(bo.0);
+            let format = (self.gbm_api.gbm_bo_get_format)(bo.0);
+            if (self.gbm_api.gbm_bo_get_plane_count)(bo.0) != 1
+                || format != ARGB8888
+                || modifier != linear
+            {
                 return Err(Failure::UnsupportedCapability);
             }
             // gbm returns an independently owned descriptor. Its memory survives the GBM device and EGL context.
-            let raw = gbm_bo_get_fd_for_plane(bo.0, 0);
+            let raw = (self.gbm_api.gbm_bo_get_fd_for_plane)(bo.0, 0);
             if raw < 0 {
                 return Err(Failure::Creation);
             }
             let mut fd = File::from_raw_fd(raw);
-            let stride = gbm_bo_get_stride_for_plane(bo.0, 0);
-            let offset = gbm_bo_get_offset(bo.0, 0);
+            let stride = (self.gbm_api.gbm_bo_get_stride_for_plane)(bo.0, 0);
+            let offset = (self.gbm_api.gbm_bo_get_offset)(bo.0, 0);
             let size = fd.seek(SeekFrom::End(0)).map_err(|_| Failure::Creation)?;
             fd.rewind().map_err(|_| Failure::Creation)?;
             if stride < width.saturating_mul(4)
@@ -252,28 +257,28 @@ impl Display for Egl {
                 return Err(Failure::Creation);
             }
             let attrs = [
-                0x3057,
+                EGL_WIDTH,
                 width as isize,
-                0x3056,
+                EGL_HEIGHT,
                 height as isize,
-                0x3271,
+                EGL_LINUX_DRM_FOURCC_EXT,
                 format as isize,
-                0x3272,
+                EGL_DMA_BUF_PLANE0_FD_EXT,
                 raw as isize,
-                0x3273,
+                EGL_DMA_BUF_PLANE0_OFFSET_EXT,
                 offset as isize,
-                0x3274,
+                EGL_DMA_BUF_PLANE0_PITCH_EXT,
                 stride as isize,
-                0x3443,
+                EGL_DMA_BUF_PLANE0_MODIFIER_LO_EXT,
                 0,
-                0x3444,
+                EGL_DMA_BUF_PLANE0_MODIFIER_HI_EXT,
                 0,
                 EGL_NONE as isize,
             ];
-            let image = eglCreateImage(
+            let image = (self.egl.eglCreateImage)(
                 self.display,
                 ptr::null_mut(),
-                0x3270,
+                EGL_LINUX_DMA_BUF_EXT,
                 ptr::null_mut(),
                 attrs.as_ptr(),
             );
@@ -281,7 +286,7 @@ impl Display for Egl {
                 return Err(Failure::Creation);
             }
             (self.bind_image)(Self::TEXTURE, image);
-            eglDestroyImage(self.display, image);
+            (self.egl.eglDestroyImage)(self.display, image);
             Ok(Arc::new(Surface {
                 fd,
                 stride,
