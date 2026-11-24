@@ -27,6 +27,7 @@ await using temporary = await mkdtempDisposable(join(tmpdir(), 'libmpv 媒体 �
 const consumer = temporary.path
 await mkdir(join(consumer, 'archives'))
 let archiveIndex = 0
+const platform = root.name + '-' + process.platform + '-' + process.arch
 const dependencies: Record<string, string> = {}
 for (const name of await readdir(packages)) {
   if (!name.endsWith('.tgz')) {
@@ -49,11 +50,16 @@ for (const name of await readdir(packages)) {
   ) {
     throw new Error('Missing tarball package name')
   }
+  if (manifest.name !== root.name && manifest.name !== platform) {
+    continue
+  }
+  if (Object.hasOwn(dependencies, manifest.name)) {
+    throw new Error('Duplicate package ' + manifest.name)
+  }
   dependencies[manifest.name] = 'file:./' + fixtureArchive
 }
 
-const platform = Object.keys(dependencies).find((name) => name.startsWith(root.name + '-'))
-if (!platform || !dependencies[root.name]) {
+if (!dependencies[platform] || !dependencies[root.name]) {
   throw new Error('Expected paired library and platform packages')
 }
 const fixture = {
