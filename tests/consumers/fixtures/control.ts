@@ -301,4 +301,8 @@ await checkControlLoad()
 if (process.env.LIBMPV_TEST_GRAPHICS === '1') {
   await checkGpuVideo()
   await checkColorOutput()
+  if (process.versions.electron) {
+    const { checkPresentation } = await import('./electron/presentation.js')
+    await checkPresentation()
+  }
 }

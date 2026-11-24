@@ -135,10 +135,29 @@ if (!metadata.tracks.some((track) => track.type === 'video' && track.codec === '
   throw new Error('The installed metadata example did not identify the FFV1 stream')
 }
 if (values.electron) {
+  const display = env.LIBMPV_TEST_DISPLAY
+  const args: string[] = []
+  if (display !== undefined) {
+    if (process.platform !== 'linux' || (display !== 'x11' && display !== 'wayland')) {
+      throw new Error('Expected a Linux X11 or Wayland session')
+    }
+    if (display === 'wayland') {
+      if (!env.WAYLAND_DISPLAY) {
+        throw new Error('Missing Wayland display')
+      }
+      delete env.DISPLAY
+    } else {
+      if (!env.DISPLAY) {
+        throw new Error('Missing X11 display')
+      }
+      delete env.WAYLAND_DISPLAY
+    }
+    args.push('--ozone-platform=' + display)
+  }
   const receipt = join(consumer, 'electron-version')
   execFileSync(
     resolve(values.electron),
-    ['--user-data-dir=' + join(consumer, 'profile'), consumer],
+    [...args, '--user-data-dir=' + join(consumer, 'profile'), consumer],
     {
       cwd: consumer,
       env: { ...env, LIBMPV_TEST_RECEIPT: receipt },

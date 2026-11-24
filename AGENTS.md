@@ -9,3 +9,5 @@
 Windows x64 和 arm64 的 `engine:windows <输出目录> --cache <归档目录>` 从固定输入构建 FFmpeg、MuJS、仅启用 DirectWrite 的 libass 和带补丁的 libmpv。输出包含媒体 DLL、PE 依赖清单、第三方许可材料及单独的对应源码。运行 `build` 后可用 `pack:platform <制品目录> --runtime <引擎输出目录>` 组装开发包。用 `test:consumers <制品目录> --electron <可执行文件>` 核对安装后的声明和两个宿主的实际调用。
 
 四个 Unix 目标使用 `engine:unix` 准备媒体运行库。各目标先运行 `build`，再用 `pack:platform` 生成主包与平台包，用 `verify:media` 验证仓库外的 Node 和实际 Electron。手动运行 CI 并选择 all，会将六份已验证的平台包交给 `pack:all` 生成一份主包，再分别从最终 tarball 消费。运行记录包含各平台清单与摘要。
+
+实机 GPU 验证使用 `LIBMPV_TEST_GRAPHICS=1` 和 `LIBMPV_TEST_VISIBLE=1`。同一台 Linux 设备分别进入 X11 和原生 Wayland 会话，设置 `LIBMPV_TEST_DISPLAY=x11` 或 `wayland` 后执行消费验证。验证程序指定相应的 Electron Ozone 平台，并使用连续帧、合成画面读回和最后引用回收核对交接。音频输出可用 `LIBMPV_TEST_AUDIO` 指定，例如 `wasapi`、`coreaudio` 或 `alsa,pulse`。样本只播放静音。
