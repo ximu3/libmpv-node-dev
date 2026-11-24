@@ -1,4 +1,5 @@
 import { checkSubtitleFonts } from './subtitle-fonts.js'
+import { checkColorOutput } from './colors.js'
 import { checkGpuVideo } from './gpu.js'
 import { checkSoftwareVideo } from './software.js'
 import { checkStreams } from './streams.js'
@@ -289,4 +290,5 @@ await checkSubtitleFonts()
 await checkSoftwareVideo()
 if (process.env.LIBMPV_TEST_GRAPHICS === '1') {
   await checkGpuVideo()
+  await checkColorOutput()
 }
