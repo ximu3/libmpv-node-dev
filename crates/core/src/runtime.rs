@@ -15,6 +15,8 @@ pub enum LoadError {
 
 pub struct Runtime {
     pub(crate) api: Api,
+    #[cfg(target_os = "linux")]
+    pub(crate) tls_ca_file: std::ffi::CString,
     _library: Library,
     directory: PathBuf,
     pub version: (u16, u16),
@@ -47,6 +49,22 @@ fn open(path: &Path) -> Result<Library, LoadError> {
         .map(Into::into)
         .map_err(|_| LoadError::LibraryLoadFailed)
 }
+#[cfg(target_os = "linux")]
+fn tls_ca_file(directory: &Path) -> Result<std::ffi::CString, LoadError> {
+    use std::os::unix::ffi::OsStrExt;
+    let bundled = directory.join("cacert.pem");
+    let path = [
+        "/etc/ssl/certs/ca-certificates.crt",
+        "/etc/pki/tls/certs/ca-bundle.crt",
+        "/etc/ssl/ca-bundle.pem",
+    ]
+    .into_iter()
+    .map(Path::new)
+    .find(|file| file.is_file())
+    .unwrap_or(&bundled);
+    std::ffi::CString::new(path.as_os_str().as_bytes()).map_err(|_| LoadError::LibraryLoadFailed)
+}
+
 const ENGINE: &str = if cfg!(windows) {
     "libmpv-2.dll"
 } else if cfg!(target_os = "macos") {
@@ -85,9 +103,13 @@ impl Runtime {
             return Err(LoadError::IncompatibleLibrary);
         }
         let api = Api::resolve(&library)?;
+        #[cfg(target_os = "linux")]
+        let ca_file = tls_ca_file(&directory)?;
         Ok(RUNTIME.get_or_init(|| Self {
             api,
             _library: library,
+            #[cfg(target_os = "linux")]
+            tls_ca_file: ca_file,
             directory,
             version: ((version >> 16) as u16, version as u16),
         }))

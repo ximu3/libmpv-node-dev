@@ -29,11 +29,15 @@ export async function assembleUnix(
   const mac = process.platform === 'darwin'
   const engine = mac ? 'libmpv.2.dylib' : 'libmpv.so.2'
   const packages = new Map<string, Package>()
+  let certificates: Package | undefined
   for (const file of await readdir(join(build.deps, 'conda-meta'))) {
     if (!file.endsWith('.json')) {
       continue
     }
     const pkg = JSON.parse(await readFile(join(build.deps, 'conda-meta', file), 'utf8')) as Package
+    if (!mac && pkg.files.includes('ssl/cacert.pem')) {
+      certificates = pkg
+    }
     for (const entry of pkg.files) {
       if (entry.startsWith('lib/')) {
         packages.set(entry, pkg)
@@ -138,6 +142,14 @@ export async function assembleUnix(
     files[name] = { sha256: await digest(file), source: entry.owner, input: entry.input }
   }
   if (!mac) {
+    if (!certificates) {
+      throw new Error('Missing locked Linux CA bundle')
+    }
+    used.set(certificates.name, certificates)
+    const cert = join(runtime, 'cacert.pem')
+    await copyFile(join(build.deps, 'ssl/cacert.pem'), cert)
+    const caHash = await digest(cert)
+    files['cacert.pem'] = { sha256: caHash, input: caHash, source: certificates.name }
     const config = join(runtime, 'fonts.conf')
     await copyFile(join(projectRoot, 'engine/posix/fontconfig/fonts.conf'), config)
     const hash = await digest(config)
