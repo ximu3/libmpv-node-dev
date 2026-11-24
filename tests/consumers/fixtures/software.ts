@@ -22,6 +22,21 @@ export async function checkSoftwareVideo() {
     ],
     videoOutput: { renderer: 'software', width: 23, height: 17 },
   })
+  const messages: string[] = []
+  await player.observeLogs(
+    {
+      next(record) {
+        if (record.type === 'log-message') {
+          messages.push(record.prefix + ': ' + record.text.trim())
+          if (messages.length > 35) {
+            messages.shift()
+          }
+        }
+      },
+      error: console.error,
+    },
+    { level: 'v' },
+  )
   const output = player.videoOutput
   assert.deepEqual(output.configuration, { width: 23, height: 17, pixelFormat: 'bgr0' })
   await using channel = await player.createClient()
@@ -33,10 +48,18 @@ export async function checkSoftwareVideo() {
   const formats = ['bgr0', 'rgb0', '0rgb', '0bgr', 'rgb24'] as const
   let first: SoftwareFrame | undefined
   for (const [index, format] of formats.entries()) {
+    console.log('Checking software frame', format)
+    let observed = 'No frame delivered'
     const width = 23 + index * 2
     const waiting = Promise.withResolvers<SoftwareFrame>()
     const watch = await output.observeFrames({
       next(frame) {
+        observed = JSON.stringify({
+          width: frame.width,
+          height: frame.height,
+          format: frame.pixelFormat,
+          first: Array.from(frame.data.slice(0, 4)),
+        })
         if (frame.width === width && frame.pixelFormat === format && red(frame)) {
           waiting.resolve(frame)
         }
@@ -48,7 +71,14 @@ export async function checkSoftwareVideo() {
     } else {
       await output.configure({ width, height: 17, pixelFormat: format })
     }
-    const frame = await waiting.promise
+    const timer = setTimeout(() => {
+      const reason = new Error(
+        'Missing ' + format + ' pixels: ' + observed + '\n' + messages.join('\n'),
+      )
+      console.error(reason)
+      waiting.reject(reason)
+    }, 10000)
+    const frame = await waiting.promise.finally(() => clearTimeout(timer))
     await watch.dispose()
     assert.equal(frame.width, width)
     assert.equal(frame.height, 17)
@@ -74,6 +104,7 @@ export async function checkSoftwareVideo() {
   const activeWatch = await output.observeFrames({ next() {}, error: conflicted.resolve })
   const configPath = fileURLToPath(new URL('./conflict.conf', import.meta.url))
   await writeFile(configPath, 'vo=null\n')
+  console.log('Checking output conflict')
   await channel.loadConfigFile(configPath)
   const conflict = await conflicted.promise
   assert.ok(conflict instanceof MpvBindingError && conflict.code === 'renderConflict')
