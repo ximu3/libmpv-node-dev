@@ -28,3 +28,5 @@ export type {
   MpvNativeLogRecord,
   MpvNativeLogMessage,
 } from './logs.js'
+
+export type { MpvHookHandler, MpvHookOptions, MpvHookContext } from './hooks.js'

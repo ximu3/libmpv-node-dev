@@ -193,7 +193,26 @@ try {
   pcm.writeUInt32LE(16000, 40)
   await writeFile(media, pcm)
   await player.setProperty('pause', true)
-  await player.command(['loadfile', media, 'replace'])
+  const started = Promise.withResolvers<AbortSignal>()
+  const pendingHook = Promise.withResolvers<void>()
+  const hook = await player.addHook('on_load', {
+    async run({ signal }) {
+      assert.equal(await player.getProperty('pause'), true)
+      started.resolve(signal)
+      return pendingHook.promise
+    },
+    error(reason) {
+      throw reason
+    },
+  })
+  const load = player.command(['loadfile', media, 'replace'])
+  const execution = await started.promise
+  assert.equal(execution.aborted, false)
+  await hook.dispose()
+  assert.equal(execution.aborted, true)
+  assert.equal(hook.closed, true)
+  pendingHook.reject(new Error('Late hook result'))
+  await load
   let duration
   for (let i = 0; i < 200; i++) {
     try {
@@ -217,6 +236,17 @@ try {
   const slow = player.command(['loadfile', media, 'replace'], { signal: abort.signal })
   abort.abort('cancel')
   await assert.rejects(slow, (error) => error instanceof MpvAbortError)
+  const rejected = Promise.withResolvers<unknown>()
+  const marker = Symbol('hook failure')
+  const brokenHook = await player.addHook('on_load', {
+    run() {
+      throw marker
+    },
+    error: rejected.resolve,
+  })
+  await player.command(['loadfile', media, 'replace'])
+  assert.equal(await rejected.promise, marker)
+  assert.equal(brokenHook.closed, true)
   const activeChild = await player.createClient()
   let childCompleted = false
   await activeChild.observeEvents(

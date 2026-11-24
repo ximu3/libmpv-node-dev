@@ -1,3 +1,4 @@
+import type { MpvHookOptions, MpvHookHandler } from '../hooks.js'
 import type { InitializationLogs } from './initialization.js'
 import type { LogLevel, MpvLogRecord, MpvNativeLogRecord } from '../logs.js'
 import type { MpvValue, MpvNode } from '../values.js'
@@ -42,6 +43,7 @@ export type CreateOptions = Options &
   )
 
 export interface MpvControl {
+  addHook(name: Name, handler: MpvHookHandler, options?: MpvHookOptions): Promise<MpvSubscription>
   observeLogs(
     observer: MpvObserver<MpvLogRecord>,
     options?: Options & { level?: LogLevel; output?: 'javascript' },

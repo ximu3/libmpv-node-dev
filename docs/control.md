@@ -33,3 +33,5 @@ Use `createClient({ name, signal })` for a separate control channel on the same 
 Use `observeLogs(observer, { level, output })` to receive diagnostics on an independent log channel. The default level is info. The `terminal-default` selection uses mpv's per-module settings. A gap precedes the next retained message after overflow. Its dropped count is exact for binding-only loss and null when mpv also reports an overflow.
 
 Pass `initializationLogs: { observer, level, output }` to the factory to receive startup diagnostics. Completion ends the logging interval. The factory separately reports initialization errors after cleanup. Native output returns the original prefix and message bytes.
+
+`addHook(name, handler, { priority, signal })` registers an asynchronous hook on a dedicated client. The hook resumes once the value returned by `handler.run({ signal })` settles. Disposing the registration aborts the active signal and releases the native wait. A late handler rejection remains consumed. A handler failure is delivered to `handler.error` after registration cleanup, preserving the original reason.

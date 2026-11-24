@@ -1,3 +1,5 @@
+import { addHook } from '../hooks.js'
+import type { MpvHookOptions, MpvHookHandler } from '../hooks.js'
 import type { CreateOptions } from './contracts.js'
 import type { JavaScriptLogs, NativeLogs, DynamicLogs } from './initialization.js'
 import { initializationLogs } from './initialization.js'
@@ -352,6 +354,17 @@ class Control {
         }
       },
       (failure) => failed(failure, op, options.signal),
+    )
+  }
+
+  async addHook(name: Name, handler: MpvHookHandler, options: MpvHookOptions = {}) {
+    return addHook(
+      this.native,
+      this.subscriptions,
+      nameBytes(name, 'addHook'),
+      handler,
+      options,
+      (failure) => failed(failure, 'addHook', options.signal),
     )
   }
 
