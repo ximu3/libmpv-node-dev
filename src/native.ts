@@ -1,3 +1,4 @@
+import type { NativeSoftware } from './video/software.js'
 import type { NativeProtocol } from './streams/contracts.js'
 import type { NativeHook } from './hooks.js'
 import type { LogLevel, MpvNativeLogRecord } from './logs.js'
@@ -7,10 +8,11 @@ import type { MpvBindingErrorCode } from './errors.js'
 export interface NativeFailure {
   error: number | MpvBindingErrorCode
   submitted: boolean
-  stage?: 'core' | 'options' | 'initializationLogs' | 'initialize' | 'publish'
+  stage?: 'core' | 'options' | 'initializationLogs' | 'initialize' | 'video' | 'publish'
   optionIndex?: number
 }
 export interface NativeClient {
+  readonly videoOutput?: NativeSoftware
   readonly clientName: string
   readonly clientId: bigint
   readonly closing: boolean

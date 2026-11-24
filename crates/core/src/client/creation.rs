@@ -26,8 +26,8 @@ impl Default for Creation {
 }
 
 impl Creation {
-    pub fn abort(&self) {
-        self.stop(Failure::Aborted);
+    pub fn abort(&self) -> bool {
+        self.stop(Failure::Aborted).submitted
     }
 
     pub fn enter(&self, stage: &'static str, index: Option<usize>) -> Result<(), CreateError> {

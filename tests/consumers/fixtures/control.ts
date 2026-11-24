@@ -1,4 +1,5 @@
 import { checkSubtitleFonts } from './subtitle-fonts.js'
+import { checkSoftwareVideo } from './software.js'
 import { checkStreams } from './streams.js'
 import { Worker } from 'node:worker_threads'
 import { once } from 'node:events'
@@ -284,3 +285,4 @@ await assert.rejects(
 )
 
 await checkSubtitleFonts()
+await checkSoftwareVideo()

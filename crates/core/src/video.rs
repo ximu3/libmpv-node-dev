@@ -1,3 +1,5 @@
+pub mod frames;
+pub(crate) mod options;
 #[cfg(target_os = "linux")]
 #[path = "video/platform/linux.rs"]
 mod platform;
@@ -7,6 +9,7 @@ mod platform;
 #[cfg(windows)]
 #[path = "video/platform/windows.rs"]
 mod platform;
+pub mod render;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum DeviceSelection {

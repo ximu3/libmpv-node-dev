@@ -22,8 +22,8 @@ impl NativeCreation {
         Self(Arc::new(Creation::default()))
     }
     #[napi]
-    pub fn abort(&self) {
-        self.0.abort();
+    pub fn abort(&self) -> bool {
+        self.0.abort()
     }
 }
 
@@ -42,6 +42,7 @@ pub(super) fn error(env: &Env, failure: CallError) -> Result<Object<'_>> {
             "error",
             match reason {
                 Failure::Native(_) => unreachable!(),
+                Failure::RenderConflict => "renderConflict",
                 Failure::Limit => "resourceLimit",
                 Failure::Closed => "closed",
                 Failure::Aborted => "ABORT_ERR",
@@ -62,11 +63,15 @@ pub fn create_client_core<'a>(
     keep_alive: KeepAlive,
     creation: &NativeCreation,
     log_level: Option<String>,
+    software: Option<crate::software::SoftwareConfiguration>,
 ) -> Result<PromiseRaw<'a, Object<'a>>> {
     let options = options
         .into_iter()
         .map(|(name, value)| Ok((values::string(name)?, values::read(value, 0)?)))
         .collect::<Result<_>>()?;
+    let video = software
+        .map(crate::software::SoftwareConfiguration::config)
+        .transpose()?;
     let mut diagnostics =
         libmpv_core::client::Diagnostics::new(log_level.map(std::ffi::CString::new).transpose()?);
     let creation = creation.0.clone();
@@ -78,10 +83,16 @@ pub fn create_client_core<'a>(
             tokio::task::spawn_blocking(move || {
                 let runtime = Runtime::load(&PathBuf::from(directory))
                     .map_err(|_| Error::from_reason("Runtime pairing failed"))?;
-                let result =
-                    Client::create(runtime, options, &creation, &mut diagnostics, move || {
+                let result = Client::create(
+                    runtime,
+                    options,
+                    &creation,
+                    &mut diagnostics,
+                    video,
+                    move || {
                         stop.lock().unwrap().take();
-                    });
+                    },
+                );
                 if let Ok(client) = &result {
                     opening.register(client);
                 }

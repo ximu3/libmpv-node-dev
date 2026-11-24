@@ -1,3 +1,4 @@
+import type { SoftwareVideoConfiguration } from './video/software.js'
 import type { VideoDeviceInfo } from './video/devices.js'
 import type { LogLevel, MpvNativeLogRecord } from './logs.js'
 import { pipeline } from 'node:stream/promises'
@@ -17,7 +18,7 @@ export interface MpvClientApiVersion {
 }
 
 export interface NativeLibrary {
-  NativeCreation: { start(): { abort(): void } }
+  NativeCreation: { start(): { abort(): boolean } }
   videoDevices(state: {
     abort(): void
   }): Promise<{ devices: VideoDeviceInfo[] } | { error: MpvBindingErrorCode; submitted: boolean }>
@@ -27,6 +28,7 @@ export interface NativeLibrary {
     keepAlive: () => void,
     creation: { abort(): void },
     logLevel?: LogLevel,
+    software?: SoftwareVideoConfiguration,
   ): Promise<({ client: NativeClient } | NativeFailure) & { logs?: readonly MpvNativeLogRecord[] }>
   loadLibrary(
     directory: string,

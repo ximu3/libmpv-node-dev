@@ -90,7 +90,7 @@ export class Subscriptions {
     observer: MpvObserver<T>,
     signal: AbortSignal | undefined,
     convert: (payload: P | null) => T,
-    fail: (failure: NativeFailure) => never,
+    fail: (failure: NativeFailure, stage: 'registration' | 'delivery') => never,
   ): Promise<MpvSubscription> {
     this.streams.check(operation)
     if (
@@ -179,7 +179,7 @@ export class Subscriptions {
               throw new MpvObservationError(notice.reason, operation)
             }
             if (notice.kind === 'error') {
-              fail(notice.failure)
+              fail(notice.failure, 'delivery')
             }
             value = convert(notice.kind === 'value' ? notice.value : null)
           } catch (error) {
@@ -218,7 +218,7 @@ export class Subscriptions {
     try {
       const result = await register(drain, gate)
       if ('error' in result) {
-        return fail(result)
+        return fail(result, 'registration')
       }
       handle = result.watch
       if (signal?.aborted || client.closing) {
