@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { chmod, copyFile, cp, mkdir, readFile, readdir, realpath, stat } from 'node:fs/promises'
 import { basename, dirname, join, relative } from 'node:path'
-import { digest, writeJson } from '../../files.ts'
+import { digest, projectRoot, writeJson } from '../../files.ts'
 import upstream from '../../../engine/mpv/source.json' with { type: 'json' }
 import sources from '../../../engine/media-sources.json' with { type: 'json' }
 import type { Target } from './build.ts'
@@ -140,6 +140,12 @@ export async function assembleUnix(
       used.set(pkg.name, pkg)
     }
   }
+  if (!mac) {
+    const config = join(runtime, 'fonts.conf')
+    await copyFile(join(projectRoot, 'engine/posix/fontconfig/fonts.conf'), config)
+    const hash = await digest(config)
+    files['fonts.conf'] = { sha256: hash, input: hash, source: 'libmpv-node' }
+  }
   const notices = join(runtime, 'third-party')
   await mkdir(notices)
   const list = []
@@ -179,6 +185,12 @@ export async function assembleUnix(
     for (const doc of documents) {
       await copyFile(join(build.sources, name, doc), join(notices, name, doc))
     }
+  }
+  if (!mac) {
+    await copyFile(
+      join(projectRoot, 'engine/posix/fontconfig/libass-config.patch'),
+      join(notices, 'libass/libass-config.patch'),
+    )
   }
   await writeJson(join(notices, 'components.json'), { upstream, sources, packages: list })
   await writeJson(join(runtime, 'engine.json'), {

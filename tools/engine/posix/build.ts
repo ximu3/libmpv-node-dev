@@ -1,3 +1,4 @@
+import fontPatch from '../../../engine/posix/fontconfig/source.json' with { type: 'json' }
 import { execFileSync } from 'node:child_process'
 import { createWriteStream } from 'node:fs'
 import {
@@ -96,6 +97,15 @@ export async function buildUnix(work: string, cache: string) {
     execFileSync('tar', ['-xf', file, '--strip-components=1', '-C', directory], {
       stdio: 'inherit',
     })
+  }
+  if (!mac) {
+    const patch = join(projectRoot, 'engine/posix/fontconfig/libass-config.patch')
+    const directory = join(sources, 'libass')
+    const provider = join(directory, 'libass/ass_fontconfig.c')
+    await verifyDigest(patch, fontPatch.patch)
+    await verifyDigest(provider, fontPatch.before)
+    execFileSync('git', ['apply', patch], { cwd: directory, stdio: 'inherit' })
+    await verifyDigest(provider, fontPatch.after)
   }
   await prepareSource(join(sources, 'mpv'))
 

@@ -26,6 +26,7 @@ async function pixels(provider: 'auto' | 'none', attachments: boolean) {
       ['embeddedfonts', attachments],
     ],
   })
+  console.log('Checking subtitle fonts', provider, attachments)
   const ready = Promise.withResolvers<void>()
   const observations = await player.observeEvents(
     {

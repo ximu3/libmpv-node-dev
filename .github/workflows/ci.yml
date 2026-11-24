@@ -107,10 +107,23 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libdrm-dev libegl1-mesa-dev libgbm-dev libva-dev libvulkan1 libasound2-dev libpulse-dev xvfb xauth
-      - name: Build the pinned Unix media runtime
+      - name: Restore the Unix media runtime
         if: runner.os != 'Windows'
+        id: unix-media
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ runner.temp }}/libmpv-runtime
+          key: media-v1-${{ matrix.target }}-${{ hashFiles('engine/mpv/**', 'engine/posix/**', 'engine/media-sources.json', 'tools/engine/posix/build.ts', 'tools/engine/posix/runtime.ts', 'tools/engine/posix/index.ts', 'tools/engine/source.ts', 'tools/files.ts', '.node-version') }}
+      - name: Build the pinned Unix media runtime
+        if: runner.os != 'Windows' && steps.unix-media.outputs.cache-hit != 'true'
         shell: bash
         run: pnpm exec vp run engine:unix "$RUNNER_TEMP/libmpv-runtime" --cache "$RUNNER_TEMP/media-cache"
+      - name: Retain the built Unix media runtime
+        if: runner.os != 'Windows' && steps.unix-media.outputs.cache-hit != 'true'
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ runner.temp }}/libmpv-runtime
+          key: ${{ steps.unix-media.outputs.cache-primary-key }}
       - name: Consume the packaged Unix binding
         if: runner.os != 'Windows'
         shell: bash

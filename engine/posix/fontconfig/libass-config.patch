@@ -1,0 +1,61 @@
+diff --git a/libass/ass_fontconfig.c b/libass/ass_fontconfig.c
+index 0e6930b..1d1a06f 100644
+--- a/libass/ass_fontconfig.c
++++ b/libass/ass_fontconfig.c
+@@ -16,9 +16,15 @@
+  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  */
+ 
++#ifndef _GNU_SOURCE
++#define _GNU_SOURCE
++#endif
++
+ #include "config.h"
+ #include "ass_compat.h"
+ 
++#include <dlfcn.h>
++#include <string.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <sys/types.h>
+@@ -32,6 +38,26 @@
+ 
+ #define MAX_NAME 100
+ 
++static char *package_config(void)
++{
++    Dl_info library;
++    if (!dladdr((const void *)package_config, &library) || !library.dli_fname)
++        return NULL;
++
++    const char *end = strrchr(library.dli_fname, '/');
++    if (!end)
++        return NULL;
++
++    static const char config[] = "/fonts.conf";
++    size_t directory = end - library.dli_fname;
++    char *path = malloc(directory + sizeof(config));
++    if (path) {
++        memcpy(path, library.dli_fname, directory);
++        memcpy(path + directory, config, sizeof(config));
++    }
++    return path;
++}
++
+ typedef struct fc_private {
+     FcConfig *config;
+     FcFontSet *fallbacks;
+@@ -372,8 +398,12 @@ ass_fontconfig_add_provider(ASS_Library *lib, ASS_FontSelector *selector,
+     // build and load fontconfig configuration
+     fc->config = FcConfigCreate();
+ 
++    char *bundled = NULL;
++    if (!config && !getenv("FONTCONFIG_FILE") && !getenv("FONTCONFIG_PATH"))
++        bundled = package_config();
+     if (fc->config)
+-        rc = FcConfigParseAndLoad(fc->config, (unsigned char *) config, FcTrue);
++        rc = FcConfigParseAndLoad(fc->config, (const FcChar8 *)(bundled ? bundled : config), FcTrue);
++    free(bundled);
+     if (!rc) {
+         ass_msg(lib, MSGL_WARN, "No usable fontconfig configuration "
+                 "file found, using fallback.");
