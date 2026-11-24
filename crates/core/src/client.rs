@@ -308,13 +308,8 @@ impl Client {
             return Err(creation.stop(Failure::Closed));
         }
         if let Some(render) = &native.render {
-            let names = crate::video::options::OBSERVED;
-            let count = if render.output.configuration().color().is_some() {
-                names.len()
-            } else {
-                1
-            };
-            for (index, name) in names[..count].iter().enumerate() {
+            let gpu = render.output.configuration().color().is_some();
+            for (index, name) in crate::video::options::observed(gpu).enumerate() {
                 // Private observations on the primary queue detect changes by scripts, profiles and other clients.
                 let status = unsafe {
                     (api.observe_property)(

@@ -12,6 +12,9 @@ pub(crate) trait Display: Sized {
     const TEXTURE: u32;
     fn open(choice: Option<&DeviceSelection>) -> Result<Self, Failure>;
     fn device(&self) -> &Device;
+    fn validate_gl(&self, _: &glow::Context) -> Result<(), Failure> {
+        Ok(())
+    }
     fn function(&self, name: &CStr) -> Handle;
     fn render_fd(&self) -> i32 {
         -1
@@ -44,9 +47,13 @@ impl Drop for Framebuffer {
 impl<P: Display> OpenGl<P> {
     pub(crate) fn new(choice: Option<&DeviceSelection>) -> Result<Self, Failure> {
         let display = P::open(choice)?;
+        if display.function(c"glGetString").is_null() {
+            return Err(Failure::UnsupportedCapability);
+        }
         let gl = unsafe {
             glow::Context::from_loader_function_cstr(|name| display.function(name).cast_const())
         };
+        display.validate_gl(&gl)?;
         Ok(Self {
             display,
             gl: Rc::new(gl),

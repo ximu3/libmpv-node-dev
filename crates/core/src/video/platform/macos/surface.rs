@@ -8,7 +8,8 @@ use std::ptr::NonNull;
 use std::sync::Arc;
 
 unsafe extern "C" {
-    fn libmpv_cgl_open(renderer: u32) -> Handle;
+    fn libmpv_cgl_open(requested: *const u32, actual: *mut u32) -> Handle;
+    fn libmpv_cgl_matches(left: u32, right: u32) -> bool;
     fn libmpv_cgl_close(context: Handle);
     fn libmpv_cgl_surface(context: Handle, width: u32, height: u32) -> Handle;
     fn libmpv_surface_release(surface: Handle);
@@ -43,20 +44,29 @@ impl Drop for Cgl {
 impl Display for Cgl {
     const TEXTURE: u32 = glow::TEXTURE_RECTANGLE;
     fn open(choice: Option<&DeviceSelection>) -> Result<Self, Failure> {
-        for device in devices()? {
-            if choice.is_some_and(|selection| selection != &device.selection) {
-                continue;
-            }
-            let DeviceSelection::Macos(id) = device.selection else {
-                unreachable!()
-            };
-            if let Some(context) = NonNull::new(unsafe { libmpv_cgl_open(id) }) {
-                return Ok(Self { context, device });
-            }
-            if choice.is_some() {
-                return Err(Failure::Creation);
-            }
+        let available = devices()?;
+        if available.is_empty() {
+            return Err(Failure::UnsupportedCapability);
         }
+        let requested = match choice {
+            None => std::ptr::null(),
+            Some(selection @ DeviceSelection::Macos(id))
+                if available
+                    .iter()
+                    .any(|device| &device.selection == selection) =>
+            {
+                std::ptr::from_ref(id)
+            }
+            Some(_) => return Err(Failure::UnsupportedCapability),
+        };
+        let mut actual = 0;
+        let context = NonNull::new(unsafe { libmpv_cgl_open(requested, &mut actual) })
+            .ok_or(Failure::Creation)?;
+        let device=available.into_iter().find(|device|matches!(device.selection,DeviceSelection::Macos(id) if unsafe{libmpv_cgl_matches(id,actual)}));
+        if let Some(device) = device {
+            return Ok(Self { context, device });
+        }
+        unsafe { libmpv_cgl_close(context.as_ptr()) };
         Err(Failure::UnsupportedCapability)
     }
     fn device(&self) -> &Device {

@@ -2,6 +2,7 @@ use crate::client::Failure;
 use crate::ffi::Handle;
 use libloading::Library;
 use std::ffi::c_char;
+use std::sync::OnceLock;
 
 macro_rules! driver_api {
     ($name:ident, $library:literal, { $(fn $symbol:ident($($param:ident : $arg:ty),* $(,)?) $( -> $out:ty)?;)* }) => {
@@ -24,6 +25,7 @@ macro_rules! driver_api {
 driver_api!(Gbm, "libgbm.so.1", {
     fn gbm_create_device(fd: i32) -> Handle;
     fn gbm_device_destroy(device: Handle);
+    fn gbm_device_is_format_supported(device: Handle, format: u32, usage: u32) -> i32;
     fn gbm_bo_create_with_modifiers2(
         device: Handle,
         width: u32,
@@ -46,6 +48,7 @@ driver_api!(EglApi, "libEGL.so.1", {
     fn eglGetPlatformDisplay(platform: u32, native: Handle, attributes: *const isize) -> Handle;
     fn eglInitialize(display: Handle, major: *mut i32, minor: *mut i32) -> u32;
     fn eglTerminate(display: Handle) -> u32;
+    fn eglReleaseThread() -> u32;
     fn eglBindAPI(api: u32) -> u32;
     fn eglChooseConfig(
         display: Handle,
@@ -73,3 +76,23 @@ driver_api!(EglApi, "libEGL.so.1", {
     ) -> Handle;
     fn eglDestroyImage(display: Handle, image: Handle) -> u32;
 });
+
+pub(super) struct Drivers {
+    pub gbm: Gbm,
+    pub egl: EglApi,
+    pub gles: Library,
+}
+pub(super) fn drivers() -> Result<&'static Drivers, Failure> {
+    static DRIVERS: OnceLock<Drivers> = OnceLock::new();
+    if let Some(drivers) = DRIVERS.get() {
+        return Ok(drivers);
+    }
+    let libraries = Drivers {
+        gbm: Gbm::load()?,
+        egl: EglApi::load()?,
+        gles: unsafe { Library::new("libGLESv2.so.2") }
+            .map_err(|_| Failure::UnsupportedCapability)?,
+    };
+    // GLVND may retain thread-exit callbacks after a context is destroyed.
+    Ok(DRIVERS.get_or_init(|| libraries))
+}

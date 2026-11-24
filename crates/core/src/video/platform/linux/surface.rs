@@ -3,6 +3,7 @@ use crate::ffi::Handle;
 use crate::video::gl::Display;
 use crate::video::gpu::{FrameSurface, SurfaceDescriptor};
 use crate::video::{Device, DeviceSelection, devices};
+use glow::HasContext;
 use std::ffi::CStr;
 use std::fs::{File, OpenOptions};
 use std::io::{Seek, SeekFrom};
@@ -13,15 +14,17 @@ use std::sync::Arc;
 const ARGB8888: u32 = u32::from_le_bytes(*b"AR24");
 const EGL_PLATFORM_GBM: u32 = 0x31d7;
 const EGL_EXTENSIONS: i32 = 0x3055;
-const EGL_OPENGL_API: u32 = 0x30a2;
+const EGL_OPENGL_ES_API: u32 = 0x30a0;
+const EGL_OPENGL_ES3_BIT: i32 = 0x40;
+const DRM_FORMAT_MOD_LINEAR: u64 = 0;
+const GBM_BO_USE_RENDERING: u32 = 1 << 2;
+const GBM_BO_USE_LINEAR: u32 = 1 << 4;
 const EGL_SURFACE_TYPE: i32 = 0x3033;
 const EGL_RENDERABLE_TYPE: i32 = 0x3040;
 const EGL_RED_SIZE: i32 = 0x3024;
 const EGL_GREEN_SIZE: i32 = 0x3023;
 const EGL_BLUE_SIZE: i32 = 0x3022;
-const EGL_CONTEXT_MAJOR_VERSION: i32 = 0x3098;
-const EGL_CONTEXT_MINOR_VERSION: i32 = 0x30fb;
-const EGL_CONTEXT_OPENGL_PROFILE_MASK: i32 = 0x30fd;
+const EGL_CONTEXT_CLIENT_VERSION: i32 = 0x3098;
 const EGL_WIDTH: isize = 0x3057;
 const EGL_HEIGHT: isize = 0x3056;
 const EGL_LINUX_DRM_FOURCC_EXT: isize = 0x3271;
@@ -35,7 +38,7 @@ const EGL_NONE: i32 = 0x3038;
 
 #[path = "api.rs"]
 mod api;
-use api::{EglApi, Gbm};
+use api::{EglApi, Gbm, drivers};
 struct Buffer<'a>(Handle, &'a Gbm);
 impl Drop for Buffer<'_> {
     fn drop(&mut self) {
@@ -65,8 +68,9 @@ impl FrameSurface for Surface {
 }
 
 pub(crate) struct Egl {
-    gbm_api: Gbm,
-    egl: EglApi,
+    gbm_api: &'static Gbm,
+    egl: &'static EglApi,
+    gles: &'static libloading::Library,
     device: Device,
     node: File,
     gbm: Handle,
@@ -89,12 +93,101 @@ impl Drop for Egl {
             if !self.display.is_null() {
                 (self.egl.eglTerminate)(self.display);
             }
+            (self.egl.eglReleaseThread)();
             (self.gbm_api.gbm_device_destroy)(self.gbm);
         }
     }
 }
 
+fn create_es_context(egl: &EglApi, display: Handle) -> Result<Handle, Failure> {
+    unsafe {
+        if (egl.eglBindAPI)(EGL_OPENGL_ES_API) == 0 {
+            return Err(Failure::UnsupportedCapability);
+        }
+        let attrs = [
+            EGL_SURFACE_TYPE,
+            0,
+            EGL_RENDERABLE_TYPE,
+            EGL_OPENGL_ES3_BIT,
+            EGL_RED_SIZE,
+            8,
+            EGL_GREEN_SIZE,
+            8,
+            EGL_BLUE_SIZE,
+            8,
+            EGL_NONE,
+        ];
+        let mut config = ptr::null_mut();
+        let mut found = 0;
+        if (egl.eglChooseConfig)(display, attrs.as_ptr(), &mut config, 1, &mut found) == 0
+            || found == 0
+        {
+            return Err(Failure::UnsupportedCapability);
+        }
+        let attrs = [EGL_CONTEXT_CLIENT_VERSION, 3, EGL_NONE];
+        let context = (egl.eglCreateContext)(display, config, ptr::null_mut(), attrs.as_ptr());
+        if context.is_null() {
+            return Err(Failure::Creation);
+        }
+        Ok(context)
+    }
+}
+
 impl Egl {
+    fn require_linear_argb(&self) -> Result<(), Failure> {
+        type Query = unsafe extern "C" fn(Handle, i32, i32, *mut u64, *mut u32, *mut i32) -> u32;
+        unsafe {
+            if (self.gbm_api.gbm_device_is_format_supported)(
+                self.gbm,
+                ARGB8888,
+                GBM_BO_USE_RENDERING | GBM_BO_USE_LINEAR,
+            ) == 0
+            {
+                return Err(Failure::UnsupportedCapability);
+            }
+            let proc = (self.egl.eglGetProcAddress)(c"eglQueryDmaBufModifiersEXT".as_ptr());
+            if proc.is_null() {
+                return Err(Failure::UnsupportedCapability);
+            }
+            let query = std::mem::transmute::<Handle, Query>(proc);
+            let mut count = 0;
+            if query(
+                self.display,
+                ARGB8888 as i32,
+                0,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                &mut count,
+            ) == 0
+                || count <= 0
+            {
+                return Err(Failure::UnsupportedCapability);
+            }
+            let mut modifiers = vec![0_u64; count as usize];
+            let mut external_only = vec![0_u32; count as usize];
+            let mut written = 0;
+            if query(
+                self.display,
+                ARGB8888 as i32,
+                count,
+                modifiers.as_mut_ptr(),
+                external_only.as_mut_ptr(),
+                &mut written,
+            ) == 0
+                || !(0..=count).contains(&written)
+                || !modifiers
+                    .iter()
+                    .zip(&external_only)
+                    .take(written as usize)
+                    .any(|(&modifier, &external)| {
+                        modifier == DRM_FORMAT_MOD_LINEAR && external == 0
+                    })
+            {
+                return Err(Failure::UnsupportedCapability);
+            }
+        }
+        Ok(())
+    }
     fn on(device: Device) -> Result<Self, Failure> {
         let DeviceSelection::Linux(path) = &device.selection else {
             unreachable!()
@@ -105,8 +198,10 @@ impl Egl {
             .open(path)
             .map_err(|_| Failure::Creation)?;
         unsafe {
-            let gbm_api = Gbm::load()?;
-            let egl = EglApi::load()?;
+            let driver = drivers()?;
+            let gbm_api = &driver.gbm;
+            let egl = &driver.egl;
+            let gles = &driver.gles;
             let bind = (egl.eglGetProcAddress)(c"glEGLImageTargetTexture2DOES".as_ptr());
             if bind.is_null() {
                 return Err(Failure::UnsupportedCapability);
@@ -118,6 +213,7 @@ impl Egl {
             let mut result = Self {
                 gbm_api,
                 egl,
+                gles,
                 device,
                 node,
                 gbm,
@@ -141,48 +237,14 @@ impl Egl {
             {
                 return Err(Failure::UnsupportedCapability);
             }
-            if (result.egl.eglBindAPI)(EGL_OPENGL_API) == 0 {
-                return Err(Failure::UnsupportedCapability);
-            }
-            let attrs = [
-                EGL_SURFACE_TYPE,
-                0,
-                EGL_RENDERABLE_TYPE,
-                8,
-                EGL_RED_SIZE,
-                8,
-                EGL_GREEN_SIZE,
-                8,
-                EGL_BLUE_SIZE,
-                8,
-                EGL_NONE,
-            ];
-            let mut config = ptr::null_mut();
-            let mut found = 0;
-            if (result.egl.eglChooseConfig)(display, attrs.as_ptr(), &mut config, 1, &mut found)
-                == 0
-                || found == 0
-            {
-                return Err(Failure::UnsupportedCapability);
-            }
-            let attrs = [
-                EGL_CONTEXT_MAJOR_VERSION,
-                3,
-                EGL_CONTEXT_MINOR_VERSION,
-                2,
-                EGL_CONTEXT_OPENGL_PROFILE_MASK,
-                1,
-                EGL_NONE,
-            ];
-            result.context =
-                (result.egl.eglCreateContext)(display, config, ptr::null_mut(), attrs.as_ptr());
-            if result.context.is_null()
-                || (result.egl.eglMakeCurrent)(
-                    display,
-                    ptr::null_mut(),
-                    ptr::null_mut(),
-                    result.context,
-                ) == 0
+            result.require_linear_argb()?;
+            result.context = create_es_context(result.egl, display)?;
+            if (result.egl.eglMakeCurrent)(
+                display,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                result.context,
+            ) == 0
             {
                 return Err(Failure::Creation);
             }
@@ -193,20 +255,59 @@ impl Egl {
 impl Display for Egl {
     const TEXTURE: u32 = glow::TEXTURE_2D;
     fn open(choice: Option<&DeviceSelection>) -> Result<Self, Failure> {
+        let mut available = devices()?;
+        if let Some(selection) = choice {
+            let DeviceSelection::Linux(path) = selection else {
+                return Err(Failure::UnsupportedCapability);
+            };
+            let requested =
+                std::fs::canonicalize(path).map_err(|_| Failure::UnsupportedCapability)?;
+            let device=available.into_iter().find(|device|matches!(&device.selection,DeviceSelection::Linux(node) if std::path::Path::new(node)==requested)).ok_or(Failure::UnsupportedCapability)?;
+            return Self::on(device);
+        }
+        // The kernel identifies the boot adapter where the platform exposes one.
+        available.sort_by_cached_key(|device| {
+            let DeviceSelection::Linux(path) = &device.selection else {
+                unreachable!()
+            };
+            let node = std::path::Path::new(path).file_name().unwrap();
+            !std::fs::read_to_string(
+                std::path::Path::new("/sys/class/drm")
+                    .join(node)
+                    .join("device/boot_vga"),
+            )
+            .is_ok_and(|v| v.trim() == "1")
+        });
         let mut failure = Failure::UnsupportedCapability;
-        for device in devices()? {
-            if choice.is_some_and(|selection| selection != &device.selection) {
-                continue;
-            }
+        for device in available {
             match Self::on(device) {
-                Ok(display) => return Ok(display),
+                Ok(output) => return Ok(output),
                 Err(error) => failure = error,
             }
         }
         Err(failure)
     }
     fn function(&self, name: &CStr) -> Handle {
-        unsafe { (self.egl.eglGetProcAddress)(name.as_ptr()) }
+        unsafe {
+            let pointer = (self.egl.eglGetProcAddress)(name.as_ptr());
+            if !pointer.is_null() {
+                return pointer;
+            }
+            self.gles
+                .get::<Handle>(name.to_bytes_with_nul())
+                .map(|symbol| *symbol)
+                .unwrap_or(ptr::null_mut())
+        }
+    }
+    fn validate_gl(&self, gl: &glow::Context) -> Result<(), Failure> {
+        if gl.version().is_embedded
+            && gl.version().major >= 3
+            && gl.supported_extensions().contains("GL_OES_EGL_image")
+        {
+            Ok(())
+        } else {
+            Err(Failure::UnsupportedCapability)
+        }
     }
     fn device(&self) -> &Device {
         &self.device
@@ -215,7 +316,7 @@ impl Display for Egl {
         self.node.as_raw_fd()
     }
     fn attach(&self, width: u32, height: u32) -> Result<Arc<dyn FrameSurface>, Failure> {
-        let linear = 0_u64;
+        let linear = DRM_FORMAT_MOD_LINEAR;
         unsafe {
             let bo = (self.gbm_api.gbm_bo_create_with_modifiers2)(
                 self.gbm,
@@ -224,12 +325,12 @@ impl Display for Egl {
                 ARGB8888,
                 &linear,
                 1,
-                1 << 2,
+                GBM_BO_USE_RENDERING,
             );
             if bo.is_null() {
                 return Err(Failure::UnsupportedCapability);
             }
-            let bo = Buffer(bo, &self.gbm_api);
+            let bo = Buffer(bo, self.gbm_api);
             let modifier = (self.gbm_api.gbm_bo_get_modifier)(bo.0);
             let format = (self.gbm_api.gbm_bo_get_format)(bo.0);
             if (self.gbm_api.gbm_bo_get_plane_count)(bo.0) != 1
@@ -243,17 +344,19 @@ impl Display for Egl {
             if raw < 0 {
                 return Err(Failure::Creation);
             }
-            let mut fd = File::from_raw_fd(raw);
+            // Rust duplicates the driver's descriptor with close-on-exec before publishing it.
+            let mut fd = File::from_raw_fd(raw)
+                .try_clone()
+                .map_err(|_| Failure::Creation)?;
             let stride = (self.gbm_api.gbm_bo_get_stride_for_plane)(bo.0, 0);
             let offset = (self.gbm_api.gbm_bo_get_offset)(bo.0, 0);
-            let size = fd.seek(SeekFrom::End(0)).map_err(|_| Failure::Creation)?;
+            let object_size = fd.seek(SeekFrom::End(0)).map_err(|_| Failure::Creation)?;
             fd.rewind().map_err(|_| Failure::Creation)?;
-            if stride < width.saturating_mul(4)
-                || size
-                    < u64::from(offset)
-                        + u64::from(stride) * (u64::from(height) - 1)
-                        + u64::from(width) * 4
-            {
+            let size = object_size
+                .checked_sub(u64::from(offset))
+                .ok_or(Failure::Creation)?;
+            let row = u64::from(width) * 4;
+            if u64::from(stride) < row || size < u64::from(stride) * (u64::from(height) - 1) + row {
                 return Err(Failure::Creation);
             }
             let attrs = [
@@ -264,7 +367,7 @@ impl Display for Egl {
                 EGL_LINUX_DRM_FOURCC_EXT,
                 format as isize,
                 EGL_DMA_BUF_PLANE0_FD_EXT,
-                raw as isize,
+                fd.as_raw_fd() as isize,
                 EGL_DMA_BUF_PLANE0_OFFSET_EXT,
                 offset as isize,
                 EGL_DMA_BUF_PLANE0_PITCH_EXT,
@@ -295,6 +398,49 @@ impl Display for Egl {
                 format,
                 modifier,
             }))
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    #[ignore = "requires Mesa surfaceless EGL on Linux"]
+    fn offscreen_context_uses_opengl_es3() {
+        const EGL_PLATFORM_SURFACELESS_MESA: u32 = 0x31dd;
+        let driver = drivers().unwrap();
+        let egl = &driver.egl;
+        unsafe {
+            let display = (egl.eglGetPlatformDisplay)(
+                EGL_PLATFORM_SURFACELESS_MESA,
+                ptr::null_mut(),
+                ptr::null(),
+            );
+            assert!(!display.is_null());
+            assert_ne!(
+                (egl.eglInitialize)(display, ptr::null_mut(), ptr::null_mut()),
+                0
+            );
+            let context = create_es_context(egl, display).unwrap();
+            let current = (egl.eglMakeCurrent)(display, ptr::null_mut(), ptr::null_mut(), context);
+            let library = &driver.gles;
+            let version = if current == 0 {
+                None
+            } else {
+                let get = library
+                    .get::<unsafe extern "C" fn(u32) -> *const std::ffi::c_char>(b"glGetString\0")
+                    .unwrap();
+                let value = get(glow::VERSION);
+                (!value.is_null()).then(|| CStr::from_ptr(value).to_string_lossy().into_owned())
+            };
+            (egl.eglMakeCurrent)(display, ptr::null_mut(), ptr::null_mut(), ptr::null_mut());
+            (egl.eglDestroyContext)(display, context);
+            (egl.eglTerminate)(display);
+            (egl.eglReleaseThread)();
+            let version = version.expect("Expected an active EGL context");
+            assert!(version.starts_with("OpenGL ES 3."), "{version}");
+            println!("{version}");
         }
     }
 }

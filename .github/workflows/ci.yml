@@ -106,7 +106,12 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdrm-dev libegl1-mesa-dev libgbm-dev libva-dev libvulkan1 libasound2-dev libpulse-dev xvfb xauth
+          sudo apt-get install -y libdrm-dev libegl1-mesa-dev libgles2 libgl1-mesa-dri libgbm-dev libva-dev libvulkan1 libasound2-dev libpulse-dev xvfb xauth
+      - name: Verify the offscreen OpenGL ES context
+        if: runner.os == 'Linux'
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: pnpm exec vp run check:linux-context
       - name: Restore the Unix media runtime
         if: runner.os != 'Windows'
         id: unix-media
