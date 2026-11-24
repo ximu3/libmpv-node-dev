@@ -72,7 +72,14 @@ async function openLibrary(operation: MpvOperation) {
   }
 
   const runtime: unknown = JSON.parse(manifest.toString('utf8'))
-  if (!record(runtime) || !record(runtime.files)) {
+  if (
+    !record(runtime) ||
+    !record(runtime.files) ||
+    typeof runtime.engine !== 'string' ||
+    createHash('sha256')
+      .update(await readFile(join(directory, 'engine.json')))
+      .digest('hex') !== runtime.engine
+  ) {
     throw new MpvBindingError('incompatibleLibrary', operation)
   }
   const files = runtime.files
