@@ -1,0 +1,17 @@
+{
+  "name": "@ximu3/libmpv-node",
+  "version": "0.1.0-dev.0",
+  "description": "Node.js bindings for libmpv",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
+  },
+  "files": ["dist", "LICENSE"],
+  "packageManager": "pnpm@12.18.0",
+  "devDependencies": {
+    "@types/node": "24.19.2",
+    "typescript": "7.1.0-beta",
+    "vite-plus": "1.6.0"
+  }
+}

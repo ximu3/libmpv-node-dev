@@ -1,0 +1,70 @@
+import { createHash } from 'node:crypto'
+import { createReadStream } from 'node:fs'
+import { readFile, realpath } from 'node:fs/promises'
+import { createRequire } from 'node:module'
+import { basename, dirname, join } from 'node:path'
+import { MpvBindingError } from './errors.js'
+import type { LoadOperation, LoadErrorCode } from './errors.js'
+
+export interface MpvClientApiVersion {
+  readonly major: number
+  readonly minor: number
+}
+
+interface NativeLibrary {
+  loadLibrary(directory: string): Promise<{ version?: MpvClientApiVersion, error?: LoadErrorCode }>
+}
+
+interface PackageBuild {
+  version: string
+  targets: Record<string, string>
+}
+
+const require = createRequire(import.meta.url)
+let pending: Promise<{ binding: NativeLibrary, version: MpvClientApiVersion }> | undefined
+
+async function openLibrary(operation: LoadOperation) {
+  const target = `${process.platform}-${process.arch}`
+  const build: PackageBuild = JSON.parse(await readFile(new URL('./build.json', import.meta.url), 'utf8'))
+  const expected = build.targets[target]
+  if (!expected) throw new MpvBindingError('libraryLoadFailed', operation)
+
+  const packageName = `@ximu3/libmpv-node-${target}`
+  let location = dirname(require.resolve(packageName + '/package.json'))
+  if (process.versions.electron) location = location.replace(/([/\\][^/\\]+\.asar)([/\\])/, '$1.unpacked$2')
+  const directory = await realpath(location)
+  const pkg = JSON.parse(await readFile(join(directory, 'package.json'), 'utf8'))
+  const manifest = await readFile(join(directory, 'runtime.json'))
+  if (pkg.name !== packageName || pkg.version !== build.version || createHash('sha256').update(manifest).digest('hex') !== expected) {
+    throw new MpvBindingError('incompatibleLibrary', operation)
+  }
+
+  const files: Record<string, string> = JSON.parse(manifest.toString('utf8')).files
+  for (const [name, expectedHash] of Object.entries(files)) {
+    if (basename(name) !== name) throw new MpvBindingError('incompatibleLibrary', operation)
+    const hash = createHash('sha256')
+    for await (const part of createReadStream(join(directory, name))) hash.update(part)
+    if (hash.digest('hex') !== expectedHash) throw new MpvBindingError('incompatibleLibrary', operation)
+  }
+  const binding = require(join(directory, 'libmpv.node')) as NativeLibrary
+  const result = await binding.loadLibrary(directory)
+  if (!result.version) throw new MpvBindingError(result.error ?? 'libraryLoadFailed', operation)
+  return { binding, version: result.version }
+}
+
+export async function library(operation: LoadOperation) {
+  pending ??= openLibrary(operation).catch((error: unknown) => {
+    pending = undefined
+    throw error
+  })
+  try {
+    return await pending
+  } catch (error) {
+    throw new MpvBindingError(error instanceof MpvBindingError ? error.code : 'libraryLoadFailed', operation)
+  }
+}
+
+export async function getClientApiVersion(): Promise<MpvClientApiVersion> {
+  const { version } = await library('getClientApiVersion')
+  return { ...version }
+}

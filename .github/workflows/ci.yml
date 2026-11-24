@@ -1,0 +1,41 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [ubuntu-22.04, ubuntu-22.04-arm, windows-2025, windows-11-arm, macos-15-intel, macos-15]
+    runs-on: ${{ matrix.runner }}
+    env:
+      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec vp run check
+      - run: pnpm exec vp run build
+      - name: Verify upstream source and patches
+        run: python3 tools/engine/source.py build/source/mpv
+      - name: Record Linux graphics availability
+        if: runner.os == 'Linux'
+        run: |
+          uname -a
+          ls -ld /dev/dri /dev/dri/renderD* || true
+          lspci -nn | grep -Ei 'VGA|Display|3D' || true
+      - name: Exercise addon load in Node
+        run: node --test tests/addon.test.ts
