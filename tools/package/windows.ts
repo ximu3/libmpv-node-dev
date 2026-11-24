@@ -24,7 +24,7 @@ interface EngineReceipt {
 export async function packWindows(destination: string, runtime: string) {
   const receiptPath = join(runtime, 'engine.json')
   const receipt = JSON.parse(await readFile(receiptPath, 'utf8')) as EngineReceipt
-  const target = 'win32-x64'
+  const target = 'win32-' + process.arch
   const patches = source.patches.map((patch) => patch.sha256)
   if (
     receipt.target !== target ||
@@ -62,7 +62,7 @@ export async function packWindows(destination: string, runtime: string) {
     version,
     private: true,
     os: ['win32'],
-    cpu: ['x64'],
+    cpu: [process.arch],
   })
 
   const main = join(work.path, 'main')
