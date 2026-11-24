@@ -188,6 +188,9 @@ export async function checkColorOutput() {
   await render('srgb', false)
   await render('display-p3', false)
   await render('srgb', true)
+  if (process.env.LIBMPV_TEST_SHARED_FRAME_ONLY === '1') {
+    return
+  }
   const decoder = { win32: 'd3d11va', darwin: 'videotoolbox', linux: 'vaapi' } as const
   await render('srgb', true, decoder[process.platform as keyof typeof decoder])
 }

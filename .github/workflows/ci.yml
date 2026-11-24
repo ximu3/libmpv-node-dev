@@ -163,6 +163,7 @@ jobs:
           Get-CimInstance Win32_VideoController | Format-Table Name, AdapterCompatibility, DriverVersion
           "LIBMPV_TEST_GRAPHICS=1" >> $env:GITHUB_ENV
           "LIBMPV_TEST_VISIBLE=1" >> $env:GITHUB_ENV
+          "LIBMPV_TEST_SHARED_FRAME_ONLY=1" >> $env:GITHUB_ENV
       - name: Verify the installed platform package
         shell: bash
         env:
