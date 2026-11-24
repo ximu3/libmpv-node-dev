@@ -13,14 +13,18 @@ function isMap(value: MpvValue): value is Readonly<Record<string, MpvValue>> {
   )
 }
 
-async function pixels(provider: 'auto' | 'none', attachments: boolean) {
+async function pixels(
+  provider: 'auto' | 'none' | 'fontconfig',
+  attachments: boolean,
+  software = true,
+) {
   await using player = await createMpv({
     options: [
       ['load-scripts', false],
       ['vo', 'null'],
       ['ao', 'null'],
       ['pause', true],
-      ['screenshot-sw', true],
+      ['screenshot-sw', software],
       ['sid', 1n],
       ['sub-font-provider', provider],
       ['embeddedfonts', attachments],
@@ -117,4 +121,8 @@ export async function checkSubtitleFonts() {
   assert.ok(embedded.includes(1))
   assert.notDeepEqual(embedded, system)
   assert.deepEqual(automatic, embedded)
+  const fallback = await pixels('none', true, false)
+  assert.deepEqual(fallback, embedded)
+  const forced = await pixels('fontconfig', false)
+  assert.deepEqual(forced, process.platform === 'linux' ? system : empty)
 }
