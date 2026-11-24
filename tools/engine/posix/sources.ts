@@ -1,5 +1,4 @@
-import { execFileSync } from 'node:child_process'
-import { createWriteStream } from 'node:fs'
+import { execFile, execFileSync } from 'node:child_process'
 import {
   copyFile,
   mkdir,
@@ -10,8 +9,10 @@ import {
   writeFile,
 } from 'node:fs/promises'
 import { basename, join } from 'node:path'
-import { pipeline } from 'node:stream/promises'
+import { promisify } from 'node:util'
 import { requiredPath, verifyDigest, writeJson } from '../../files.ts'
+
+const download = promisify(execFile)
 
 export interface SourceArchive {
   urls: string[]
@@ -28,13 +29,40 @@ export async function obtain(source: SourceArchive, cache: string) {
   await using work = await mkdtempDisposable(join(cache, 'source-'))
   const file = join(work.path, 'archive')
   const failures: unknown[] = []
+  const mirrors = new Set(source.urls.map((url) => url.replace(/^http:/, 'https:')))
   for (const url of source.urls) {
+    const remote = new URL(url)
+    if (remote.hostname === 'ftpmirror.gnu.org') {
+      mirrors.add('https://mirrors.kernel.org/gnu' + remote.pathname)
+    }
+    if (remote.hostname === 'ftp.gnu.org' && remote.pathname.startsWith('/gnu/')) {
+      mirrors.add('https://mirrors.kernel.org' + remote.pathname)
+    }
+    if (remote.hostname === 'zlib.net') {
+      mirrors.add('https://zlib.net/fossils/' + basename(remote.pathname))
+    }
+  }
+  for (const url of mirrors) {
     try {
-      const response = await fetch(url, { signal: AbortSignal.timeout(300000) })
-      if (!response.ok || !response.body) {
-        throw new Error('HTTP ' + response.status + ' for ' + url)
-      }
-      await pipeline(response.body, createWriteStream(file))
+      await download(
+        'curl',
+        [
+          '--fail',
+          '--location',
+          '--silent',
+          '--show-error',
+          '--connect-timeout',
+          '20',
+          '--max-time',
+          '300',
+          '--retry',
+          '1',
+          '--output',
+          file,
+          url,
+        ],
+        { windowsHide: true },
+      )
       await verifyDigest(file, source.sha256)
       await rename(file, path)
       return path
@@ -76,18 +104,21 @@ export async function downloadSources(kit: string, cache: string) {
     ).values(),
   ]
   const names: Record<string, string> = {}
+  const failures: unknown[] = []
   async function next() {
     for (let item = entries.pop(); item; item = entries.pop()) {
-      const path = await obtain(item, cache)
-      await copyFile(path, join(directory, basename(path)))
-      names[basename(path)] = item.sha256
+      try {
+        const path = await obtain(item, cache)
+        await copyFile(path, join(directory, basename(path)))
+        names[basename(path)] = item.sha256
+      } catch (error) {
+        failures.push(error)
+      }
     }
   }
-  const results = await Promise.allSettled(Array.from({ length: 4 }, next))
-  for (const result of results) {
-    if (result.status === 'rejected') {
-      throw result.reason
-    }
+  await Promise.all(Array.from({ length: 4 }, next))
+  if (failures.length) {
+    throw new AggregateError(failures, 'Could not assemble all corresponding sources')
   }
   await writeJson(
     join(directory, 'checksums.json'),
