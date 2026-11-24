@@ -67,6 +67,15 @@ export class Subscriptions {
 
   constructor(private readonly parent?: Subscriptions) {}
 
+  track(subscription: { dispose(): Promise<void>; finished: Promise<void> }) {
+    this.active.add(subscription)
+    this.parent?.active.add(subscription)
+    return () => {
+      this.active.delete(subscription)
+      this.parent?.active.delete(subscription)
+    }
+  }
+
   async observe<P, T>(
     client: NativeClient,
     operation: MpvOperation,
@@ -110,16 +119,14 @@ export class Subscriptions {
         return this.dispose()
       },
     }
-    const parent = this.parent?.active
-    const group = this.active
+    let untrack: (() => void) | undefined
     function release() {
       if (cleanup) {
         return cleanup
       }
       cancellation?.[Symbol.dispose]()
       cleanup = (handle?.dispose() ?? Promise.resolve()).finally(() => {
-        parent?.delete(subscription)
-        group.delete(subscription)
+        untrack?.()
         context.emitDestroy()
         end.resolve()
       })
@@ -209,8 +216,7 @@ export class Subscriptions {
         }
         throw new MpvBindingError('closed', operation, true)
       }
-      group.add(subscription)
-      parent?.add(subscription)
+      untrack = this.track(subscription)
       setImmediate(() => {
         published = true
         drain()

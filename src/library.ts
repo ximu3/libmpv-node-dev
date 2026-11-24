@@ -1,3 +1,4 @@
+import type { VideoDeviceInfo } from './video/devices.js'
 import type { LogLevel, MpvNativeLogRecord } from './logs.js'
 import { pipeline } from 'node:stream/promises'
 import { createHash } from 'node:crypto'
@@ -17,6 +18,9 @@ export interface MpvClientApiVersion {
 
 export interface NativeLibrary {
   NativeCreation: { start(): { abort(): void } }
+  videoDevices(state: {
+    abort(): void
+  }): Promise<{ devices: VideoDeviceInfo[] } | { error: MpvBindingErrorCode; submitted: boolean }>
   createClientCore(
     directory: string,
     options: readonly (readonly [Uint8Array, MpvNode])[],

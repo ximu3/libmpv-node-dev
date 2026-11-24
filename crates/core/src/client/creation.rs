@@ -30,11 +30,7 @@ impl Creation {
         self.stop(Failure::Aborted);
     }
 
-    pub(super) fn enter(
-        &self,
-        stage: &'static str,
-        index: Option<usize>,
-    ) -> Result<(), CreateError> {
+    pub fn enter(&self, stage: &'static str, index: Option<usize>) -> Result<(), CreateError> {
         let mut state = self.state.lock().unwrap();
         if let Some(error) = state.stopped {
             return Err(error);

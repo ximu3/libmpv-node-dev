@@ -51,6 +51,12 @@ pub struct Property {
 }
 
 #[repr(C)]
+pub struct HookEvent {
+    pub name: *const c_char,
+    pub id: u64,
+}
+
+#[repr(C)]
 pub struct LogMessage {
     pub prefix: *const c_char,
     pub level: *const c_char,
@@ -108,6 +114,8 @@ client_api! {
     command_node_async(Handle, u64, *mut Node) -> c_int,
     abort_async_command(Handle, u64) -> (),
     load_config_file(Handle, *const c_char) -> c_int,
+    hook_add(Handle, u64, *const c_char, c_int) -> c_int,
+    hook_continue(Handle, u64) -> c_int,
     request_log_messages(Handle, *const c_char) -> c_int,
     request_event(Handle, c_int, c_int) -> c_int,
     observe_property(Handle, u64, *const c_char, c_int) -> c_int,

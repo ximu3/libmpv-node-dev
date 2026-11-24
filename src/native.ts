@@ -1,3 +1,4 @@
+import type { NativeHook } from './hooks.js'
 import type { LogLevel, MpvNativeLogRecord } from './logs.js'
 import type { MpvNativeEvent, NativeWatch } from './subscriptions.js'
 import type { MpvNode } from './values.js'
@@ -36,6 +37,12 @@ export interface NativeClient {
     wake: () => void,
     gate: { abort(): void },
   ): Promise<{ watch: NativeWatch<MpvNativeLogRecord> } | NativeFailure>
+  addHook(
+    name: Uint8Array,
+    priority: number,
+    wake: () => void,
+    gate: { abort(): void },
+  ): Promise<{ hook: NativeHook } | NativeFailure>
   setReferenced(value: boolean): void
   time(): bigint | null
   request(

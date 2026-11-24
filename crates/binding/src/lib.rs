@@ -1,8 +1,10 @@
 pub mod client;
 mod environment;
 pub mod events;
+pub mod hooks;
 mod logs;
 mod values;
+pub mod video;
 
 use libmpv_core::{LoadError, Runtime};
 use napi::{Env, Result, Task, bindgen_prelude::AsyncTask};

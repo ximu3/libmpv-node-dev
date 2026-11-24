@@ -4,9 +4,12 @@ import type { MpvNode } from './values.js'
 
 export type MpvOperation =
   | 'getClientApiVersion'
+  | 'getVideoDevices'
   | 'createMpv'
   | 'createClient'
   | 'command'
+  | 'addHook'
+  | 'continueHook'
   | 'getProperty'
   | 'getPropertyText'
   | 'observeProperty'
