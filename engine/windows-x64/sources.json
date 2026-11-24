@@ -1,0 +1,188 @@
+{
+  "mingw-w64-brotli": {
+    "archive": "mingw-w64-brotli-1.2.0-1.src.tar.zst",
+    "sha256": "2f0f93875aac21990d20f1eaf0ad8b970eb6f186c663c77ae47aaaf9e5711fcf",
+    "recipeCommit": "9b344635687ddaf0703725e32965f212ce40208e",
+    "recipeSha256": "894120dac11e7fffd72224148e22d424075fabf23a8cafbf4f2c5390c73755c9"
+  },
+  "mingw-w64-bzip2": {
+    "archive": "mingw-w64-bzip2-1.0.8-4.src.tar.zst",
+    "sha256": "fd9360917314d1cbccb3cb15ed8450d1e56b8a9f733b606504aba52c52159e54",
+    "recipeCommit": "4660b7d07063b222cfe8f7c20d465e6948f1ba41",
+    "recipeSha256": "a82348d211ec09835b8d77de2e98d3153831a9389cdaf6cb8cfadf711096aa24"
+  },
+  "mingw-w64-dav1d": {
+    "archive": "mingw-w64-dav1d-1.5.4-1.src.tar.zst",
+    "sha256": "dd7bdbd140996eb26e857c2cfe80d0952641c997a5826c15d5bb204571d2518e",
+    "recipeCommit": "d4f3f5f07586f1d40ce9bad1c540da3f951c8c39",
+    "recipeSha256": "f44d69b4c2181fe1e6a6808d48a1fc92b9ea8c7bb7f7b761f0c60b562015723f"
+  },
+  "mingw-w64-freetype": {
+    "archive": "mingw-w64-freetype-2.15.0-1.src.tar.zst",
+    "sha256": "2f09c60b72bd249642d055aa5a34edf2577392e592415f3f4730dd37990b47ad",
+    "recipeCommit": "b6f22c12be0e5586136c0ee86a102cdb7c712751",
+    "recipeSha256": "c1cd68a207ce2737a8938a9aa599bd5d78bddb7cfd410f49be8eac9f6d1e4793"
+  },
+  "mingw-w64-fribidi": {
+    "archive": "mingw-w64-fribidi-1.0.17-1.src.tar.zst",
+    "sha256": "0f192cf5009fe18e2ac752273de509094cf161106fbedd69f112186e75253850",
+    "recipeCommit": "2a1cc601019e47707188965e3635dec3630a5a46",
+    "recipeSha256": "cb04bae41893dd48562ee6002d5e9681c87f382fc0c76d43921d7a8cacc684f5"
+  },
+  "mingw-w64-gcc": {
+    "archive": "mingw-w64-gcc-16.2.0-6.src.tar.zst",
+    "sha256": "a901d8afb78438abcff9ed020cd9aa9431db76de1992171c2454c3c07ad289e8",
+    "recipeCommit": "5c1ca99730b358ba0915fc8eba7a29e6e169c378",
+    "recipeSha256": "1a123ea062e01beb611c4375999492b0f41ef2d92d03e38cb29e7c23e855ad45"
+  },
+  "mingw-w64-gettext": {
+    "archive": "mingw-w64-gettext-1.0-1.src.tar.zst",
+    "sha256": "cca0d0c8f60353faccc5ad40405240014e4a7ccc8b1c6ca9f4626aef3097d26e",
+    "recipeCommit": "efb77424dfbeaaa22d96621274765d7ab5a3344f",
+    "recipeSha256": "853ef80a50588f29355722a4513f24cf1a5f8de06e0b5ee326580464db539741"
+  },
+  "mingw-w64-glib2": {
+    "archive": "mingw-w64-glib2-2.90.1-1.src.tar.zst",
+    "sha256": "ac3bc00e4079e6b51dd0a1fb9ccc420fff033b4e9095e4487dbf6cf01312cee6",
+    "recipeCommit": "8718c5b0ed6a01bf4b6fdd7b275a620586adf90b",
+    "recipeSha256": "ca768ab894a3a5b9c07cbcf56411fbca55e1c60b8243c6e6409f3496ae46e6d8"
+  },
+  "mingw-w64-graphite2": {
+    "archive": "mingw-w64-graphite2-1.3.15-1.src.tar.zst",
+    "sha256": "eb76ce274c68ea6bad0883144c21e44a803ec94fed9dc0f6584feb0a8415a1d6",
+    "recipeCommit": "290de186c366023606c765b657f42b22bc773ee1",
+    "recipeSha256": "2fd68eeb0a96760c64f203506004dd0485fc588bdc0fb83684665821493df6d5"
+  },
+  "mingw-w64-harfbuzz": {
+    "archive": "mingw-w64-harfbuzz-14.6.0-1.src.tar.zst",
+    "sha256": "6c02c446b27412717a760eca77ac6ed997b294fdc390a5e5f46760ebda8a7c64",
+    "recipeCommit": "0da26296852fb8b86e0bc481b007f603ad7957f8",
+    "recipeSha256": "0beecaf3877f8105c68a70485a062a7b466cd49c8858b54ceda84573804c4bc0"
+  },
+  "mingw-w64-lcms2": {
+    "archive": "mingw-w64-lcms2-2.19.1-1.src.tar.zst",
+    "sha256": "83414d0d95c5cb2548d3050670694e9efc64304a52190f42bcad951efa038b41",
+    "recipeCommit": "c13ff2ab5c718d63da878bb180c2cc0b5ce40dec",
+    "recipeSha256": "6f39c90313ec3f739b7406d6c7e2eb802c8aa8142323278a36d41083e765350f"
+  },
+  "mingw-w64-libdovi": {
+    "archive": "mingw-w64-libdovi-3.4.0-1.src.tar.zst",
+    "sha256": "50e7303249bd57b9bb543e87e5de4b6331d744b22d2d26861bc8968ee60a70a3",
+    "recipeCommit": "8189224cf0d6948f649f4ff311e056e9e3d901e1",
+    "recipeSha256": "9d9c7ca22ff45570a70a75123885ca3fc402c70ecc92eea356d13f2e115b615d"
+  },
+  "mingw-w64-libiconv": {
+    "archive": "mingw-w64-libiconv-1.19-1.src.tar.zst",
+    "sha256": "74428280c17094da5b702c29b2e1a0abae59556ea5dfdd65705cc8ccc1e000fb",
+    "recipeCommit": "045d46aedb9fdbd93b0900b1e20c1a6c73f23072",
+    "recipeSha256": "9b3212d06910560fb59e017e0b73a29d392a5082d3a47a613e61509bd7dcd475"
+  },
+  "mingw-w64-libogg": {
+    "archive": "mingw-w64-libogg-1.3.6-1.src.tar.zst",
+    "sha256": "af94ea3c4011694b7a68904144ec1ab73c6c649152c78cb93a7df2a6c386b351",
+    "recipeCommit": "daef506c4c521baa745ba4417c95ef5868df1d43",
+    "recipeSha256": "007f7e94f4d3a44c63a0684a8c69446b885a289eb00c12e9111aa5dc8a5e3933"
+  },
+  "mingw-w64-libplacebo": {
+    "archive": "mingw-w64-libplacebo-7.360.1-2.src.tar.zst",
+    "sha256": "2abe10f1d16981407e8108c5ccb2e13cbeb28ce62f702a4caf1165b732e85bf0",
+    "recipeCommit": "10f52aed234b626002d381170705ffa38cba915d",
+    "recipeSha256": "db36a2a78cc154d92620201323bccb86343de4d3559834a70f8693a914a6ddf3"
+  },
+  "mingw-w64-libpng": {
+    "archive": "mingw-w64-libpng-1.6.59-1.src.tar.zst",
+    "sha256": "2b836f8565a3889ed9bb86f9724074ae274f109e2bcd882dd1f080ea4da8a41a",
+    "recipeCommit": "ef96cee57ce74e2c1ac44f5ff3ff6922851b3c6a",
+    "recipeSha256": "949b56ac247cdf8044166ad4419d55ef937f3caa86c066dd1eb710bdac11bc34"
+  },
+  "mingw-w64-libsoxr": {
+    "archive": "mingw-w64-libsoxr-0.1.3-6.src.tar.zst",
+    "sha256": "f6808c093eb32c771268933e3f23ab41ba3780a32fa6a07b7f8116e637fd8b69",
+    "recipeCommit": "5fc86ab103a4a8b4f7e75353a43fd1f13ce5add7",
+    "recipeSha256": "78eb0fedf413fa32c05d4ff53a94a52f2531786d87c107197240e973efc33f6b"
+  },
+  "mingw-w64-libunibreak": {
+    "archive": "mingw-w64-libunibreak-7.0-1.src.tar.zst",
+    "sha256": "3d51ed18b20deb475c6947ea8fdabb7d6107962e2e6e690de90e5227537728ad",
+    "recipeCommit": "9ff9c06d322365abd7a3c393671600a298363f39",
+    "recipeSha256": "855faf71cc7952b983ed9cf45d7b6dda8f041af53a30322f27382a13d315c65c"
+  },
+  "mingw-w64-libvorbis": {
+    "archive": "mingw-w64-libvorbis-1.3.7-3.src.tar.zst",
+    "sha256": "429f3219de93435cbaa7737627b3b548ba8917d09c525f2005b9283ac5b39142",
+    "recipeCommit": "4660b7d07063b222cfe8f7c20d465e6948f1ba41",
+    "recipeSha256": "38f4410bcfba376befc9031b4c204e9abc1d5949d2e617c53497cdb19db5316a"
+  },
+  "mingw-w64-libvpx": {
+    "archive": "mingw-w64-libvpx-1.17.0-1.src.tar.zst",
+    "sha256": "7b322fffe50501d26bbbb489135e5001f6096da2529ad992c712c00c94bb38dd",
+    "recipeCommit": "f81ee9d5400540ea3636f15205b693f485649e48",
+    "recipeSha256": "ec57aa54095093c69364d4870f84176a6470ff6eed74bea64954ed4ebec74592"
+  },
+  "mingw-w64-libxml2": {
+    "archive": "mingw-w64-libxml2-2.15.4-2.src.tar.zst",
+    "sha256": "685476a67ddf542e8d8cb9dd60290711dcfbb5175bff069c129a683b8907588d",
+    "recipeCommit": "b33ebf063b8ac2983c8671f6e1015e50f25715cd",
+    "recipeSha256": "55b6381c38414b9fc7ad0373c96f464cb312f53dad1525a03fef3989132ffed8"
+  },
+  "mingw-w64-luajit": {
+    "archive": "mingw-w64-luajit-2.1.1791988261-1.src.tar.zst",
+    "sha256": "8c68acb4c2c7aaa32260abea7a2bd8471402fbe08f215d3a28eb8c04b29fb0ea",
+    "recipeCommit": "a083466dbefc0a553217c494db1a15fcc5d2f1ff",
+    "recipeSha256": "7f2d131a56bbf58fe837e96f97eac323fdabdd6ec8030eb3e3809cf25f1f1937"
+  },
+  "mingw-w64-opus": {
+    "archive": "mingw-w64-opus-1.6.1-2.src.tar.zst",
+    "sha256": "65af241b547b36a0b1b07561b41f35ea6f8825712a22707005b9e783bd9afc72",
+    "recipeCommit": "b33ebf063b8ac2983c8671f6e1015e50f25715cd",
+    "recipeSha256": "1bf6a9f3bd44097537bb97fb22f4089eb4844921dca0c9eb11e0b2c63f313e6c"
+  },
+  "mingw-w64-pcre2": {
+    "archive": "mingw-w64-pcre2-10.49-1.src.tar.zst",
+    "sha256": "b02f0d5070b7d7f6db5c8ba9b009f28c1a07b9b52aaf7964dc0c8b098e4088d1",
+    "recipeCommit": "c8cf480d6a95485fd9c33e813d2013885098f359",
+    "recipeSha256": "19e2827b5ffd57b7981ec9678258107e5737f520229d36b4d15d71c24267eb19"
+  },
+  "mingw-w64-shaderc": {
+    "archive": "mingw-w64-shaderc-2026.4-1.src.tar.zst",
+    "sha256": "7c9df6e89d39cc343aa914b3728d4fbacc35832c5ecda83d54ae386966186e2a",
+    "recipeCommit": "c4aa0e3732726175961e34c7749476844eab8f81",
+    "recipeSha256": "b80712a4c55b5dbc9cb29e3e80878767aa987bc704a12eca296a1a2af4b849ac"
+  },
+  "mingw-w64-spirv-cross": {
+    "archive": "mingw-w64-spirv-cross-1~1.4.363.0-1.src.tar.zst",
+    "sha256": "2043f9e7e1359edbf1618a59c38a687d47e3a5779844db6adc4f8de78c5e1eed",
+    "recipeCommit": "952c3555c366357f0bf47269619354de17f8803b",
+    "recipeSha256": "350e57cf5b9037e4e8a0e721b2f89fb080d20edfd3edd652cc32d94f1859a313"
+  },
+  "mingw-w64-vulkan-loader": {
+    "archive": "mingw-w64-vulkan-loader-1~1.4.363.0-1.src.tar.zst",
+    "sha256": "61ed2ebe6007c464af1687e4ecad93199e9faeb3d8dd4d3c24e5b2576f730c9b",
+    "recipeCommit": "952c3555c366357f0bf47269619354de17f8803b",
+    "recipeSha256": "0eab7710e701cc796d2975261ffc3fe8143cb37f1c5bc4733facbd3a2051b5bf"
+  },
+  "mingw-w64-winpthreads": {
+    "archive": "mingw-w64-winpthreads-14.0.0.r495.g63ebe6cdb-1.src.tar.zst",
+    "sha256": "2e4dcb3933fc2dfbd6939935f601e10ae7f9abad06f0be508e1e152768e3e55b",
+    "recipeCommit": "2224da8785ff8e9908ec69e4b13ee0bbb8c5d461",
+    "recipeSha256": "1ed2e13d4e8b360c72be2063c1045b8c4f3a0bc4b35dec8b6932581d2e8ad2e8"
+  },
+  "mingw-w64-xz": {
+    "archive": "mingw-w64-xz-5.8.4-1.src.tar.zst",
+    "sha256": "b8acbc56b2bfe08df7bffff423f3bf07ee85dbec4e07416017ab04c8afb9d13e",
+    "recipeCommit": "bcf3f933e6c743a5d58b563d0e7da81b32ae35ae",
+    "recipeSha256": "b93950051015573095f0d9cd50428ed6dd80d726c2786a2eeef005257888b3ba"
+  },
+  "mingw-w64-zimg": {
+    "archive": "mingw-w64-zimg-3.0.6-3.src.tar.zst",
+    "sha256": "0e6026b3899ff49d109b89cbd51b9768b475f7c1b29c7655517da9c1a564a41e",
+    "recipeCommit": "82bcf47d0ae2621e1cd00fb82c8ee5db02b91955",
+    "recipeSha256": "e604ad47fa3e87e49632d3b1bc889efca30b296e4f8a05905252ac47996c514f"
+  },
+  "mingw-w64-zlib": {
+    "archive": "mingw-w64-zlib-1.3.2-2.src.tar.zst",
+    "sha256": "eef69dea52357e01b272d6fd6dc4d7c0773f71260cb7bcde6047c8c383518db3",
+    "recipeCommit": "6430831b570304e48982fce7d65af399b801ceab",
+    "recipeSha256": "8a4a54a964eab7efa313e2faa8267052bc237ef61f8adf82a55cc93f4028db8a"
+  }
+}

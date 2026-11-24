@@ -43,6 +43,12 @@ export default defineConfig({
       'engine:unix': { command: 'node tools/engine/posix/index.ts', cache: false },
       'pack:unix': { command: 'node tools/package/unix.ts', cache: false },
       'verify:unix-media': { command: 'node tools/engine/posix/verify.ts', cache: false },
+      'check:windows-media': { command: 'node tools/engine/check-windows.ts', cache: false },
+      'verify:windows-media': {
+        command: 'node tools/engine/verify-windows.ts',
+        dependsOn: ['build'],
+        cache: false,
+      },
       'engine:source': { command: 'node tools/engine/source.ts', cache: false },
       'engine:windows': { command: 'node tools/engine/windows.ts', cache: false },
       'pack:windows': { command: 'node tools/package/windows.ts', cache: false },

@@ -1,36 +1,36 @@
-import { execFileSync } from 'node:child_process'
-import settings from '../../engine/windows-x64.json' with { type: 'json' }
-import { join } from 'node:path'
+import { mkdir, mkdtempDisposable, rename } from 'node:fs/promises'
+import { dirname, join } from 'node:path'
 import { parseArgs } from 'node:util'
-import { requiredPath } from '../files.ts'
+import settings from '../../engine/windows-x64/configuration.json' with { type: 'json' }
+import { requiredPath, requireNewDirectory } from '../files.ts'
+import { prepareArchives } from './archives.ts'
+import { collectRuntime } from './runtime.ts'
 import { prepareSource } from './source.ts'
+import { buildDependencies, engineCommand, prepareToolchain } from './toolchain.ts'
 
-const { values, positionals } = parseArgs({
-  allowPositionals: true,
-  options: {
-    msys: { type: 'string' },
-    prefix: { type: 'string' },
-    repository: { type: 'string' },
-  },
-})
-const destination = requiredPath(positionals[0], 'destination')
-const msys = requiredPath(values.msys, '--msys')
-const prefix = requiredPath(values.prefix, '--prefix')
-await prepareSource(join(destination, 'source'), values.repository)
+export async function buildEngine(destination: string, cache: string, repository?: string) {
+  await requireNewDirectory(destination)
+  await prepareArchives(cache)
+  await mkdir(dirname(destination), { recursive: true })
+  await using temporary = await mkdtempDisposable(join(dirname(destination), 'engine-'))
+  const work = temporary.path
+  await prepareSource(join(work, 'mpv'), repository)
+  const toolchain = await prepareToolchain(work, cache)
+  const prefix = await buildDependencies(work, toolchain)
+  engineCommand(toolchain, prefix, work, ['meson', 'setup', 'obj', 'mpv', ...settings.mpvOptions])
+  engineCommand(toolchain, prefix, work, ['meson', 'compile', '-C', 'obj', '-j', '8'])
+  await collectRuntime(work, toolchain, prefix, join(work, 'runtime'), cache)
+  await rename(join(work, 'runtime'), destination)
+}
 
-const bash = join(msys, 'usr/bin/bash.exe')
-const script = [
-  'set -eu',
-  'prefix=$(cygpath -u "$1")',
-  'shift',
-  'export PATH="$prefix/bin:/ucrt64/bin:/usr/bin"',
-  'export PKG_CONFIG_LIBDIR="$prefix/lib/pkgconfig:/ucrt64/lib/pkgconfig:/ucrt64/share/pkgconfig"',
-  'unset PKG_CONFIG_PATH',
-  'meson setup obj source "$@"',
-  'meson compile -C obj',
-].join('\n')
-execFileSync(bash, ['--login', '-c', script, 'build-engine', prefix, ...settings.mpvOptions], {
-  cwd: destination,
-  env: { ...process.env, MSYSTEM: 'UCRT64', CHERE_INVOKING: '1' },
-  stdio: 'inherit',
-})
+if (import.meta.main) {
+  const { values, positionals } = parseArgs({
+    allowPositionals: true,
+    options: { cache: { type: 'string' }, repository: { type: 'string' } },
+  })
+  await buildEngine(
+    requiredPath(positionals[0], 'destination'),
+    requiredPath(values.cache, '--cache'),
+    values.repository,
+  )
+}
