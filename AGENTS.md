@@ -6,4 +6,6 @@
 
 每项独立变更从最新 main 建立短分支，通过 PR 和必需检查后 Squash 合并。管理员同样遵守主线保护。公开开发仓库的 Issue 和 PR 仅限受邀协作者创建。仓库操作使用 git 和 gh，遵守[共同协作规范](https://github.com/ximu3/kisaki-dev/blob/main/refactor/design/engineering/workspace.md#collaboration)。
 
-Windows x64 和 arm64 的 `engine:windows <输出目录> --cache <归档目录>` 从固定输入构建 FFmpeg、MuJS、仅启用 DirectWrite 的 libass 和带补丁的 libmpv。输出包含媒体 DLL、PE 依赖清单、第三方许可材料及单独的对应源码。运行 `build` 后可用 `pack:windows <制品目录> --runtime <引擎输出目录>` 组装开发包。用 `test:consumers <制品目录> --electron <可执行文件>` 核对安装后的声明和两个宿主的实际调用。
+Windows x64 和 arm64 的 `engine:windows <输出目录> --cache <归档目录>` 从固定输入构建 FFmpeg、MuJS、仅启用 DirectWrite 的 libass 和带补丁的 libmpv。输出包含媒体 DLL、PE 依赖清单、第三方许可材料及单独的对应源码。运行 `build` 后可用 `pack:platform <制品目录> --runtime <引擎输出目录>` 组装开发包。用 `test:consumers <制品目录> --electron <可执行文件>` 核对安装后的声明和两个宿主的实际调用。
+
+macOS 和 Linux 运行 `engine:unix` 构建目标引擎。六种目标使用同一个 `pack:platform` 入口装配并采集实际引擎目录，`verify:media` 从配对的 tarball 安装，在 Node 和实际 Electron 中验证。

@@ -13,31 +13,32 @@ import {
   writeJson,
 } from '../files.ts'
 import { runPnpm } from '../pnpm.ts'
+import { stageMain } from './main.ts'
 
-interface EngineReceipt {
+interface Receipt {
   target: string
   mpvCommit: string
   patches: string[]
   files: Record<string, { sha256: string }>
 }
+const engines = { win32: 'libmpv-2.dll', linux: 'libmpv.so.2', darwin: 'libmpv.2.dylib' } as const
 
-export async function packWindows(destination: string, runtime: string) {
+export async function packPlatform(destination: string, runtime: string) {
+  const { platform: os, arch } = process
+  if (!(os in engines) || (arch !== 'x64' && arch !== 'arm64')) {
+    throw new Error('Unsupported media target ' + os + '-' + arch)
+  }
+  const target = os + '-' + arch
   const receiptPath = join(runtime, 'engine.json')
-  const receipt = JSON.parse(await readFile(receiptPath, 'utf8')) as EngineReceipt
-  const target = 'win32-' + process.arch
-  const patches = source.patches.map((patch) => patch.sha256)
+  const receipt = JSON.parse(await readFile(receiptPath, 'utf8')) as Receipt
   if (
     receipt.target !== target ||
     receipt.mpvCommit !== source.commit ||
-    !receipt.files['libmpv-2.dll'] ||
-    receipt.patches.length !== patches.length ||
-    !patches.every((hash, i) => hash === receipt.patches[i])
+    !receipt.files[engines[os as keyof typeof engines]] ||
+    JSON.stringify(receipt.patches) !== JSON.stringify(source.patches.map((p) => p.sha256))
   ) {
-    throw new Error('Engine does not match this build')
+    throw new Error('Engine identity does not match the source and target')
   }
-
-  const { name, version, description, license, type, exports, files: included } = metadata
-  const platformName = name + '-' + target
   await requireNewDirectory(destination)
   await mkdir(dirname(destination), { recursive: true })
   await using work = await mkdtempDisposable(join(dirname(destination), 'libmpv-pack-'))
@@ -45,8 +46,8 @@ export async function packWindows(destination: string, runtime: string) {
   await mkdir(platform)
   const files: Record<string, string> = {}
   for (const [file, artifact] of Object.entries(receipt.files)) {
-    if (basename(file) !== file || !file.endsWith('.dll')) {
-      throw new Error('Invalid engine file name')
+    if (basename(file) !== file || file === '.' || file === '..') {
+      throw new Error('Invalid runtime file name')
     }
     await copyFile(join(runtime, file), join(platform, file))
     await verifyDigest(join(platform, file), artifact.sha256)
@@ -55,58 +56,46 @@ export async function packWindows(destination: string, runtime: string) {
   await copyFile(receiptPath, join(platform, 'engine.json'))
   await cp(join(runtime, 'third-party'), join(platform, 'third-party'), { recursive: true })
   await copyFile(join(projectRoot, 'build/addon/libmpv.node'), join(platform, 'libmpv.node'))
+  await copyFile(join(projectRoot, 'LICENSE'), join(platform, 'LICENSE'))
   files['libmpv.node'] = await digest(join(platform, 'libmpv.node'))
-  await writeJson(join(platform, 'runtime.json'), { files, engine: await digest(receiptPath) })
+  const name = metadata.name + '-' + target
   await writeJson(join(platform, 'package.json'), {
-    name: platformName,
-    version,
-    private: true,
-    os: ['win32'],
-    cpu: [process.arch],
-  })
-
-  const main = join(work.path, 'main')
-  await cp(join(projectRoot, 'dist'), join(main, 'dist'), { recursive: true })
-  await copyFile(join(projectRoot, 'LICENSE'), join(main, 'LICENSE'))
-  await cp(join(projectRoot, 'docs'), join(main, 'docs'), { recursive: true })
-  await writeJson(join(main, 'dist/build.json'), {
-    version,
-    targets: { [target]: await digest(join(platform, 'runtime.json')) },
-  })
-  await writeJson(join(main, 'package.json'), {
     name,
-    version,
-    description,
-    license,
-    type,
-    exports,
-    files: included,
+    version: metadata.version,
     private: true,
-    optionalDependencies: { [platformName]: version },
+    license: metadata.license,
+    os: [os],
+    cpu: [arch],
+    ...(os === 'linux' ? { libc: ['glibc'] } : {}),
   })
 
+  const manifestPath = join(platform, 'runtime.json')
+  const manifest = { files, engine: await digest(receiptPath) }
+  await writeJson(manifestPath, manifest)
+  const main = join(work.path, 'main')
+  const identity = { [target]: await digest(manifestPath) }
+  await stageMain(main, identity)
+  // The engine stays loaded until process exit, so probe in a child before removing the staging directory.
   execFileSync(
     process.execPath,
     [
       join(projectRoot, 'tools/catalog/collect.ts'),
       main,
       platform,
-      platformName,
+      name,
       target,
       receipt.mpvCommit,
     ],
     { stdio: 'inherit' },
   )
   files['catalog.json'] = await digest(join(platform, 'catalog.json'))
-  await writeJson(join(platform, 'runtime.json'), { files, engine: await digest(receiptPath) })
-  await writeJson(join(main, 'dist/build.json'), {
-    version,
-    targets: { [target]: await digest(join(platform, 'runtime.json')) },
-  })
+  await writeJson(manifestPath, manifest)
+  identity[target] = await digest(manifestPath)
+  await writeJson(join(main, 'dist/build.json'), { version: metadata.version, targets: identity })
   const output = join(work.path, 'packages')
   await mkdir(output)
-  for (const directory of [platform, main]) {
-    runPnpm(['pack', '--pack-destination', output], directory)
+  for (const dir of [platform, main]) {
+    runPnpm(['pack', '--pack-destination', output], dir)
   }
   await rename(output, destination)
 }
@@ -116,7 +105,7 @@ if (import.meta.main) {
     allowPositionals: true,
     options: { runtime: { type: 'string' } },
   })
-  await packWindows(
+  await packPlatform(
     requiredPath(positionals[0], 'destination'),
     requiredPath(values.runtime, '--runtime'),
   )

@@ -129,9 +129,9 @@ jobs:
         shell: bash
         run: |
           if [[ "$RUNNER_OS" == Linux ]]; then
-            xvfb-run -a pnpm exec vp run verify:unix-media "$RUNNER_TEMP/libmpv-runtime"
+            xvfb-run -a pnpm exec vp run verify:media "$RUNNER_TEMP/libmpv-runtime"
           else
-            pnpm exec vp run verify:unix-media "$RUNNER_TEMP/libmpv-runtime"
+            pnpm exec vp run verify:media "$RUNNER_TEMP/libmpv-runtime"
           fi
       - name: Restore the exact media build
         id: media
@@ -139,7 +139,7 @@ jobs:
         uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
         with:
           path: ${{ runner.temp }}/libmpv-engine
-          key: media-v2-${{ matrix.target }}-${{ hashFiles('engine/**', 'tools/engine/windows/**', 'tools/engine/source.ts', 'tools/files.ts', '.node-version') }}
+          key: media-v2-${{ matrix.target }}-${{ hashFiles('engine/mpv/**', 'engine/windows/**', 'engine/media-sources.json', 'tools/engine/windows/**', 'tools/engine/source.ts', 'tools/files.ts', '.node-version') }}
       - name: Build media dependencies
         if: runner.os == 'Windows' && steps.media.outputs.cache-hit != 'true'
         run: pnpm exec vp run engine:windows "$env:RUNNER_TEMP/libmpv-engine" --cache "$env:RUNNER_TEMP/media-archives"
@@ -154,7 +154,7 @@ jobs:
           key: ${{ steps.media.outputs.cache-primary-key }}
       - name: Consume the packaged Windows binding
         if: runner.os == 'Windows'
-        run: pnpm exec vp run verify:windows-media "$env:RUNNER_TEMP/libmpv-engine"
+        run: pnpm exec vp run verify:media "$env:RUNNER_TEMP/libmpv-engine"
   gate:
     name: ${{ github.event_name == 'workflow_dispatch' && 'Requested checks' || 'Required checks' }}
     runs-on: ubuntu-22.04
