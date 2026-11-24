@@ -51,3 +51,12 @@ export {
   type SoftwarePixelFormat,
   type SoftwareFrame,
 } from './video/software.js'
+
+export {
+  GpuVideoOutput,
+  type GpuVideoConfiguration,
+  type GpuVideoOptions,
+  type VideoTarget,
+} from './video/gpu.js'
+export { NativeFrame, type NativeDmaBufPlane, type NativeFrameSurface } from './video/frame.js'
+export type { VideoOutputOptions, VideoOutput } from './client/contracts.js'

@@ -1,3 +1,5 @@
+pub mod frame;
+pub mod output;
 use crate::client::{NativeCreation, error};
 use libmpv_core::client::Error as CallError;
 use libmpv_core::video::{DeviceSelection, devices};
@@ -33,26 +35,7 @@ pub fn video_devices<'a>(
             Ok(devices) => {
                 let mut list = Vec::with_capacity(devices.len());
                 for device in devices {
-                    let mut item = Object::new(env)?;
-                    let mut selection = Object::new(env)?;
-                    let platform = match device.selection {
-                        DeviceSelection::Windows(luid) => {
-                            selection.set_named_property("adapterLuid", BigInt::from(luid))?;
-                            "win32"
-                        }
-                        DeviceSelection::Macos(renderer) => {
-                            selection.set_named_property("rendererId", renderer)?;
-                            "darwin"
-                        }
-                        DeviceSelection::Linux(node) => {
-                            selection.set_named_property("renderNode", node)?;
-                            "linux"
-                        }
-                    };
-                    selection.set_named_property("platform", platform)?;
-                    item.set_named_property("selection", selection)?;
-                    item.set_named_property("name", device.name)?;
-                    list.push(item);
+                    list.push(device_info(env, device)?);
                 }
                 let mut result = Object::new(env)?;
                 result.set_named_property("devices", list)?;
@@ -60,4 +43,28 @@ pub fn video_devices<'a>(
             }
         },
     )
+}
+
+pub(super) fn device_info(env: &Env, device: libmpv_core::video::Device) -> Result<Object<'_>> {
+    let mut item = Object::new(env)?;
+    let mut selection = Object::new(env)?;
+    let platform = match device.selection {
+        DeviceSelection::Windows(luid) => {
+            selection.set_named_property("adapterLuid", BigInt::from(luid))?;
+            "win32"
+        }
+        DeviceSelection::Macos(renderer) => {
+            selection.set_named_property("rendererId", renderer)?;
+            "darwin"
+        }
+        DeviceSelection::Linux(node) => {
+            selection.set_named_property("renderNode", node)?;
+            "linux"
+        }
+    };
+    selection.set_named_property("platform", platform)?;
+    item.set_named_property("selection", selection)?;
+    item.set_named_property("name", device.name)?;
+
+    Ok(item)
 }

@@ -1,3 +1,5 @@
+#[path = "macos/surface.rs"]
+pub(crate) mod surface;
 use super::{Device, DeviceSelection};
 use crate::client::Failure;
 use std::ffi::{CStr, c_char, c_void};

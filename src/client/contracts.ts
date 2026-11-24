@@ -1,3 +1,4 @@
+import type { GpuVideoOptions, GpuVideoOutput } from '../video/gpu.js'
 import type { SoftwareVideoOutput, SoftwareVideoOptions } from '../video/software.js'
 import type { MpvStreamProvider } from '../streams/contracts.js'
 import type { MpvHookOptions, MpvHookHandler } from '../hooks.js'
@@ -37,9 +38,11 @@ export type Command =
   | { readonly name: string; readonly [key: string]: MpvValue }
 export type NativeCommand = Extract<MpvNode, { readonly format: 'array' | 'map' }>
 
+export type VideoOutputOptions = SoftwareVideoOptions | GpuVideoOptions
+export type VideoOutput = SoftwareVideoOutput | GpuVideoOutput
 export type CreateMpvOptions = CreateOptions & {
   readonly initializationLogs?: InitializationLogs
-  readonly videoOutput?: SoftwareVideoOptions | undefined
+  readonly videoOutput?: VideoOutputOptions | undefined
 }
 export type CreateOptions = Options &
   (
@@ -171,9 +174,7 @@ export interface MpvClient extends MpvControl {
   [Symbol.asyncDispose](): Promise<void>
 }
 
-export interface Mpv<
-  V extends SoftwareVideoOutput | null = SoftwareVideoOutput | null,
-> extends MpvControl {
+export interface Mpv<V extends VideoOutput | null = VideoOutput | null> extends MpvControl {
   registerProtocol(
     name: Name,
     provider: MpvStreamProvider<string>,

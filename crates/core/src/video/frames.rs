@@ -1,4 +1,6 @@
-use super::render::{Configuration, FrameTiming};
+use super::gpu::GpuFrame;
+use super::render::FrameTiming;
+use super::software::Configuration;
 use crate::client::Failure;
 use std::sync::{Arc, Mutex};
 
@@ -10,14 +12,20 @@ pub struct SoftwareFrame {
     pub timing: FrameTiming,
 }
 
+#[derive(Clone)]
+pub enum Frame {
+    Software(Arc<SoftwareFrame>),
+    Gpu(Arc<GpuFrame>),
+}
+
 pub enum FrameNotice {
-    Frame(Arc<SoftwareFrame>),
+    Frame(Frame),
     End,
     Failed(Failure),
 }
 
 struct Slot {
-    latest: Option<Arc<SoftwareFrame>>,
+    latest: Option<Frame>,
     end: Option<FrameNotice>,
     stopped: bool,
 }
@@ -43,7 +51,7 @@ impl FrameWatch {
         !self.state.lock().unwrap().stopped
     }
 
-    pub(super) fn send(&self, frame: Arc<SoftwareFrame>) {
+    pub(super) fn send(&self, frame: Frame) {
         let mut slot = self.state.lock().unwrap();
         if slot.stopped {
             return;

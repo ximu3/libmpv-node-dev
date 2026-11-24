@@ -10,5 +10,5 @@
     "outDir": "out",
     "types": ["node"]
   },
-  "include": ["*.ts", "electron/*.ts"]
+  "include": ["*.ts", "electron/*.ts", "electron/*.cts"]
 }
