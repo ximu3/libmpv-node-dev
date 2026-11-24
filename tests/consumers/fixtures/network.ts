@@ -14,6 +14,21 @@ async function open(url: string, codec: string) {
       ['network-timeout', 10],
     ],
   })
+  const diagnostics: string[] = []
+  await player.observeLogs(
+    {
+      next(record) {
+        if (
+          record.type === 'log-message' &&
+          /certificate|handshake|TLS|HTTP error/i.test(record.text)
+        ) {
+          diagnostics.push(record.text.trim())
+        }
+      },
+      error: console.error,
+    },
+    { level: 'v' },
+  )
   const opened = Promise.withResolvers<void>()
   await using watch = await player.observeEvents(
     {
@@ -21,7 +36,11 @@ async function open(url: string, codec: string) {
         if (event.type === 'file-loaded') {
           opened.resolve()
         } else if (event.type === 'end-file' && event.reason === 'error') {
-          opened.reject(new Error('Could not load ' + new URL(url).protocol + ' media'))
+          opened.reject(
+            new Error(
+              'Could not load ' + new URL(url).protocol + ' media: ' + diagnostics.join('\n'),
+            ),
+          )
         }
       },
       error: opened.reject,
@@ -39,6 +58,7 @@ async function checkAudio(url: string, backend: string) {
       ['load-scripts', false],
       ['video', 'no'],
       ['ao', backend],
+      ['pause', true],
       ['mute', true],
       ...(backend === 'alsa' ? [['audio-device', 'alsa/null'] as const] : []),
     ],
@@ -69,6 +89,7 @@ async function checkAudio(url: string, backend: string) {
   assert.equal(await player.getProperty('current-ao'), backend)
   const rate = await player.getProperty('audio-out-params/samplerate')
   assert.ok(typeof rate === 'bigint' && rate > 0n)
+  await player.setProperty('pause', false)
   await ended.promise
   await watch.dispose()
   console.log(JSON.stringify({ backend, sampleRate: rate.toString(), silentPlayback: 'eof' }))

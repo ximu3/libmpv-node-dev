@@ -62,7 +62,10 @@ const staging = join(work.path, 'output')
 await mkdir(staging)
 const name = 'libmpv-node-' + target + '-sources.tar'
 const path = join(staging, name)
-execFileSync('tar', ['-cf', path, '-C', work.path, 'source-materials'], { stdio: 'inherit' })
+execFileSync('tar', ['-cf', join('output', name), 'source-materials'], {
+  cwd: work.path,
+  stdio: 'inherit',
+})
 await writeJson(join(staging, 'checksums.json'), {
   target,
   commit,
