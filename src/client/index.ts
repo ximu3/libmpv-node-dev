@@ -2,9 +2,16 @@ import {
   wrapSoftwareOutput,
   softwareConfiguration,
   type SoftwareVideoOptions,
-  type SoftwareVideoConfiguration,
   type SoftwareVideoOutput,
 } from '../video/software.js'
+import {
+  gpuConfiguration,
+  wrapGpuOutput,
+  type GpuVideoOptions,
+  type GpuVideoOutput,
+} from '../video/gpu.js'
+import type { WireConfiguration } from '../video/output.js'
+import type { VideoOutput, VideoOutputOptions } from './contracts.js'
 import { CoreStreams } from '../streams/index.js'
 import type { MpvStreamProvider } from '../streams/contracts.js'
 import { addHook } from '../hooks.js'
@@ -72,22 +79,30 @@ function failed(error: NativeFailure, operation: MpvOperation, signal?: AbortSig
   throw new MpvBindingError(error.error, operation, error.submitted, creation)
 }
 
-type OutputSelection<V extends SoftwareVideoOptions | undefined> = {
+type OutputSelection<V extends VideoOutputOptions | undefined> = {
   readonly videoOutput?: V &
     (V extends SoftwareVideoOptions
       ? Record<Exclude<keyof V, keyof SoftwareVideoOptions>, never>
-      : unknown)
+      : V extends GpuVideoOptions
+        ? Record<Exclude<keyof V, keyof GpuVideoOptions>, never>
+        : unknown)
 } & (undefined extends V ? {} : { readonly videoOutput: V })
-type CreatedMpv<V> = Mpv<V extends SoftwareVideoOptions ? SoftwareVideoOutput : null>
+type CreatedMpv<V> = Mpv<
+  V extends SoftwareVideoOptions
+    ? SoftwareVideoOutput
+    : V extends GpuVideoOptions
+      ? GpuVideoOutput
+      : null
+>
 export function createMpv(): Promise<Mpv<null>>
-export function createMpv<const V extends SoftwareVideoOptions | undefined = undefined>(
+export function createMpv<const V extends VideoOutputOptions | undefined = undefined>(
   configuration: CreateOptions &
     OutputSelection<V> & { readonly initializationLogs?: JavaScriptLogs },
 ): Promise<CreatedMpv<V>>
-export function createMpv<const V extends SoftwareVideoOptions | undefined = undefined>(
+export function createMpv<const V extends VideoOutputOptions | undefined = undefined>(
   configuration: CreateOptions & OutputSelection<V> & { readonly initializationLogs: NativeLogs },
 ): Promise<CreatedMpv<V>>
-export function createMpv<const V extends SoftwareVideoOptions | undefined = undefined>(
+export function createMpv<const V extends VideoOutputOptions | undefined = undefined>(
   configuration: CreateOptions & OutputSelection<V> & { readonly initializationLogs: DynamicLogs },
 ): Promise<CreatedMpv<V>>
 export async function createMpv(configuration: CreateMpvOptions = {}): Promise<Mpv> {
@@ -108,14 +123,14 @@ export async function createMpv(configuration: CreateMpvOptions = {}): Promise<M
   }
   checkAbort('input')
   let diagnostics: ReturnType<typeof initializationLogs>
-  let software: SoftwareVideoConfiguration | undefined
+  let video: WireConfiguration | undefined
   let options: (readonly [Uint8Array, MpvNode])[]
   try {
     if (configuration.videoOutput !== undefined) {
-      if (configuration.videoOutput?.renderer !== 'software') {
-        throw new MpvBindingError('unsupportedCapability', op)
-      }
-      software = softwareConfiguration(configuration.videoOutput, op)
+      video =
+        configuration.videoOutput?.renderer === 'software'
+          ? softwareConfiguration(configuration.videoOutput, op)
+          : gpuConfiguration(configuration.videoOutput, op)
     }
     diagnostics = initializationLogs(configuration.initializationLogs)
     const input = mode(configuration.input, op)
@@ -144,7 +159,7 @@ export async function createMpv(configuration: CreateMpvOptions = {}): Promise<M
   const creation = binding.NativeCreation.start()
   const cancellation = signal && addAbortListener(signal, () => creation.abort())
   const result = await binding
-    .createClientCore(directory, options, () => {}, creation, diagnostics?.level, software)
+    .createClientCore(directory, options, () => {}, creation, diagnostics?.level, video)
     .finally(() => cancellation?.[Symbol.dispose]())
   if (diagnostics && result.logs) {
     await diagnostics.deliver(result.logs, signal)
@@ -497,11 +512,17 @@ class Channel extends Control {
 }
 
 class Player extends Control {
-  readonly videoOutput: SoftwareVideoOutput | null
+  readonly videoOutput: VideoOutput | null
   constructor(native: NativeClient) {
     super(native)
     const output = native.videoOutput
-    this.videoOutput = output ? wrapSoftwareOutput(output, native, this.subscriptions) : null
+    if (!output) {
+      this.videoOutput = null
+    } else if (output.renderer === 'gpu') {
+      this.videoOutput = wrapGpuOutput(output, native, this.subscriptions)
+    } else {
+      this.videoOutput = wrapSoftwareOutput(output, native, this.subscriptions)
+    }
   }
   #shutdown?: Promise<void>
 

@@ -1,3 +1,5 @@
+#[path = "linux/surface.rs"]
+pub(crate) mod surface;
 use super::{Device, DeviceSelection};
 use crate::client::Failure;
 use std::fs;

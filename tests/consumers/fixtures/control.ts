@@ -1,4 +1,5 @@
 import { checkSubtitleFonts } from './subtitle-fonts.js'
+import { checkGpuVideo } from './gpu.js'
 import { checkSoftwareVideo } from './software.js'
 import { checkStreams } from './streams.js'
 import { Worker } from 'node:worker_threads'
@@ -286,3 +287,6 @@ await assert.rejects(
 
 await checkSubtitleFonts()
 await checkSoftwareVideo()
+if (process.env.LIBMPV_TEST_GRAPHICS === '1') {
+  await checkGpuVideo()
+}
