@@ -105,7 +105,7 @@ struct Pool<G: Graphics> {
     // GL bindings must be destroyed before their owning platform context.
     slots: Vec<Slot<G::View>>,
     target: G::Target,
-    prepared: Option<G::Target>,
+    prepared: Option<(G::Target, Slot<G::View>)>,
     graphics: G,
     config: GpuConfiguration,
     capacity: usize,
@@ -114,8 +114,9 @@ struct Pool<G: Graphics> {
 impl<G: Graphics> Pool<G> {
     fn new(graphics: G, options: &GpuOptions) -> Result<Self, Failure> {
         let target = graphics.target(options.config.width, options.config.height)?;
+        let slot = graphics.slot(options.config.width, options.config.height)?;
         Ok(Self {
-            slots: Vec::new(),
+            slots: vec![slot],
             target,
             prepared: None,
             graphics,
@@ -153,15 +154,27 @@ impl<G: Graphics> Backend for Pool<G> {
     fn prepare(&mut self, config: GpuConfiguration) -> Result<(), Failure> {
         self.prepared = if (config.width, config.height) != (self.config.width, self.config.height)
         {
-            Some(self.graphics.target(config.width, config.height)?)
+            Some((
+                self.graphics.target(config.width, config.height)?,
+                self.graphics.slot(config.width, config.height)?,
+            ))
         } else {
             None
         };
         Ok(())
     }
     fn adopt(&mut self, config: GpuConfiguration) {
-        if let Some(target) = self.prepared.take() {
+        if let Some((target, slot)) = self.prepared.take() {
             self.target = target;
+            if let Some(idle) = self
+                .slots
+                .iter_mut()
+                .find(|entry| Arc::strong_count(&entry.surface) == 1)
+            {
+                *idle = slot;
+            } else if self.slots.len() < self.capacity {
+                self.slots.push(slot);
+            }
         }
         self.config = config;
     }
