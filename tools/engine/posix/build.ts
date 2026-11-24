@@ -1,4 +1,5 @@
 import fontPatch from '../../../engine/posix/fontconfig/source.json' with { type: 'json' }
+import metadata from '../../../package.json' with { type: 'json' }
 import { execFileSync } from 'node:child_process'
 import { createWriteStream } from 'node:fs'
 import {
@@ -130,7 +131,7 @@ export async function buildUnix(work: string, cache: string) {
     LDFLAGS: `-L${prefix}/lib -L${deps}/lib -Wl,-rpath,${prefix}/lib -Wl,-rpath,${deps}/lib`,
   }
   if (mac) {
-    env.MACOSX_DEPLOYMENT_TARGET = '13.0'
+    env.MACOSX_DEPLOYMENT_TARGET = metadata.config.macosDeploymentTarget
   } else {
     env.LD_LIBRARY_PATH = join(prefix, 'lib') + ':' + join(deps, 'lib')
   }

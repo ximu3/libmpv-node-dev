@@ -2,6 +2,7 @@ import { execFileSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { digest, projectRoot, writeJson } from '../files.ts'
+import metadata from '../../package.json' with { type: 'json' }
 
 function version(value: string) {
   return value.split('.').map(Number)
@@ -85,7 +86,7 @@ export async function auditPlatform(directory: string, files: readonly string[])
             /cmd LC_BUILD_VERSION\s+cmdsize \d+\s+platform (?:MACOS|macos|1)\s+minos ([\d.]+)/,
           )?.[1] ??
           commands.match(/cmd LC_VERSION_MIN_MACOSX\s+cmdsize \d+\s+version ([\d.]+)/)?.[1]
-        if (!minimum || greater(minimum, '13.0')) {
+        if (!minimum || greater(minimum, metadata.config.macosDeploymentTarget)) {
           throw new Error('Unsupported macOS deployment target for ' + name + ': ' + minimum)
         }
         objects[name] = { arch, minimum }
