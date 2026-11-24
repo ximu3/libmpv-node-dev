@@ -25,3 +25,7 @@ Use `getProperty` and `setProperty` for structured values. A native integer maps
 `input: 'native'` accepts a discriminated `MpvNode`. `output: 'native'` preserves string bytes and ordered map entries. A conversion error exposes a fresh copy of its original result through `getNativeValue()`. An unavailable property retains libmpv's error code.
 
 Calls accept an optional `AbortSignal`. A submitted command may have taken effect when its wait ends in cancellation. Errors expose `operation`, `submitted`, and a native or binding error code. Repeated calls to `close()` await the same shutdown. `unref()` lets an idle Node environment exit while the player is open.
+
+Use `createClient({ name, signal })` for a separate control channel on the same player. It has its own client identity and directed messages. `dispose()` releases that channel. Closing the player also ends its channels.
+
+`observeEvents`, `observeProperty` and `observePropertyText` return an independently disposable subscription. Await registration before sending a directed message. The first callback runs after the subscription is delivered. Property notifications distinguish available values and unavailable state. Native event output preserves message arguments as byte arrays. A subscription can be cancelled with its signal, including from a callback.

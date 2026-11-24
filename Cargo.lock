@@ -153,6 +153,7 @@ name = "libmpv-core"
 version = "0.1.0-dev.0"
 dependencies = [
  "futures-channel",
+ "futures-executor",
  "libloading",
  "same-file",
  "windows-sys",

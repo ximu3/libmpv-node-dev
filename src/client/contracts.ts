@@ -1,0 +1,160 @@
+import type { MpvValue, MpvNode } from '../values.js'
+import type {
+  MpvSubscription,
+  MpvObserver,
+  MpvEvent,
+  MpvEventName,
+  MpvNativeEvent,
+  PropertyState,
+} from '../subscriptions.js'
+
+export type Name = string | Uint8Array<ArrayBuffer>
+export type Mode = 'native' | 'javascript'
+export type Format = 'node' | 'flag' | 'int64' | 'double'
+type FormatValue<F extends Format> = F extends 'flag'
+  ? boolean
+  : F extends 'int64'
+    ? bigint
+    : F extends 'double'
+      ? number
+      : MpvValue
+type Output<T, M extends Mode> = M extends 'native' ? MpvNode : T
+export type Options = { readonly signal?: AbortSignal }
+type PropertyValue<N> = N extends 'pause'
+  ? boolean
+  : N extends 'volume' | 'time-pos' | 'duration'
+    ? number
+    : N extends 'path' | 'mpv-version'
+      ? string
+      : MpvValue
+export type Command =
+  | readonly [string, ...MpvValue[]]
+  | { readonly name: string; readonly [key: string]: MpvValue }
+export type NativeCommand = Extract<MpvNode, { readonly format: 'array' | 'map' }>
+
+export type CreateMpvOptions = Options &
+  (
+    | { readonly input?: 'javascript'; readonly options?: readonly (readonly [Name, MpvValue])[] }
+    | { readonly input: 'native'; readonly options?: readonly (readonly [Name, MpvNode])[] }
+  )
+
+export interface MpvControl {
+  observeProperty<N extends Name>(
+    name: N,
+    observer: MpvObserver<PropertyState<PropertyValue<NoInfer<N>>>>,
+    options?: Options & { format?: 'node'; output?: 'javascript' },
+  ): Promise<MpvSubscription>
+  observeProperty<F extends Format>(
+    name: Name,
+    observer: MpvObserver<PropertyState<FormatValue<NoInfer<F>>>>,
+    options: Options & { format: F; output?: 'javascript' },
+  ): Promise<MpvSubscription>
+  observeProperty(
+    name: Name,
+    observer: MpvObserver<PropertyState<MpvNode>>,
+    options: Options & { format?: Format; output: 'native' },
+  ): Promise<MpvSubscription>
+  observeProperty(
+    name: Name,
+    observer: MpvObserver<void>,
+    options: Options & { format: 'none'; output?: never },
+  ): Promise<MpvSubscription>
+  observePropertyText(
+    name: Name,
+    observer: MpvObserver<PropertyState<string>>,
+    options?: Options & { output?: 'javascript' },
+  ): Promise<MpvSubscription>
+  observePropertyText(
+    name: Name,
+    observer: MpvObserver<PropertyState<Uint8Array<ArrayBuffer>>>,
+    options: Options & { output: 'native' },
+  ): Promise<MpvSubscription>
+  observeEvents(
+    observer: MpvObserver<MpvEvent>,
+    options?: Options & { output?: 'javascript'; events?: readonly MpvEventName[] },
+  ): Promise<MpvSubscription>
+  observeEvents(
+    observer: MpvObserver<MpvNativeEvent>,
+    options: Options & { output: 'native'; events?: readonly MpvEventName[] },
+  ): Promise<MpvSubscription>
+  observeEvents(
+    observer: MpvObserver<MpvEvent | MpvNativeEvent>,
+    options: (Options & { output?: Mode; events?: readonly MpvEventName[] }) | undefined,
+  ): Promise<MpvSubscription>
+  observePropertyText(
+    name: Name,
+    observer: MpvObserver<PropertyState<string | Uint8Array<ArrayBuffer>>>,
+    options: (Options & { output?: Mode }) | undefined,
+  ): Promise<MpvSubscription>
+  observeProperty<N extends Name>(
+    name: N,
+    observer: MpvObserver<PropertyState<PropertyValue<NoInfer<N>> | MpvNode>>,
+    options: (Options & { format?: 'node'; output?: Mode }) | undefined,
+  ): Promise<MpvSubscription>
+  observeProperty<F extends Format>(
+    name: Name,
+    observer: MpvObserver<PropertyState<FormatValue<NoInfer<F>> | MpvNode>>,
+    options: Options & { format: F; output?: Mode },
+  ): Promise<MpvSubscription>
+  readonly clientName: string
+  readonly clientId: bigint
+  getTimeNs(): bigint
+  getProperty<N extends Name>(
+    name: N,
+    options?: Options & { format?: 'node'; output?: 'javascript' },
+  ): Promise<PropertyValue<N>>
+  getProperty<F extends Format>(
+    name: Name,
+    options: Options & { format: F; output?: 'javascript' },
+  ): Promise<FormatValue<F>>
+  getProperty<M extends Mode>(
+    name: Name,
+    options: Options & { format?: Format; output: M },
+  ): Promise<Output<MpvValue, M>>
+  getPropertyText(
+    name: Name,
+    options?: Options & { format?: 'plain' | 'osd'; output?: 'javascript' },
+  ): Promise<string>
+  getPropertyText<M extends Mode>(
+    name: Name,
+    options: Options & { format?: 'plain' | 'osd'; output: M },
+  ): Promise<M extends 'native' ? Uint8Array<ArrayBuffer> : string>
+  setProperty<N extends Name>(
+    name: N,
+    value: PropertyValue<NoInfer<N>>,
+    options?: Options & { input?: 'javascript' },
+  ): Promise<void>
+  setProperty(name: Name, value: MpvNode, options: Options & { input: 'native' }): Promise<void>
+  command(
+    args: Command,
+    options?: Options & { input?: 'javascript'; output?: 'javascript' },
+  ): Promise<MpvValue>
+  command<M extends Mode>(
+    args: Command,
+    options: Options & { input?: 'javascript'; output: M },
+  ): Promise<Output<MpvValue, M>>
+  command(
+    args: NativeCommand,
+    options: Options & { input: 'native'; output?: 'javascript' },
+  ): Promise<MpvValue>
+  command<M extends Mode>(
+    args: NativeCommand,
+    options: Options & { input: 'native'; output: M },
+  ): Promise<Output<MpvValue, M>>
+  loadConfigFile(path: Name, options?: Options): Promise<void>
+}
+
+export interface MpvClient extends MpvControl {
+  dispose(): Promise<void>
+  [Symbol.asyncDispose](): Promise<void>
+}
+
+export interface Mpv extends MpvControl {
+  readonly videoOutput: null
+  createClient(options?: Options & { name?: string }): Promise<MpvClient>
+  ref(): this
+  unref(): this
+  hasRef(): boolean
+  close(): Promise<void>
+  [Symbol.asyncDispose](): Promise<void>
+}

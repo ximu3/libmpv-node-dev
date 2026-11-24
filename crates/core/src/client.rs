@@ -1,3 +1,5 @@
+mod events;
+pub use events::{EngineEvent, Notice, Selection, Watch};
 mod creation;
 pub use creation::Creation;
 mod values;
@@ -93,6 +95,9 @@ struct State {
     closing: bool,
     destroyed: bool,
     deliveries: usize,
+    children: Vec<Shutdown>,
+    watches: HashMap<u64, Arc<events::Queue>>,
+    next_watch: u64,
     requests: HashMap<u32, Request>,
     bytes: usize,
     finished: Vec<oneshot::Sender<()>>,
@@ -195,8 +200,9 @@ impl Client {
         // mpv_create returns one owning client reference or null.
         let raw = NonNull::new(unsafe { (api.create)() })
             .ok_or_else(|| creation.stop(Failure::Creation))?;
-        let native = OwnedCore {
+        let native = OwnedClient {
             handle: NativeHandle(raw),
+            destroy: api.terminate_destroy,
             api,
         };
         let handle = raw.as_ptr();
@@ -213,12 +219,61 @@ impl Client {
             }
         }
         creation.enter("initialize", None)?;
-        // All options have been applied. OwnedCore handles cleanup even when initialization fails.
+        // All options have been applied. OwnedClient handles cleanup even when initialization fails.
         let status = unsafe { (api.initialize)(handle) };
         if status < 0 {
             return Err(creation.stop(Failure::Native(status)));
         }
         creation.enter("publish", None)?;
+        Self::start(native, on_close).map_err(|reason| creation.stop(reason))
+    }
+
+    pub fn child(&self, name: Option<&CStr>, creation: &Creation) -> Result<Self, Error> {
+        let mut state = self.shared.lock();
+        let parent = state
+            .handle
+            .as_ref()
+            .filter(|_| !state.closing)
+            .ok_or(Error {
+                reason: Failure::Closed,
+                submitted: false,
+            })?;
+        creation.enter("core", None).map_err(|error| Error {
+            reason: error.reason,
+            submitted: error.submitted,
+        })?;
+        let api = self.shared.api;
+        // The parent state lock prevents destruction until the new weak handle has its own owner.
+        let handle = unsafe {
+            (api.create_weak_client)(
+                parent.0.as_ptr(),
+                name.map_or(std::ptr::null(), CStr::as_ptr),
+            )
+        };
+        let raw = NonNull::new(handle).ok_or(Error {
+            reason: Failure::Creation,
+            submitted: true,
+        })?;
+        let native = OwnedClient {
+            handle: NativeHandle(raw),
+            destroy: api.destroy,
+            api,
+        };
+        let child = Self::start(native, || ()).map_err(|reason| Error {
+            reason,
+            submitted: true,
+        })?;
+        state.children.retain(Shutdown::pending);
+        state.children.push(child.shutdown());
+        Ok(child)
+    }
+
+    fn start(
+        native: OwnedClient,
+        on_close: impl FnOnce() + Send + 'static,
+    ) -> Result<Self, Failure> {
+        let handle = native.handle.0.as_ptr();
+        let api = native.api;
         // These snapshots are taken on a live, initialized handle before moving ownership to the event thread.
         let (id, name) = unsafe {
             (
@@ -231,10 +286,13 @@ impl Client {
         let shared = Arc::new(Shared {
             api,
             state: Mutex::new(State {
-                handle: Some(NativeHandle(raw)),
+                handle: Some(NativeHandle(native.handle.0)),
                 closing: false,
                 destroyed: false,
                 deliveries: 0,
+                children: Vec::new(),
+                watches: HashMap::new(),
+                next_watch: 1,
                 requests: HashMap::new(),
                 bytes: 0,
                 finished: Vec::new(),
@@ -247,7 +305,7 @@ impl Client {
             .spawn(move || {
                 native.run(state, receiver, on_close);
             })
-            .map_err(|_| creation.stop(Failure::Creation))?;
+            .map_err(|_| Failure::Creation)?;
         Ok(Self {
             shared,
             work,
@@ -341,19 +399,20 @@ impl Drop for Client {
     }
 }
 
-struct OwnedCore {
+struct OwnedClient {
+    destroy: unsafe extern "C" fn(ffi::Handle),
     handle: NativeHandle,
     api: &'static Api,
 }
 
-impl Drop for OwnedCore {
+impl Drop for OwnedClient {
     fn drop(&mut self) {
         // Only this owner destroys the initial handle, after it has stopped accepting concurrent users.
-        unsafe { (self.api.terminate_destroy)(self.handle.0.as_ptr()) };
+        unsafe { (self.destroy)(self.handle.0.as_ptr()) };
     }
 }
 
-impl OwnedCore {
+impl OwnedClient {
     fn submit(&self, id: u32, operation: Operation) -> (i32, bool) {
         let handle = self.handle.0.as_ptr();
         let id = u64::from(id);
@@ -442,6 +501,7 @@ impl OwnedCore {
             // Only this thread advances the event queue; event data is copied before the next wait.
             let event = unsafe { &*(self.api.wait_event)(self.handle.0.as_ptr(), 0.0) };
             if event.id == 1 {
+                shared.publish(event);
                 break;
             }
             if event.id == 0 {
@@ -456,6 +516,7 @@ impl OwnedCore {
                 }
                 let event = unsafe { &*(self.api.wait_event)(self.handle.0.as_ptr(), -1.0) };
                 if event.id == 1 {
+                    shared.publish(event);
                     break;
                 }
                 self.deliver(&shared, event);
@@ -463,7 +524,8 @@ impl OwnedCore {
                 self.deliver(&shared, event);
             }
         }
-        {
+
+        let children = {
             let mut state = shared.lock();
             state.closing = true;
             state.handle = None;
@@ -475,6 +537,15 @@ impl OwnedCore {
                     }));
                 }
             }
+            std::mem::take(&mut state.children)
+        };
+        shared.end_watches();
+        let closing: Vec<_> = children
+            .into_iter()
+            .filter_map(|child| child.start())
+            .collect();
+        for child in closing {
+            let _ = futures_executor::block_on(child);
         }
         drop(self);
         on_close();
@@ -487,6 +558,7 @@ impl OwnedCore {
 
     fn deliver(&self, shared: &Arc<Shared>, event: &Event) {
         if !(3..=5).contains(&event.id) {
+            shared.publish(event);
             return;
         }
         let id = event.userdata as u32;

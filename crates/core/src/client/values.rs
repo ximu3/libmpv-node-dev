@@ -5,7 +5,7 @@ use std::mem::size_of;
 use std::ptr;
 use std::slice;
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum Value {
     None,
     Flag(bool),

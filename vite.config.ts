@@ -5,7 +5,7 @@ export default defineConfig({
   run: {
     tasks: {
       build: {
-        command: ['tsc -p config/typescript/tsconfig.lib.json', 'node tools/build.ts'],
+        command: ['node tools/build.ts'],
         cache: false,
       },
       typecheck: {

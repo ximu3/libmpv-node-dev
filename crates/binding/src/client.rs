@@ -13,7 +13,7 @@ use std::sync::{Arc, Mutex};
 type KeepAlive = ThreadsafeFunction<(), (), (), Status, false>;
 
 #[napi]
-pub struct NativeCreation(Arc<Creation>);
+pub struct NativeCreation(pub(super) Arc<Creation>);
 
 #[napi]
 impl NativeCreation {
@@ -29,12 +29,12 @@ impl NativeCreation {
 
 #[napi]
 pub struct NativeClient {
-    client: Arc<Client>,
+    pub(super) client: Arc<Client>,
     keep_alive: Arc<Mutex<Option<KeepAlive>>>,
     referenced: bool,
 }
 
-fn error(env: &Env, failure: CallError) -> Result<Object<'_>> {
+pub(super) fn error(env: &Env, failure: CallError) -> Result<Object<'_>> {
     let mut result = Object::new(env)?;
     match failure.reason {
         Failure::Native(code) => result.set_named_property("error", code)?,
@@ -119,6 +119,40 @@ pub fn create_client_core<'a>(
 
 #[napi]
 impl NativeClient {
+    #[napi]
+    pub fn create_child<'a>(
+        &self,
+        env: &'a Env,
+        name: Option<Uint8Array>,
+        creation: &NativeCreation,
+    ) -> Result<PromiseRaw<'a, Object<'a>>> {
+        let parent = self.client.clone();
+        let name = name.map(values::string).transpose()?;
+        let creation = creation.0.clone();
+        env.spawn_future_with_callback(
+            async move {
+                tokio::task::spawn_blocking(move || parent.child(name.as_deref(), &creation))
+                    .await
+                    .map_err(|_| Error::from_reason("Client creation worker failed"))
+            },
+            |env, result| match result {
+                Ok(client) => {
+                    let mut result = Object::new(env)?;
+                    result.set_named_property(
+                        "client",
+                        NativeClient {
+                            client: Arc::new(client),
+                            keep_alive: Arc::new(Mutex::new(None)),
+                            referenced: false,
+                        },
+                    )?;
+                    Ok(result)
+                }
+                Err(failure) => error(env, failure),
+            },
+        )
+    }
+
     #[napi(getter)]
     pub fn has_ref(&self) -> bool {
         self.referenced && !self.client.is_closing()

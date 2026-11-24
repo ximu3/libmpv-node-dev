@@ -50,6 +50,21 @@ pub struct Property {
     pub data: *mut c_void,
 }
 
+#[repr(C)]
+pub struct ClientMessage {
+    pub num_args: c_int,
+    pub args: *const *const c_char,
+}
+
+#[repr(C)]
+pub struct EndFile {
+    pub reason: c_int,
+    pub error: c_int,
+    pub playlist_entry_id: i64,
+    pub playlist_insert_id: i64,
+    pub playlist_insert_num_entries: c_int,
+}
+
 macro_rules! client_api {
     ($($name:ident($($arg:ty),*) -> $result:ty),+ $(,)?) => {
         pub struct Api {
@@ -78,11 +93,16 @@ client_api! {
     client_id(Handle) -> i64,
     get_time_ns(Handle) -> i64,
     terminate_destroy(Handle) -> (),
+    destroy(Handle) -> (),
+    create_weak_client(Handle, *const c_char) -> Handle,
     get_property_async(Handle, u64, *const c_char, c_int) -> c_int,
     set_property_async(Handle, u64, *const c_char, c_int, *mut c_void) -> c_int,
     command_node_async(Handle, u64, *mut Node) -> c_int,
     abort_async_command(Handle, u64) -> (),
     load_config_file(Handle, *const c_char) -> c_int,
+    request_event(Handle, c_int, c_int) -> c_int,
+    observe_property(Handle, u64, *const c_char, c_int) -> c_int,
+    unobserve_property(Handle, u64) -> c_int,
     wait_event(Handle, f64) -> *const Event,
     wakeup(Handle) -> (),
 }

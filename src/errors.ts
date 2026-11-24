@@ -1,11 +1,16 @@
+import type { MpvNativeEvent } from './subscriptions.js'
 import type { MpvNode } from './values.js'
 
 export type MpvOperation =
   | 'getClientApiVersion'
   | 'createMpv'
+  | 'createClient'
   | 'command'
   | 'getProperty'
   | 'getPropertyText'
+  | 'observeProperty'
+  | 'observePropertyText'
+  | 'observeEvents'
   | 'setProperty'
   | 'loadConfigFile'
   | 'getTimeNs'
@@ -22,6 +27,8 @@ export type MpvBindingErrorCode =
   | 'internalFailure'
   | 'ABORT_ERR'
   | 'valueConversion'
+  | 'observationInterrupted'
+  | 'notificationConversion'
 export type Creation =
   | { readonly stage: 'input' | 'library' | 'core' | 'initialize' | 'publish' }
   | { readonly stage: 'options'; readonly optionIndex: number }
@@ -120,5 +127,28 @@ export class MpvConversionError extends MpvBindingError {
   }
   getNativeValue(): MpvNode {
     return structuredClone(this.#node)
+  }
+}
+
+export class MpvObservationError extends MpvBindingError {
+  declare readonly code: 'observationInterrupted'
+  constructor(
+    readonly reason: 'nativeQueueOverflow' | 'deliveryQueueOverflow',
+    operation: MpvOperation,
+  ) {
+    super('observationInterrupted', operation, true)
+  }
+}
+
+export class MpvNotificationConversionError extends MpvBindingError {
+  declare readonly code: 'notificationConversion'
+  readonly reason = 'invalidUtf8' as const
+  #notification: MpvNativeEvent
+  constructor(operation: MpvOperation, notification: MpvNativeEvent) {
+    super('notificationConversion', operation, true)
+    this.#notification = notification
+  }
+  getNativeNotification() {
+    return structuredClone(this.#notification)
   }
 }
