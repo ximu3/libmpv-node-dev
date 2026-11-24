@@ -61,7 +61,9 @@ export abstract class MpvError extends Error {
   ) {
     super(message, options)
     this.name = new.target.name
-    if (creation) this.creation = creation
+    if (creation) {
+      this.creation = creation
+    }
   }
 }
 

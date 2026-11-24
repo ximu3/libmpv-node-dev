@@ -1,4 +1,12 @@
 packages: []
 allowBuilds:
   esbuild: false
+  electron: false
 saveExact: true
+minimumReleaseAgeExclude:
+  - electron@45.3.2
+strictPeerDependencies: true
+autoInstallPeers: false
+peerDependencyRules:
+  allowedVersions:
+    vite: 1.6.0

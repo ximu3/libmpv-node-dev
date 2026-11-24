@@ -41,21 +41,28 @@ const formats = { node: 6, flag: 3, int64: 4, double: 5 } as const
 const empty = new Uint8Array(0)
 
 function mode(value: Mode | undefined, op: MpvOperation) {
-  if (value === undefined || value === 'javascript') return 'javascript'
-  if (value === 'native') return value
+  if (value === undefined || value === 'javascript') {
+    return 'javascript'
+  }
+  if (value === 'native') {
+    return value
+  }
   throw new MpvBindingError('invalidArgument', op)
 }
 
 function failed(error: NativeFailure, operation: MpvOperation, signal?: AbortSignal): never {
-  const creation: Creation | undefined =
-    error.stage === 'options'
-      ? { stage: 'options', optionIndex: error.optionIndex! }
-      : error.stage
-        ? { stage: error.stage }
-        : undefined
-  if (typeof error.error === 'number') throw new MpvNativeError(error.error, operation, creation)
-  if (error.error === 'ABORT_ERR')
+  let creation: Creation | undefined
+  if (error.stage === 'options') {
+    creation = { stage: 'options', optionIndex: error.optionIndex! }
+  } else if (error.stage) {
+    creation = { stage: error.stage }
+  }
+  if (typeof error.error === 'number') {
+    throw new MpvNativeError(error.error, operation, creation)
+  }
+  if (error.error === 'ABORT_ERR') {
     throw new MpvAbortError(operation, error.submitted, signal?.reason, creation)
+  }
   throw new MpvBindingError(error.error, operation, error.submitted, creation)
 }
 
@@ -126,17 +133,22 @@ export async function createMpv(configuration: CreateMpvOptions = {}): Promise<M
   }
   const signal = configuration.signal
   function checkAbort(stage: 'input' | 'library') {
-    if (signal?.aborted) throw new MpvAbortError(op, false, signal.reason, { stage })
+    if (signal?.aborted) {
+      throw new MpvAbortError(op, false, signal.reason, { stage })
+    }
   }
   checkAbort('input')
   let options: (readonly [Uint8Array, MpvNode])[]
   try {
     const input = mode(configuration.input, op)
     const entries = configuration.options === undefined ? [] : configuration.options
-    if (!Array.isArray(entries)) throw new MpvBindingError('invalidArgument', op)
+    if (!Array.isArray(entries)) {
+      throw new MpvBindingError('invalidArgument', op)
+    }
     options = Array.from(entries, (pair) => {
-      if (!Array.isArray(pair) || pair.length !== 2)
+      if (!Array.isArray(pair) || pair.length !== 2) {
         throw new MpvBindingError('invalidArgument', op)
+      }
       return [nameBytes(pair[0], op), inputNode(pair[1], input, op)] as const
     })
   } catch (error) {
@@ -156,10 +168,14 @@ export async function createMpv(configuration: CreateMpvOptions = {}): Promise<M
   const result = await binding
     .createClientCore(directory, options, () => {}, creation)
     .finally(() => cancellation?.[Symbol.dispose]())
-  if ('error' in result) return failed(result, op, signal)
+  if ('error' in result) {
+    return failed(result, op, signal)
+  }
   if (signal?.aborted || result.client.closing) {
     await result.client.close()
-    if (signal?.aborted) throw new MpvAbortError(op, true, signal.reason, { stage: 'publish' })
+    if (signal?.aborted) {
+      throw new MpvAbortError(op, true, signal.reason, { stage: 'publish' })
+    }
     throw new MpvBindingError('closed', op, true, { stage: 'publish' })
   }
   return new Player(result.client) as Mpv
@@ -186,8 +202,12 @@ class Player {
     format: number,
     signal?: AbortSignal,
   ) {
-    if (this.#closed || this.#native.closing) throw new MpvBindingError('closed', operation)
-    if (signal?.aborted) throw new MpvAbortError(operation, false, signal.reason)
+    if (this.#closed || this.#native.closing) {
+      throw new MpvBindingError('closed', operation)
+    }
+    if (signal?.aborted) {
+      throw new MpvAbortError(operation, false, signal.reason)
+    }
     const id = this.#nextId
     this.#nextId = id === 0xffffffff ? 1 : id + 1
     const waiting = this.#native.request(id, operation, name, format, value)
@@ -197,7 +217,9 @@ class Player {
       if (signal?.aborted) {
         throw new MpvAbortError(operation, 'node' in reply || reply.submitted, signal.reason)
       }
-      if ('error' in reply) return failed(reply, operation, signal)
+      if ('error' in reply) {
+        return failed(reply, operation, signal)
+      }
       return reply.node
     } finally {
       cancellation?.[Symbol.dispose]()
@@ -206,14 +228,18 @@ class Player {
 
   getTimeNs() {
     const time = this.#native.time()
-    if (time == null) throw new MpvBindingError('closed', 'getTimeNs')
+    if (time == null) {
+      throw new MpvBindingError('closed', 'getTimeNs')
+    }
     return time
   }
 
   async getProperty(name: Name, options: Options & { format?: Format; output?: Mode } = {}) {
     const format = options.format ?? 'node'
     const output = mode(options.output, 'getProperty')
-    if (!Object.hasOwn(formats, format)) throw new MpvBindingError('invalidArgument', 'getProperty')
+    if (!Object.hasOwn(formats, format)) {
+      throw new MpvBindingError('invalidArgument', 'getProperty')
+    }
     const node = await this.#request(
       'getProperty',
       nameBytes(name, 'getProperty'),
@@ -221,12 +247,15 @@ class Player {
       formats[format],
       options.signal,
     )
-    if (output === 'native') return node
+    if (output === 'native') {
+      return node
+    }
     const value = toJavaScript(node, 'getProperty')
     if (format === 'node' && typeof name === 'string') {
       const expected = propertyType(name)
-      if (expected && typeof value !== expected)
+      if (expected && typeof value !== expected) {
         throw new MpvConversionError('unexpectedShape', 'getProperty', node)
+      }
     }
     return value
   }
@@ -237,8 +266,9 @@ class Player {
   ) {
     const output = mode(options.output, 'getPropertyText')
     const format = options.format ?? 'plain'
-    if (format !== 'plain' && format !== 'osd')
+    if (format !== 'plain' && format !== 'osd') {
       throw new MpvBindingError('invalidArgument', 'getPropertyText')
+    }
     const node = await this.#request(
       'getPropertyText',
       nameBytes(name, 'getPropertyText'),
@@ -246,8 +276,9 @@ class Player {
       format === 'osd' ? 2 : 1,
       options.signal,
     )
-    if (node.format !== 'string')
+    if (node.format !== 'string') {
       throw new MpvConversionError('unexpectedShape', 'getPropertyText', node)
+    }
     return output === 'native' ? node.value : toJavaScript(node, 'getPropertyText')
   }
 
@@ -259,8 +290,9 @@ class Player {
     const input = mode(options.input, 'setProperty')
     if (input === 'javascript' && typeof name === 'string') {
       const expected = propertyType(name)
-      if (expected && typeof value !== expected)
+      if (expected && typeof value !== expected) {
         throw new MpvBindingError('invalidArgument', 'setProperty')
+      }
     }
     await this.#request(
       'setProperty',
@@ -278,16 +310,18 @@ class Player {
     const input = mode(options.input, 'command')
     const output = mode(options.output, 'command')
     const node = inputNode(args, input, 'command')
-    if (node.format !== 'map' && node.format !== 'array')
+    if (node.format !== 'map' && node.format !== 'array') {
       throw new MpvBindingError('invalidArgument', 'command')
+    }
     const result = await this.#request('command', empty, node, 6, options.signal)
     return output === 'native' ? result : toJavaScript(result, 'command')
   }
 
   async loadConfigFile(path: Name, options: Options = {}) {
     const bytes = nameBytes(path, 'loadConfigFile')
-    if (!isAbsolute(Buffer.from(bytes).toString('latin1')))
+    if (!isAbsolute(Buffer.from(bytes).toString('latin1'))) {
       throw new MpvBindingError('invalidArgument', 'loadConfigFile')
+    }
     await this.#request('loadConfigFile', bytes, none, 0, options.signal)
   }
 

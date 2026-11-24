@@ -1,12 +1,13 @@
+import type { NativeLibrary } from '../src/library.ts'
 import assert from 'node:assert/strict'
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
-import test from 'node:test'
+import { test } from 'vitest'
 
 test('a missing engine fails at its package location', async () => {
-  const native = createRequire(import.meta.url)('../build/addon/libmpv.node')
+  const native = createRequire(import.meta.url)('../build/addon/libmpv.node') as NativeLibrary
   const directory = await mkdtemp(join(tmpdir(), 'libmpv-missing-'))
   try {
     const result = await native.loadLibrary(directory)

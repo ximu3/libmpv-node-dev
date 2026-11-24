@@ -1,22 +1,93 @@
 name: CI
+
 on:
   pull_request:
+    types: [opened, reopened, synchronize, edited]
   push:
     branches: [main]
+  merge_group:
   workflow_dispatch:
+    inputs:
+      target:
+        description: Verification host
+        type: choice
+        options: [all, linux-x64, linux-arm64, windows-x64, windows-arm64, macos-x64, macos-arm64]
 
 permissions:
   contents: read
+  actions: read
+  pull-requests: read
+
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' && (github.event.action != 'edited' || github.event.changes.base != null) }}
 
 jobs:
+  plan:
+    name: Select checks
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    outputs:
+      reused: ${{ steps.plan.outputs.reused }}
+      code: ${{ steps.plan.outputs.code }}
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          REUSE_EDIT: ${{ github.event.action == 'edited' && !github.event.changes.base }}
+          REQUEST_TARGET: ${{ inputs.target }}
+        run: node tools/ci/plan.ts
+      - if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: ${{ steps.plan.outputs.receipt }}
+          path: ${{ runner.temp }}/candidate.txt
+          overwrite: true
+          retention-days: 7
+
+  workspace:
+    name: Workspace checks
+    needs: plan
+    if: needs.plan.outputs.reused != 'true'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - run: node tools/check-docs.ts
+      - if: needs.plan.outputs.code == 'true'
+        uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+      - if: needs.plan.outputs.code == 'true'
+        run: pnpm install --frozen-lockfile
+      - if: needs.plan.outputs.code == 'true'
+        run: pnpm exec vp run check
+
   build:
+    name: libmpv-node / ${{ matrix.target }} / verify
+    needs: plan
+    if: needs.plan.outputs.reused != 'true' && needs.plan.outputs.code == 'true'
     strategy:
       fail-fast: false
-      matrix:
-        runner: [ubuntu-22.04, ubuntu-22.04-arm, windows-2025, windows-11-arm, macos-15-intel, macos-15]
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ${{ matrix.runner }}
-    env:
-      MACOSX_DEPLOYMENT_TARGET: "13.0"
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
@@ -27,15 +98,28 @@ jobs:
           package-manager-cache: false
       - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
       - run: pnpm install --frozen-lockfile
-      - run: pnpm exec vp run check
-      - run: pnpm exec vp run build
-      - name: Verify upstream source and patches
-        run: python3 tools/engine/source.py build/source/mpv
-      - name: Record Linux graphics availability
-        if: runner.os == 'Linux'
+      - run: pnpm exec vp run verify
+        env:
+          MACOSX_DEPLOYMENT_TARGET: '13.0'
+
+  gate:
+    name: ${{ github.event_name == 'workflow_dispatch' && 'Requested checks' || 'Required checks' }}
+    runs-on: ubuntu-22.04
+    needs: [plan, workspace, build]
+    if: always()
+    steps:
+      - env:
+          PLAN: ${{ needs.plan.result }}
+          REUSED: ${{ needs.plan.outputs.reused }}
+          CODE: ${{ needs.plan.outputs.code }}
+          WORKSPACE: ${{ needs.workspace.result }}
+          BUILD: ${{ needs.build.result }}
         run: |
-          uname -a
-          ls -ld /dev/dri /dev/dri/renderD* || true
-          lspci -nn | grep -Ei 'VGA|Display|3D' || true
-      - name: Exercise addon load in Node
-        run: node --test tests/addon.test.ts
+          [[ "$PLAN" == success ]]
+          if [[ "$REUSED" == true ]]; then
+            [[ "$WORKSPACE" == skipped && "$BUILD" == skipped ]]
+          elif [[ "$CODE" == true ]]; then
+            [[ "$WORKSPACE" == success && "$BUILD" == success ]]
+          else
+            [[ "$WORKSPACE" == success && "$BUILD" == skipped ]]
+          fi

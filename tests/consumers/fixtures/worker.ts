@@ -7,4 +7,4 @@ const player = await createMpv({
     ['ao', 'null'],
   ],
 })
-parentPort.postMessage(player.clientId)
+parentPort!.postMessage(player.clientId)

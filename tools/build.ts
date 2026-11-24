@@ -8,6 +8,6 @@ const name = {
   win32: 'libmpv_binding.dll',
   linux: 'liblibmpv_binding.so',
   darwin: 'liblibmpv_binding.dylib',
-}[process.platform]
+}[process.platform as 'win32' | 'linux' | 'darwin']
 mkdirSync('build/addon', { recursive: true })
 copyFileSync('target/release/' + name, 'build/addon/libmpv.node')

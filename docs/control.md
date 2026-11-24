@@ -8,7 +8,11 @@
 import { createMpv } from '@ximu3/libmpv-node'
 
 await using player = await createMpv({
-  options: [['pause', true], ['vo', 'null'], ['ao', 'null']],
+  options: [
+    ['pause', true],
+    ['vo', 'null'],
+    ['ao', 'null'],
+  ],
 })
 
 await player.command(['loadfile', '/media/example.mkv', 'replace'])
