@@ -11,6 +11,7 @@ export async function verifyArchive(
   electron: string,
   env: NodeJS.ProcessEnv,
   platform: string,
+  hostArgs: readonly string[],
 ) {
   const app = join(consumer, 'packaged')
   const asar = join(consumer, 'app.asar')
@@ -38,12 +39,16 @@ export async function verifyArchive(
       await writeFile(join(external, 'engine.json'), '{}\n')
     }
     const receipt = join(consumer, mismatch ? 'mismatch.receipt' : 'archive.receipt')
-    execFileSync(electron, ['--user-data-dir=' + join(consumer, 'archive-profile'), asar], {
-      cwd: consumer,
-      stdio: 'inherit',
-      timeout: 60000,
-      env: { ...env, LIBMPV_TEST_MISMATCH: mismatch ? '1' : '0', LIBMPV_TEST_RECEIPT: receipt },
-    })
+    execFileSync(
+      electron,
+      [...hostArgs, '--user-data-dir=' + join(consumer, 'archive-profile'), asar],
+      {
+        cwd: consumer,
+        stdio: 'inherit',
+        timeout: 60000,
+        env: { ...env, LIBMPV_TEST_MISMATCH: mismatch ? '1' : '0', LIBMPV_TEST_RECEIPT: receipt },
+      },
+    )
     assert.equal(await readFile(receipt, 'utf8'), metadata.devDependencies.electron)
   }
 }

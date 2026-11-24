@@ -20,7 +20,10 @@ const targets = [
   'win32-x64',
 ] as const
 function content(archive: string, file: string): Buffer {
-  return execFileSync('tar', ['-xOf', archive, 'package/' + file], { maxBuffer: 512 * 1024 * 1024 })
+  return execFileSync('tar', ['-xOf', basename(archive), 'package/' + file], {
+    cwd: dirname(archive),
+    maxBuffer: 512 * 1024 * 1024,
+  })
 }
 function hash(bytes: Buffer) {
   return createHash('sha256').update(bytes).digest('hex')

@@ -169,6 +169,6 @@ if (values.electron) {
   if (version !== fixture.devDependencies.electron) {
     throw new Error('Missing receipt from Electron ' + fixture.devDependencies.electron)
   }
-  await verifyArchive(consumer, resolve(values.electron), env, platform)
+  await verifyArchive(consumer, resolve(values.electron), env, platform, args)
   console.log(`Electron ${version} completed the installed-package and ASAR checks.`)
 }

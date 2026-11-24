@@ -67,25 +67,31 @@ export async function frameReceiver(visible = false) {
       const released = Promise.withResolvers<void>()
       const lease = frame.clone()
       let releases = 0
-      const texture = sharedTexture.importSharedTexture({
-        textureInfo: {
-          pixelFormat: frame.pixelFormat === 'bgra8unorm' ? 'bgra' : 'rgba',
-          codedSize: { width: frame.width, height: frame.height },
-          visibleRect: frame.visibleRect,
-          colorSpace: {
-            primaries: colorSpace === 'srgb' ? 'bt709' : 'p3',
-            transfer: 'srgb',
-            matrix: 'rgb',
-            range: 'full',
+      let texture: ReturnType<typeof sharedTexture.importSharedTexture>
+      try {
+        texture = sharedTexture.importSharedTexture({
+          textureInfo: {
+            pixelFormat: frame.pixelFormat === 'bgra8unorm' ? 'bgra' : 'rgba',
+            codedSize: { width: frame.width, height: frame.height },
+            visibleRect: frame.visibleRect,
+            colorSpace: {
+              primaries: colorSpace === 'srgb' ? 'bt709' : 'p3',
+              transfer: 'srgb',
+              matrix: 'rgb',
+              range: 'full',
+            },
+            handle: handle(lease.getSurface()),
           },
-          handle: handle(lease.getSurface()),
-        },
-        allReferencesReleased() {
-          releases++
-          lease.release()
-          released.resolve()
-        },
-      })
+          allReferencesReleased() {
+            releases++
+            lease.release()
+            released.resolve()
+          },
+        })
+      } catch (error) {
+        lease.release()
+        throw error
+      }
       const read = once(window.webContents.ipc, 'texture-read')
       try {
         await sharedTexture.sendSharedTexture(
