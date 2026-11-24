@@ -139,10 +139,6 @@
     "archive": "mingw-w64-clang-aarch64-pcre2-10.49-1-any.pkg.tar.zst",
     "sha256": "586feddae0186f675a7d6183427819ed00f6c83c03874712c27e0115c0df302a"
   },
-  "libplacebo-360.dll": {
-    "archive": "mingw-w64-clang-aarch64-libplacebo-7.360.1-2-any.pkg.tar.zst",
-    "sha256": "f2e89eb67a6d40bf7e6047e472f00b4769ba7492894e2617077075da6eba82d2"
-  },
   "libpng16-16.dll": {
     "archive": "mingw-w64-clang-aarch64-libpng-1.6.59-1-any.pkg.tar.zst",
     "sha256": "6ae06374c5d9e77b4a9e4d9f3677a8e1da588048fb51df3e1a10d6c6055e6018"
@@ -210,5 +206,9 @@
   "zlib1.dll": {
     "archive": "mingw-w64-clang-aarch64-zlib-1.3.2-2-any.pkg.tar.zst",
     "sha256": "fed18d2fda0a1b0252787fd59e7c01ed900f5c90eeb131f30a9992abb328c7ca"
+  },
+  "libplacebo-387.dll": {
+    "archive": "mingw-w64-clang-aarch64-libplacebo-7.387.0-1-any.pkg.tar.zst",
+    "sha256": "7bd49bbb83845895d5eeb1ddecf101a733a7d8971f0a0d03a289b97dfd662163"
   }
 }

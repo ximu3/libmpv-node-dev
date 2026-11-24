@@ -196,8 +196,8 @@
     "sha256": "8e983cb41ab76985709b00871469fd9116c05751e0b72abe37c00b364238c74a"
   },
   {
-    "file": "mingw-w64-clang-aarch64-libplacebo-7.360.1-2-any.pkg.tar.zst",
-    "sha256": "418c4a4cfceaa6bc3e7fd4161e6964abadcfd92554b95b3ba6e69804b6aff698"
+    "file": "mingw-w64-clang-aarch64-libplacebo-7.387.0-1-any.pkg.tar.zst",
+    "sha256": "164806d84c8c9d5c6c1cf4311af1911b01abeee82fb6bb12f2ad392e19764794"
   },
   {
     "file": "mingw-w64-clang-aarch64-libpng-1.6.59-1-any.pkg.tar.zst",

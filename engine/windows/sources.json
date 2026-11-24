@@ -84,10 +84,10 @@
     "recipeSha256": "007f7e94f4d3a44c63a0684a8c69446b885a289eb00c12e9111aa5dc8a5e3933"
   },
   "mingw-w64-libplacebo": {
-    "archive": "mingw-w64-libplacebo-7.360.1-2.src.tar.zst",
-    "sha256": "2abe10f1d16981407e8108c5ccb2e13cbeb28ce62f702a4caf1165b732e85bf0",
-    "recipeCommit": "10f52aed234b626002d381170705ffa38cba915d",
-    "recipeSha256": "db36a2a78cc154d92620201323bccb86343de4d3559834a70f8693a914a6ddf3"
+    "archive": "mingw-w64-libplacebo-7.387.0-1.src.tar.zst",
+    "sha256": "524698cf028391134e1ce199fe47ebbefb4e26b2d4cb68273365448103031942",
+    "recipeCommit": "d468dd4568d3c2e6f07deee83cfbffebe79ac033",
+    "recipeSha256": "94f3f7f2595695b7e9a0c2a32364dd509a3e5d6ee2f67c1bebb672b8ddaba407"
   },
   "mingw-w64-libpng": {
     "archive": "mingw-w64-libpng-1.6.59-1.src.tar.zst",
