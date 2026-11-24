@@ -252,7 +252,7 @@ export async function buildUnix(work: string, cache: string) {
           '-Dgl-cocoa=enabled',
           '-Dvideotoolbox-gl=enabled',
           '-Dcoreaudio=enabled',
-          '-Dswift-build=disabled',
+          '-Dswift-build=enabled',
         ]
       : [
           '-Dplain-gl=enabled',
