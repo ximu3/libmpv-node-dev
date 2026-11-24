@@ -89,6 +89,10 @@ export async function checkGpuVideo() {
     await watch.dispose()
     await player.close()
     assert.deepEqual(held.getSurface(), descriptor)
+    if (process.versions.electron) {
+      const { checkElectronFrame } = await import('./electron/shared.js')
+      await checkElectronFrame(changed)
+    }
     assert.equal(output.closed, true)
     console.log(
       JSON.stringify({
