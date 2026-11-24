@@ -172,20 +172,25 @@ pub(crate) fn conflict(operation: &Operation, color: Option<super::gpu::ColorSpa
             }
         }
         Operation::Command(command @ Value::Map(_)) => {
-            let Some(name) = member(command, b"property")
-                .or_else(|| member(command, b"option"))
+            let Some(kind) = member(command, b"_name").and_then(text) else {
+                return false;
+            };
+            let Some(name) = member(command, b"name")
                 .and_then(text)
                 .filter(|name| reserved(name, color.is_some()))
             else {
                 return false;
             };
-            match member(command, b"name").and_then(text) {
-                Some(b"set") => {
+            match kind {
+                b"set" => {
                     !member(command, b"value").is_some_and(|value| compatible(name, value, color))
                 }
-                Some(
-                    b"change-list" | b"add" | b"multiply" | b"cycle" | b"cycle-values" | b"del",
-                ) => true,
+                b"change-list" => {
+                    !(member(command, b"operation").and_then(text) == Some(b"set")
+                        && member(command, b"value")
+                            .is_some_and(|value| compatible(name, value, color)))
+                }
+                b"add" | b"multiply" | b"cycle" | b"del" => true,
                 _ => false,
             }
         }
