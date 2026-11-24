@@ -1,6 +1,15 @@
 import { execFileSync } from 'node:child_process'
 import { createWriteStream } from 'node:fs'
-import { chmod, copyFile, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises'
+import {
+  chmod,
+  copyFile,
+  mkdir,
+  readFile,
+  readdir,
+  stat,
+  symlink,
+  writeFile,
+} from 'node:fs/promises'
 import { availableParallelism } from 'node:os'
 import { basename, delimiter, join } from 'node:path'
 import { pipeline } from 'node:stream/promises'
@@ -117,6 +126,15 @@ export async function buildUnix(work: string, cache: string) {
   }
   if (!mac) {
     const tuple = execFileSync('gcc', ['-print-multiarch'], { encoding: 'utf8' }).trim()
+    await symlink('/usr/include/va', join(prefix, 'include/va'), 'dir')
+    const nativeLib = '/usr/lib/' + tuple
+    for (const name of ['libva', 'libva-drm']) {
+      await symlink(join(nativeLib, name + '.so'), join(prefix, 'lib', name + '.so'))
+      await symlink(
+        join(nativeLib, 'pkgconfig', name + '.pc'),
+        join(prefix, 'lib/pkgconfig', name + '.pc'),
+      )
+    }
     env.PKG_CONFIG_PATH += ':/usr/lib/' + tuple + '/pkgconfig:/usr/share/pkgconfig'
   } else {
     env.LDFLAGS += ' -Wl,-headerpad_max_install_names'
