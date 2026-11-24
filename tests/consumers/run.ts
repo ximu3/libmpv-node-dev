@@ -1,3 +1,4 @@
+import { globSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import root from '../../package.json' with { type: 'json' }
 import { execFileSync } from 'node:child_process'
@@ -32,8 +33,13 @@ for (const name of await readdir(packages)) {
     continue
   }
   const archive = join(packages, name)
+  const fixtureArchive = 'archives/package-' + archiveIndex++ + '.tgz'
+  await copyFile(archive, join(consumer, fixtureArchive))
   const manifest: unknown = JSON.parse(
-    execFileSync('tar', ['-xOf', archive, 'package/package.json'], { encoding: 'utf8' }),
+    execFileSync('tar', ['-xOf', fixtureArchive, 'package/package.json'], {
+      cwd: consumer,
+      encoding: 'utf8',
+    }),
   )
   if (
     !manifest ||
@@ -43,8 +49,6 @@ for (const name of await readdir(packages)) {
   ) {
     throw new Error('Missing tarball package name')
   }
-  const fixtureArchive = 'archives/package-' + archiveIndex++ + '.tgz'
-  await copyFile(archive, join(consumer, fixtureArchive))
   dependencies[manifest.name] = 'file:./' + fixtureArchive
 }
 
@@ -83,7 +87,8 @@ execFileSync(
     join(projectRoot, 'vite.config.ts'),
     '--ignore-path',
     join(projectRoot, '.gitignore'),
-    '.',
+    ...globSync('**/*.ts', { cwd: join(projectRoot, 'tests/consumers/fixtures') }),
+    'example.ts',
   ],
   { cwd: consumer, stdio: 'inherit' },
 )
