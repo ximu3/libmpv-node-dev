@@ -4,7 +4,9 @@ import { readFile, realpath } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { basename, dirname, join } from 'node:path'
 import { MpvBindingError } from './errors.js'
-import type { LoadOperation, LoadErrorCode } from './errors.js'
+import type { NativeClient, NativeFailure } from './native.js'
+import type { MpvNode } from './values.js'
+import type { MpvOperation, MpvBindingErrorCode } from './errors.js'
 
 export interface MpvClientApiVersion {
   readonly major: number
@@ -12,7 +14,16 @@ export interface MpvClientApiVersion {
 }
 
 interface NativeLibrary {
-  loadLibrary(directory: string): Promise<{ version?: MpvClientApiVersion, error?: LoadErrorCode }>
+  NativeCreation: { start(): { abort(): void } }
+  createClientCore(
+    directory: string,
+    options: readonly (readonly [Uint8Array, MpvNode])[],
+    keepAlive: () => void,
+    creation: { abort(): void },
+  ): Promise<{ client: NativeClient } | NativeFailure>
+  loadLibrary(
+    directory: string,
+  ): Promise<{ version?: MpvClientApiVersion; error?: MpvBindingErrorCode }>
 }
 
 interface PackageBuild {
@@ -21,21 +32,28 @@ interface PackageBuild {
 }
 
 const require = createRequire(import.meta.url)
-let pending: Promise<{ binding: NativeLibrary, version: MpvClientApiVersion }> | undefined
+let pending: ReturnType<typeof openLibrary> | undefined
 
-async function openLibrary(operation: LoadOperation) {
+async function openLibrary(operation: MpvOperation) {
   const target = `${process.platform}-${process.arch}`
-  const build: PackageBuild = JSON.parse(await readFile(new URL('./build.json', import.meta.url), 'utf8'))
+  const build: PackageBuild = JSON.parse(
+    await readFile(new URL('./build.json', import.meta.url), 'utf8'),
+  )
   const expected = build.targets[target]
   if (!expected) throw new MpvBindingError('libraryLoadFailed', operation)
 
   const packageName = `@ximu3/libmpv-node-${target}`
   let location = dirname(require.resolve(packageName + '/package.json'))
-  if (process.versions.electron) location = location.replace(/([/\\][^/\\]+\.asar)([/\\])/, '$1.unpacked$2')
+  if (process.versions.electron)
+    location = location.replace(/([/\\][^/\\]+\.asar)([/\\])/, '$1.unpacked$2')
   const directory = await realpath(location)
   const pkg = JSON.parse(await readFile(join(directory, 'package.json'), 'utf8'))
   const manifest = await readFile(join(directory, 'runtime.json'))
-  if (pkg.name !== packageName || pkg.version !== build.version || createHash('sha256').update(manifest).digest('hex') !== expected) {
+  if (
+    pkg.name !== packageName ||
+    pkg.version !== build.version ||
+    createHash('sha256').update(manifest).digest('hex') !== expected
+  ) {
     throw new MpvBindingError('incompatibleLibrary', operation)
   }
 
@@ -44,15 +62,16 @@ async function openLibrary(operation: LoadOperation) {
     if (basename(name) !== name) throw new MpvBindingError('incompatibleLibrary', operation)
     const hash = createHash('sha256')
     for await (const part of createReadStream(join(directory, name))) hash.update(part)
-    if (hash.digest('hex') !== expectedHash) throw new MpvBindingError('incompatibleLibrary', operation)
+    if (hash.digest('hex') !== expectedHash)
+      throw new MpvBindingError('incompatibleLibrary', operation)
   }
   const binding = require(join(directory, 'libmpv.node')) as NativeLibrary
   const result = await binding.loadLibrary(directory)
   if (!result.version) throw new MpvBindingError(result.error ?? 'libraryLoadFailed', operation)
-  return { binding, version: result.version }
+  return { binding, directory, version: result.version }
 }
 
-export async function library(operation: LoadOperation) {
+export async function library(operation: MpvOperation) {
   pending ??= openLibrary(operation).catch((error: unknown) => {
     pending = undefined
     throw error
@@ -60,7 +79,10 @@ export async function library(operation: LoadOperation) {
   try {
     return await pending
   } catch (error) {
-    throw new MpvBindingError(error instanceof MpvBindingError ? error.code : 'libraryLoadFailed', operation)
+    throw new MpvBindingError(
+      error instanceof MpvBindingError ? error.code : 'libraryLoadFailed',
+      operation,
+    )
   }
 }
 

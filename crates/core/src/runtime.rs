@@ -1,3 +1,4 @@
+use crate::ffi::Api;
 #[cfg(windows)]
 mod windows;
 
@@ -13,6 +14,7 @@ pub enum LoadError {
 }
 
 pub struct Runtime {
+    pub(crate) api: Api,
     _library: Library,
     directory: PathBuf,
     pub version: (u16, u16),
@@ -80,7 +82,9 @@ impl Runtime {
         if version != ((2 << 16) | 6) {
             return Err(LoadError::IncompatibleLibrary);
         }
+        let api = Api::resolve(&library)?;
         Ok(RUNTIME.get_or_init(|| Self {
+            api,
             _library: library,
             directory,
             version: ((version >> 16) as u16, version as u16),

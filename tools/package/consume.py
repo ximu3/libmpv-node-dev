@@ -27,13 +27,14 @@ def consume(packages, electron):
             "overrides:\n  " + json.dumps(platform) + ": " + json.dumps(deps[platform]) + "\n"
         )
         subprocess.run([shutil.which("pnpm"), "install", "--offline"], cwd=consumer, check=True)
-        shutil.copyfile(ROOT / "tests/consumers/version.ts", consumer / "version.mjs")
+        shutil.copyfile(ROOT / "tests/consumers/control.ts", consumer / "control.mjs")
+        shutil.copyfile(ROOT / "tests/consumers/worker.ts", consumer / "worker.mjs")
         environment = os.environ.copy()
         for key in ["NODE_PATH", "NODE_OPTIONS", "ELECTRON_RUN_AS_NODE"]:
             environment.pop(key, None)
         if sys.platform == "win32":
             environment["PATH"] = str(Path(os.environ["SYSTEMROOT"]) / "System32")
-        subprocess.run([shutil.which("node"), consumer / "version.mjs"], cwd=temp, env=environment, check=True, timeout=60)
+        subprocess.run([shutil.which("node"), consumer / "control.mjs"], cwd=temp, env=environment, check=True, timeout=60)
         if electron:
             receipt = consumer / "electron-version"
             environment["LIBMPV_TEST_RECEIPT"] = str(receipt)

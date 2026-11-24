@@ -1,3 +1,7 @@
+pub mod client;
+mod environment;
+mod values;
+
 use libmpv_core::{LoadError, Runtime};
 use napi::{Env, Result, Task, bindgen_prelude::AsyncTask};
 use napi_derive::napi;

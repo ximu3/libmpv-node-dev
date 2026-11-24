@@ -140,16 +140,19 @@ dependencies = [
 name = "libmpv-binding"
 version = "0.1.0-dev.0"
 dependencies = [
+ "futures-executor",
  "libmpv-core",
  "napi",
  "napi-build",
  "napi-derive",
+ "tokio",
 ]
 
 [[package]]
 name = "libmpv-core"
 version = "0.1.0-dev.0"
 dependencies = [
+ "futures-channel",
  "libloading",
  "same-file",
  "windows-sys",
@@ -181,6 +184,7 @@ dependencies = [
  "napi-sys",
  "nohash-hasher",
  "rustc-hash",
+ "tokio",
 ]
 
 [[package]]
@@ -291,6 +295,15 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
+]
+
+[[package]]
+name = "tokio"
+version = "1.54.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b52fd3255258d26fac7264ab5a76b53c13367136dc011d3d6ad4f8ed070396a3"
+dependencies = [
+ "pin-project-lite",
 ]
 
 [[package]]
