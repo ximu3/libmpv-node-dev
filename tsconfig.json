@@ -1,14 +1,11 @@
 {
-  "compilerOptions": {
-    "target": "ES2024",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "strict": true,
-    "declaration": true,
-    "verbatimModuleSyntax": true,
-    "types": ["node"],
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": ["src/**/*.ts"]
+  "references": [
+    {
+      "path": "./config/typescript/tsconfig.lib.json"
+    },
+    {
+      "path": "./config/typescript/tsconfig.tools.json"
+    }
+  ],
+  "files": []
 }

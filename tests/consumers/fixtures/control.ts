@@ -13,13 +13,13 @@ assert.deepEqual(versions, [
 ])
 console.log(JSON.stringify({ host: process.versions.electron ?? process.version, versions }))
 
-const { createMpv, MpvAbortError, MpvConversionError, MpvNativeError } =
+const { createMpv, MpvBindingError, MpvAbortError, MpvConversionError, MpvNativeError } =
   await import('@ximu3/libmpv-node')
 await assert.rejects(
   createMpv({ options: [['kisaki-unknown-option', 1]] }),
   (error) =>
     error instanceof MpvNativeError &&
-    error.creation.stage === 'options' &&
+    error.creation?.stage === 'options' &&
     error.creation.optionIndex === 0,
 )
 const player = await createMpv({
@@ -54,10 +54,13 @@ try {
     { format: 'string', value: Uint8Array.of(255) },
     { input: 'native' },
   )
-  await assert.rejects(
-    player.getProperty('user-data/text'),
-    (error) => error instanceof MpvConversionError && error.getNativeValue().value[0] === 255,
-  )
+  await assert.rejects(player.getProperty('user-data/text'), (error) => {
+    if (!(error instanceof MpvConversionError) || error.reason !== 'invalidUtf8') {
+      return false
+    }
+    const node = error.getNativeValue()
+    return node.format === 'string' && node.value[0] === 255
+  })
   await assert.rejects(
     player.getProperty('no-such-property'),
     (error) =>
@@ -68,7 +71,7 @@ try {
     (error) => error instanceof MpvAbortError && error.cause === 'test' && !error.submitted,
   )
   assert.equal(await player.command(['ignore']), null)
-  const worker = new Worker(new URL('./worker.mjs', import.meta.url))
+  const worker = new Worker(new URL('./worker.js', import.meta.url))
   await once(worker, 'message')
   await worker.terminate()
   assert.equal(await player.getProperty('pause'), false)
@@ -95,23 +98,28 @@ try {
       duration = await player.getProperty('duration')
       break
     } catch (error) {
-      if (error.code !== -10) throw error
+      if (!(error instanceof MpvNativeError) || error.code !== -10) {
+        throw error
+      }
     }
     await setTimeout(10)
   }
   assert.equal(duration, 1)
   const tracks = await player.getProperty('track-list')
-  assert.equal(tracks[0].type, 'audio')
-  assert.equal(tracks[0]['demux-samplerate'], 8000n)
+  assert.ok(Array.isArray(tracks))
+  const track: unknown = tracks[0]
+  assert.ok(track && typeof track === 'object' && 'type' in track && 'demux-samplerate' in track)
+  assert.equal(track.type, 'audio')
+  assert.equal(track['demux-samplerate'], 8000n)
   const abort = new AbortController()
   const slow = player.command(['loadfile', media, 'replace'], { signal: abort.signal })
   abort.abort('cancel')
-  await assert.rejects(slow, (error) => error.code === 'ABORT_ERR')
+  await assert.rejects(slow, (error) => error instanceof MpvAbortError)
 } finally {
   await Promise.all([player.close(), player.close()])
 }
 assert.equal(player.hasRef(), false)
 await assert.rejects(
   player.getProperty('pause'),
-  (error) => error.code === 'closed' && !error.submitted,
+  (error) => error instanceof MpvBindingError && error.code === 'closed' && !error.submitted,
 )

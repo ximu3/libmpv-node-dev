@@ -5,13 +5,23 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
-  "files": ["dist", "LICENSE"],
+  "files": [
+    "dist",
+    "LICENSE",
+    "docs/control.md"
+  ],
   "packageManager": "pnpm@12.18.0",
   "devDependencies": {
     "@types/node": "24.19.2",
     "typescript": "7.1.0-beta",
-    "vite-plus": "1.6.0"
+    "vite-plus": "1.6.0",
+    "electron": "45.3.2",
+    "vitest": "5.1.0",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.6.0"
   }
 }
