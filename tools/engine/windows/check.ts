@@ -1,8 +1,8 @@
 import { execFileSync } from 'node:child_process'
 import { readFile, readdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import upstream from '../../engine/mpv/source.json' with { type: 'json' }
-import { projectRoot, requiredPath, verifyDigest } from '../files.ts'
+import upstream from '../../../engine/mpv/source.json' with { type: 'json' }
+import { projectRoot, requiredPath, verifyDigest } from '../../files.ts'
 
 const runtime = requiredPath(process.argv[2], 'runtime')
 const receipt = JSON.parse(await readFile(join(runtime, 'engine.json'), 'utf8')) as {
@@ -13,7 +13,7 @@ const receipt = JSON.parse(await readFile(join(runtime, 'engine.json'), 'utf8'))
 }
 const expected = upstream.patches.map((item) => item.sha256)
 if (
-  receipt.target !== 'win32-x64' ||
+  receipt.target !== 'win32-' + process.arch ||
   receipt.mpvCommit !== upstream.commit ||
   JSON.stringify(receipt.patches) !== JSON.stringify(expected)
 ) {

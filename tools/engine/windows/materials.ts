@@ -2,11 +2,11 @@ import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { copyFile, cp, mkdir, readdir, writeFile } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
-import inputs from '../../engine/windows-x64/inputs.json' with { type: 'json' }
-import sourcePackages from '../../engine/windows-x64/sources.json' with { type: 'json' }
-import upstream from '../../engine/mpv/source.json' with { type: 'json' }
-import { digest, projectRoot, writeJson } from '../files.ts'
-import { packageUrl } from './archives.ts'
+import { inputs, target } from './settings.ts'
+import sourcePackages from '../../../engine/windows/sources.json' with { type: 'json' }
+import upstream from '../../../engine/mpv/source.json' with { type: 'json' }
+import { digest, projectRoot, writeJson } from '../../files.ts'
+import { fetchArchive, packageUrl } from './archives.ts'
 
 const nested: Record<string, { archive: string; files: string[] }> = {
   'mingw-w64-libvorbis': {
@@ -26,6 +26,7 @@ export async function collectMaterials(
   output: string,
   archives: Set<string>,
 ) {
+  const licenseDirectory = target.environment + '/share/licenses/'
   const notices = join(output, 'third-party')
   const sources = join(output, 'source-materials')
   await mkdir(notices, { recursive: true })
@@ -89,7 +90,10 @@ export async function collectMaterials(
       throw new Error('Missing corresponding source for ' + archive)
     }
     const recipe = sourcePackages[pkgbase as keyof typeof sourcePackages]
-    const src = join(cache, recipe.archive)
+    const src = await fetchArchive(cache, {
+      url: 'https://repo.msys2.org/mingw/sources/' + recipe.archive,
+      sha256: recipe.sha256,
+    })
     if (
       digestBytes(member(src, pkgbase + '/PKGBUILD')) !== recipe.recipeSha256 ||
       !build.includes('pkgbuild_sha256sum = ' + recipe.recipeSha256)
@@ -105,11 +109,10 @@ export async function collectMaterials(
     })
       .split(/\r?\n/)
       .filter(
-        (file) =>
-          file.startsWith('ucrt64/share/licenses/') && !file.endsWith('/') && !file.includes('..'),
+        (file) => file.startsWith(licenseDirectory) && !file.endsWith('/') && !file.includes('..'),
       )
     for (const file of files) {
-      const target = join(directory, file.slice('ucrt64/share/licenses/'.length))
+      const target = join(directory, file.slice(licenseDirectory.length))
       await mkdir(dirname(target), { recursive: true })
       await writeFile(target, member(binary, file))
     }
