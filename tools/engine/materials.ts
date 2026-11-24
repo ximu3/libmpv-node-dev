@@ -9,7 +9,6 @@ import { digest, projectRoot, writeJson } from '../files.ts'
 import { packageUrl } from './archives.ts'
 
 const nested: Record<string, { archive: string; files: string[] }> = {
-  'mingw-w64-libass': { archive: 'libass-0.17.5.tar.xz', files: ['libass-0.17.5/COPYING'] },
   'mingw-w64-libvorbis': {
     archive: 'libvorbis-1.3.7.tar.gz',
     files: ['libvorbis-1.3.7/COPYING', 'libvorbis-1.3.7/AUTHORS'],
@@ -57,20 +56,20 @@ export async function collectMaterials(
     const file = basename(item.url)
     await copyFile(join(cache, file), join(sources, file))
     const directory = join(work, 'sources', item.name + '-' + item.version)
-    await copyNotices(
-      item.name,
-      directory,
-      item.name === 'ffmpeg'
-        ? [
-            'LICENSE.md',
-            'CREDITS',
-            'COPYING.LGPLv2.1',
-            'COPYING.LGPLv3',
-            'COPYING.GPLv2',
-            'COPYING.GPLv3',
-          ]
-        : ['COPYING', 'AUTHORS'],
-    )
+    let texts = ['COPYING']
+    if (item.name === 'mujs') {
+      texts = ['COPYING', 'AUTHORS']
+    } else if (item.name === 'ffmpeg') {
+      texts = [
+        'LICENSE.md',
+        'CREDITS',
+        'COPYING.LGPLv2.1',
+        'COPYING.LGPLv3',
+        'COPYING.GPLv2',
+        'COPYING.GPLv3',
+      ]
+    }
+    await copyNotices(item.name, directory, texts)
   }
 
   const components: Array<{
@@ -155,7 +154,7 @@ export async function collectMaterials(
   })
   const checksums: Record<string, string> = {}
   for (const file of await readdir(sources, { withFileTypes: true })) {
-    if (file.isFile()) {
+    if (file.isFile() && file.name !== 'checksums.json') {
       checksums[file.name] = await digest(join(sources, file.name))
     }
   }

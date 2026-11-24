@@ -7,6 +7,18 @@ import upstream from '../../engine/mpv/source.json' with { type: 'json' }
 import { digest, verifyDigest, writeJson } from '../files.ts'
 import { imports } from './pe.ts'
 
+function componentName(name: string) {
+  if (name === 'mujs.dll') {
+    return 'mujs'
+  }
+  if (/^libass-\d+\.dll$/.test(name)) {
+    return 'libass'
+  }
+  if (/^(av(codec|format|filter|util|device)|sw(resample|scale))-\d+\.dll$/.test(name)) {
+    return 'ffmpeg'
+  }
+  throw new Error('Unknown locally built dependency: ' + name)
+}
 export async function collectRuntime(
   work: string,
   toolchain: string,
@@ -57,9 +69,7 @@ export async function collectRuntime(
     }
     let source = upstream.repository
     if (path !== mpv && path.startsWith(directories[1]! + '\\')) {
-      source = inputs.sources.find(
-        (item) => item.name === (name === 'mujs.dll' ? 'mujs' : 'ffmpeg'),
-      )!.url
+      source = inputs.sources.find((item) => item.name === componentName(name))!.url
     } else if (path !== mpv) {
       const expected = known[name]
       if (!expected) {

@@ -54,10 +54,6 @@
     "-Dlibcurl=disabled"
   ],
   "dependencies": {
-    "libass-9.dll": {
-      "archive": "mingw-w64-ucrt-x86_64-libass-0.17.5-1-any.pkg.tar.zst",
-      "sha256": "cb2b46133b3bd9630384148bd7229e987af9703208d4329fc2215f4170b8dc6b"
-    },
     "libbrotlicommon.dll": {
       "archive": "mingw-w64-ucrt-x86_64-brotli-1.2.0-1-any.pkg.tar.zst",
       "sha256": "c62c08223e450dfc2fff33c752cc228505ffd9d755201958ba800d5d30481a2c"
@@ -77,14 +73,6 @@
     "libdovi.dll": {
       "archive": "mingw-w64-ucrt-x86_64-libdovi-3.4.0-1-any.pkg.tar.zst",
       "sha256": "75988509f0d2166e2060ed548913bd7b34556bc16b3f9a02469de1dd2347a7fb"
-    },
-    "libexpat-1.dll": {
-      "archive": "mingw-w64-ucrt-x86_64-expat-2.9.0-1-any.pkg.tar.zst",
-      "sha256": "8a10cf7e89524b621d5f74bd4aedc659c47c7ce397d489f323a1065ba695027a"
-    },
-    "libfontconfig-1.dll": {
-      "archive": "mingw-w64-ucrt-x86_64-fontconfig-2.18.3-1-any.pkg.tar.zst",
-      "sha256": "be30a200fa4000d0a7a1d3911391969627440148f01d0028a319bcb9fa112202"
     },
     "libfreetype-6.dll": {
       "archive": "mingw-w64-ucrt-x86_64-freetype-2.15.0-1-any.pkg.tar.zst",
@@ -251,5 +239,16 @@
     "uxtheme.dll",
     "version.dll",
     "ws2_32.dll"
+  ],
+  "libassOptions": [
+    "--wrap-mode=nodownload",
+    "--auto-features=disabled",
+    "--buildtype=release",
+    "--default-library=shared",
+    "-Ddirectwrite=enabled",
+    "-Dfontconfig=disabled",
+    "-Dcoretext=disabled",
+    "-Dlibunibreak=enabled",
+    "-Dasm=enabled"
   ]
 }

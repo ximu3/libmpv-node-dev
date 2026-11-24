@@ -15,6 +15,12 @@
       "version": "1.3.11",
       "url": "https://mujs.com/downloads/mujs-1.3.11.tar.gz",
       "sha256": "456a395769daf110a30f9bf6f793044261e261481d5dca33b63cdc8714774ca4"
+    },
+    {
+      "name": "libass",
+      "version": "0.17.5",
+      "url": "https://github.com/libass/libass/releases/download/0.17.5/libass-0.17.5.tar.xz",
+      "sha256": "2dca25c0e0c837ddf00b52011b3f82cac1e4ddd3ad018227806b0c2288864acc"
     }
   ],
   "packages": [
@@ -151,14 +157,6 @@
       "sha256": "f52364dc874009316e1ee1fe46ee89784594b80d10cbcc1cc856945d575308e0"
     },
     {
-      "file": "mingw-w64-ucrt-x86_64-ffmpeg-9.0.2-1-any.pkg.tar.zst",
-      "sha256": "fa38d677cc6373180d9650e675c503d28fb6e60b99eb630a97866051afa953b2"
-    },
-    {
-      "file": "mingw-w64-ucrt-x86_64-fontconfig-2.18.3-1-any.pkg.tar.zst",
-      "sha256": "d0b364f3ee37e3b6f6c136688ce8fa909bb6d8a69df7e08de1aa40870d9e1d60"
-    },
-    {
       "file": "mingw-w64-ucrt-x86_64-freetype-2.15.0-1-any.pkg.tar.zst",
       "sha256": "a9a691f71d1a553099c54ca666e611abfb2b4ff08dae24f2a5af72e22a7e5feb"
     },
@@ -249,10 +247,6 @@
     {
       "file": "mingw-w64-ucrt-x86_64-lerc-4.1.1-1-any.pkg.tar.zst",
       "sha256": "c0afbf4832488d67030c6f313349cd814946c9a7bc3ae9fd54524825c9ca055d"
-    },
-    {
-      "file": "mingw-w64-ucrt-x86_64-libass-0.17.5-1-any.pkg.tar.zst",
-      "sha256": "4385fd47a77784478878f0f03f2d9afa59a5ac71facb7cad1dfe19c555e75762"
     },
     {
       "file": "mingw-w64-ucrt-x86_64-libb2-0.98.1-3-any.pkg.tar.zst",

@@ -68,6 +68,19 @@ export function engineCommand(root: string, prefix: string, cwd: string, args: s
   )
 }
 
+export function buildSubtitleLibrary(work: string, root: string, prefix: string) {
+  const libass = inputs.sources.find((source) => source.name === 'libass')!
+  engineCommand(root, prefix, work, [
+    'meson',
+    'setup',
+    'ass-build',
+    'sources/libass-' + libass.version,
+    '--prefix=' + prefix.replaceAll('\\', '/'),
+    ...settings.libassOptions,
+  ])
+  engineCommand(root, prefix, work, ['meson', 'compile', '-C', 'ass-build', '-j', '8'])
+  engineCommand(root, prefix, work, ['meson', 'install', '-C', 'ass-build'])
+}
 export async function buildDependencies(work: string, root: string) {
   const prefix = join(work, 'prefix')
   const packages = join(prefix, 'lib/pkgconfig')
@@ -96,6 +109,8 @@ export async function buildDependencies(work: string, root: string) {
     join(packages, 'mujs.pc'),
     `prefix=${nativePrefix}\nlibdir=\${prefix}/lib\nincludedir=\${prefix}/include\nName: mujs\nDescription: MuJS library\nVersion: ${mujs.version}\nLibs: -L\${libdir} -lmujs\nCflags: -I\${includedir}\n`,
   )
+
+  buildSubtitleLibrary(work, root, prefix)
 
   const ffmpeg = inputs.sources.find((source) => source.name === 'ffmpeg')!
   const directory = join(work, 'ffmpeg')

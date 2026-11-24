@@ -1,3 +1,4 @@
+import { checkSubtitleFonts } from './subtitle-fonts.js'
 import { Worker } from 'node:worker_threads'
 import { once } from 'node:events'
 import { writeFile } from 'node:fs/promises'
@@ -244,3 +245,5 @@ await assert.rejects(
   player.getProperty('pause'),
   (error) => error instanceof MpvBindingError && error.code === 'closed' && !error.submitted,
 )
+
+await checkSubtitleFonts()

@@ -34,32 +34,33 @@ for (const name of await readdir(packages)) {
   dependencies[manifest.name] = pathToFileURL(archive).href
 }
 
-await using temporary = await mkdtempDisposable(join(tmpdir(), 'libmpv consumer '))
+await using temporary = await mkdtempDisposable(join(tmpdir(), 'libmpv 媒体 📚 '))
 const consumer = temporary.path
 const platform = Object.keys(dependencies).find((name) => name.startsWith(root.name + '-'))
 if (!platform || !dependencies[root.name]) {
   throw new Error('Expected paired library and platform packages')
 }
-await writeJson(join(consumer, 'package.json'), {
+const fixture = {
   private: true,
   type: 'module',
   main: './out/electron/main.js',
-  packageManager: root.packageManager,
-  dependencies,
   devDependencies: Object.fromEntries(
     (['typescript', '@types/node', 'electron'] as const).map((key) => [
       key,
       root.devDependencies[key],
     ]),
   ),
-})
+}
+await writeJson(join(consumer, 'package.json'), fixture)
 await writeFile(
   join(consumer, 'pnpm-workspace.yaml'),
   `allowBuilds:\n  electron: false\noverrides:\n  "${platform}": ${JSON.stringify(dependencies[platform])}\n`,
 )
 await cp(join(projectRoot, 'tests/consumers/fixtures'), consumer, { recursive: true })
 await copyFile(join(projectRoot, 'examples/version.ts'), join(consumer, 'example.ts'))
-runPnpm(['install', '--offline'], consumer)
+runPnpm(['install', '--no-frozen-lockfile'], consumer)
+await writeJson(join(consumer, 'package.json'), { ...fixture, dependencies })
+runPnpm(['install', '--no-frozen-lockfile', '--offline'], consumer)
 runPnpm(['exec', 'tsc', '-p', 'tsconfig.json'], consumer)
 execFileSync(
   process.execPath,
@@ -72,6 +73,7 @@ execFileSync(
     join(projectRoot, '.gitignore'),
     'control.ts',
     'worker.ts',
+    'subtitle-fonts.ts',
     'example.ts',
     'electron/main.ts',
   ],

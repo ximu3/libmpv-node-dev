@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { mkdtempDisposable } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -10,6 +11,12 @@ await using work = await mkdtempDisposable(join(tmpdir(), 'libmpv-media-'))
 const runtime = join(work.path, 'runtime')
 const packages = join(work.path, 'packages')
 await buildEngine(runtime, join(work.path, 'archives'))
+const env = { ...process.env, LIBMPV_TEST_RUNTIME: runtime }
+execFileSync(
+  'cargo',
+  ['test', '--locked', '-p', 'libmpv-core', '--test', 'windows_media', '--', '--ignored'],
+  { cwd: projectRoot, env, stdio: 'inherit' },
+)
 await packWindows(packages, runtime)
 runPnpm(['exec', 'install-electron'], projectRoot)
 runPnpm(
