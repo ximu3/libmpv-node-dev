@@ -62,7 +62,8 @@ export interface CommandDefinitions<A> {
         | 'hearing-impaired'
         | 'visual-impaired'
         | 'forced'
-        | 'default',
+        | 'default'
+        | 'commentary',
         At<A, 2>
       >?,
       string?,
@@ -77,7 +78,8 @@ export interface CommandDefinitions<A> {
         | 'hearing-impaired'
         | 'visual-impaired'
         | 'forced'
-        | 'default',
+        | 'default'
+        | 'commentary',
         At<A, 'flags'>
       >
       readonly title?: string
@@ -151,7 +153,15 @@ export interface CommandDefinitions<A> {
         | 'menu'
         | 'title-menu'
         | 'popup'
+        | 'audio-menu'
+        | 'sub-menu'
+        | 'angle-menu'
+        | 'up-menu'
         | 'prev'
+        | 'red'
+        | 'green'
+        | 'yellow'
+        | 'blue'
         | 'mouse-move'
         | 'mouse-click'
       ),
@@ -168,7 +178,15 @@ export interface CommandDefinitions<A> {
         | 'menu'
         | 'title-menu'
         | 'popup'
+        | 'audio-menu'
+        | 'sub-menu'
+        | 'angle-menu'
+        | 'up-menu'
         | 'prev'
+        | 'red'
+        | 'green'
+        | 'yellow'
+        | 'blue'
         | 'mouse-move'
         | 'mouse-click'
       readonly x?: RealArgument
@@ -440,6 +458,7 @@ export interface CommandDefinitions<A> {
         | 's-log1'
         | 's-log2'
         | 'st428'
+        | 'scrgb'
       )?,
     ]
     named: ({ readonly name: 'overlay-add' } | { readonly _name: 'overlay-add' }) & {
@@ -493,6 +512,7 @@ export interface CommandDefinitions<A> {
         | 's-log1'
         | 's-log2'
         | 'st428'
+        | 'scrgb'
     }
   }
   'overlay-remove': {
@@ -693,7 +713,8 @@ export interface CommandDefinitions<A> {
         | 'hearing-impaired'
         | 'visual-impaired'
         | 'forced'
-        | 'default',
+        | 'default'
+        | 'commentary',
         At<A, 2>
       >?,
       string?,
@@ -708,7 +729,8 @@ export interface CommandDefinitions<A> {
         | 'hearing-impaired'
         | 'visual-impaired'
         | 'forced'
-        | 'default',
+        | 'default'
+        | 'commentary',
         At<A, 'flags'>
       >
       readonly title?: string
@@ -799,7 +821,8 @@ export interface CommandDefinitions<A> {
         | 'visual-impaired'
         | 'attached-picture'
         | 'forced'
-        | 'default',
+        | 'default'
+        | 'commentary',
         At<A, 2>
       >?,
       string?,
@@ -816,7 +839,8 @@ export interface CommandDefinitions<A> {
         | 'visual-impaired'
         | 'attached-picture'
         | 'forced'
-        | 'default',
+        | 'default'
+        | 'commentary',
         At<A, 'flags'>
       >
       readonly title?: string
@@ -1469,6 +1493,8 @@ export interface OptionDefinitions {
   'hdr-compute-peak': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
   'hdr-contrast-recovery': { read: number; write: RealArgument }
   'hdr-contrast-smoothness': { read: number; write: RealArgument }
+  'hdr-film-strength': { read: number; write: RealArgument }
+  'hdr-mastering-clip': { read: number; write: RealArgument }
   'hdr-peak-decay-rate': { read: number; write: RealArgument }
   'hdr-peak-percentile': { read: number; write: RealArgument }
   'hdr-reference-white': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
@@ -2201,6 +2227,7 @@ export interface OptionDefinitions {
       | 's-log1'
       | 's-log2'
       | 'st428'
+      | 'scrgb'
     write:
       | 'auto'
       | 'bt.1886'
@@ -2219,6 +2246,7 @@ export interface OptionDefinitions {
       | 's-log1'
       | 's-log2'
       | 'st428'
+      | 'scrgb'
   }
   'taskbar-progress': { read: boolean; write: boolean | 'yes' | 'no' }
   'teletext-page': { read: bigint; write: IntegerArgument }
@@ -2267,8 +2295,19 @@ export interface OptionDefinitions {
   }
   'tone-mapping-desaturate': { read: MpvValue; write: MpvValue }
   'tone-mapping-desaturate-exponent': { read: MpvValue; write: MpvValue }
+  'tone-mapping-exposure': { read: number; write: RealArgument }
+  'tone-mapping-knee-adaptation': { read: number; write: RealArgument }
+  'tone-mapping-knee-default': { read: number; write: RealArgument }
+  'tone-mapping-knee-maximum': { read: number; write: RealArgument }
+  'tone-mapping-knee-minimum': { read: number; write: RealArgument }
+  'tone-mapping-knee-offset': { read: number; write: RealArgument }
+  'tone-mapping-linear-knee': { read: number; write: RealArgument }
   'tone-mapping-max-boost': { read: number; write: RealArgument }
   'tone-mapping-param': { read: number; write: RealArgument }
+  'tone-mapping-reinhard-contrast': { read: number; write: RealArgument }
+  'tone-mapping-slope-offset': { read: number; write: RealArgument }
+  'tone-mapping-slope-tuning': { read: number; write: RealArgument }
+  'tone-mapping-spline-contrast': { read: number; write: RealArgument }
   'tone-mapping-visualize': { read: boolean; write: boolean | 'yes' | 'no' }
   'track-auto-selection': { read: boolean; write: boolean | 'yes' | 'no' }
   'treat-srgb-as-power22': {
@@ -2875,6 +2914,8 @@ export type PropertyName =
   | 'hdr-compute-peak'
   | 'hdr-contrast-recovery'
   | 'hdr-contrast-smoothness'
+  | 'hdr-film-strength'
+  | 'hdr-mastering-clip'
   | 'hdr-peak-decay-rate'
   | 'hdr-peak-percentile'
   | 'hdr-reference-white'
@@ -3342,8 +3383,19 @@ export type PropertyName =
   | 'tls-key-file'
   | 'tls-verify'
   | 'tone-mapping'
+  | 'tone-mapping-exposure'
+  | 'tone-mapping-knee-adaptation'
+  | 'tone-mapping-knee-default'
+  | 'tone-mapping-knee-maximum'
+  | 'tone-mapping-knee-minimum'
+  | 'tone-mapping-knee-offset'
+  | 'tone-mapping-linear-knee'
   | 'tone-mapping-max-boost'
   | 'tone-mapping-param'
+  | 'tone-mapping-reinhard-contrast'
+  | 'tone-mapping-slope-offset'
+  | 'tone-mapping-slope-tuning'
+  | 'tone-mapping-spline-contrast'
   | 'tone-mapping-visualize'
   | 'total-avsync-change'
   | 'touch-pos'
