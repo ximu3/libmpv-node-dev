@@ -38,6 +38,7 @@ export async function assemble(destination: string, inputs: string) {
   const archives = (await readdir(inputs, { recursive: true })).filter((name) =>
     name.endsWith('.tgz'),
   )
+  const commit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim()
   for (const target of targets) {
     const name = metadata.name + '-' + target
     const archiveName = name.slice(1).replace('/', '-') + '-' + metadata.version + '.tgz'
@@ -82,6 +83,22 @@ export async function assemble(destination: string, inputs: string) {
     ) {
       throw new Error('Incompatible media archive for ' + target)
     }
+    const abiBytes = content(archive, 'abi.json')
+    const abi = JSON.parse(abiBytes.toString('utf8')) as {
+      target: string
+      sourceCommit: string
+      clean: boolean
+      nodeApi: number
+    }
+    if (
+      hash(abiBytes) !== runtime.files['abi.json'] ||
+      abi.target !== target ||
+      abi.sourceCommit !== commit ||
+      !abi.clean ||
+      abi.nodeApi !== 8
+    ) {
+      throw new Error('Incompatible binding source or ABI for ' + target)
+    }
     const data = content(archive, 'catalog.json')
     const catalog = JSON.parse(data.toString('utf8')) as Catalog
     if (
@@ -105,6 +122,7 @@ export async function assemble(destination: string, inputs: string) {
   files[mainName] = await digest(join(output, mainName))
   await writeJson(join(output, 'checksums.json'), {
     version: metadata.version,
+    bindingCommit: commit,
     mpvCommit: source.commit,
     files,
   })

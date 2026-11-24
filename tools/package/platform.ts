@@ -1,3 +1,4 @@
+import { auditPlatform } from './abi.ts'
 import { execFileSync } from 'node:child_process'
 import { cp, copyFile, mkdir, mkdtempDisposable, readFile, rename } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
@@ -58,6 +59,8 @@ export async function packPlatform(destination: string, runtime: string) {
   await copyFile(join(projectRoot, 'build/addon/libmpv.node'), join(platform, 'libmpv.node'))
   await copyFile(join(projectRoot, 'LICENSE'), join(platform, 'LICENSE'))
   files['libmpv.node'] = await digest(join(platform, 'libmpv.node'))
+  await auditPlatform(platform, Object.keys(files))
+  files['abi.json'] = await digest(join(platform, 'abi.json'))
   const name = metadata.name + '-' + target
   await writeJson(join(platform, 'package.json'), {
     name,

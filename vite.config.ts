@@ -51,6 +51,8 @@ export default defineConfig({
       'engine:windows': { command: 'node tools/engine/windows/index.ts', cache: false },
       'catalog:generate': { command: 'node tools/catalog/generate.ts', cache: false },
       'pack:platform': { command: 'node tools/package/platform.ts', cache: false },
+      'check:package': { command: 'node tools/package/check.ts', cache: false },
+      'pack:sources': { command: 'node tools/package/materials.ts', cache: false },
       'pack:all': { command: 'node tools/package/assemble.ts', cache: false },
       'test:consumers': { command: 'node tests/consumers/run.ts', cache: false },
     },

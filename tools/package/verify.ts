@@ -1,3 +1,4 @@
+import { checkMainArchive } from './check.ts'
 import { execFileSync } from 'node:child_process'
 import { copyFile, mkdir, mkdtempDisposable, readdir } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -27,6 +28,7 @@ if (!values.installed) {
   packages = join(work.path, 'packages')
   await packPlatform(packages, location)
 }
+checkMainArchive(packages)
 runPnpm(['exec', 'install-electron'], projectRoot)
 const binaries = {
   win32: 'electron.exe',

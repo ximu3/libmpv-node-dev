@@ -1,3 +1,4 @@
+import { checkNetwork } from './network.js'
 import { checkUnixModules } from './modules.js'
 import { checkSubtitleFonts } from './subtitle-fonts.js'
 import { checkGpuVideo } from './gpu.js'
@@ -207,6 +208,7 @@ try {
   await writeFile(media, pcm)
   console.log('Checking checkStreams')
   await checkStreams(pcm)
+  await checkNetwork(pcm)
   await player.setProperty('pause', true)
   const started = Promise.withResolvers<AbortSignal>()
   const pendingHook = Promise.withResolvers<void>()

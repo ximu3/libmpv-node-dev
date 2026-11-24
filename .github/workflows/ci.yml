@@ -143,10 +143,19 @@ jobs:
         with:
           path: ${{ runner.temp }}/libmpv-engine
           key: ${{ steps.media.outputs.cache-primary-key }}
+      - name: Prepare Linux audio devices for the full media check
+        if: runner.os == 'Linux' && github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+        run: |
+          sudo apt-get install -y pulseaudio pulseaudio-utils
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=libmpv_test
+          pactl set-default-sink libmpv_test
+          echo "LIBMPV_TEST_AUDIO=alsa,pulse" >> "$GITHUB_ENV"
       - name: Verify the installed platform package
         shell: bash
         env:
           ASSEMBLE: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'all' }}
+          LIBMPV_TEST_HTTPS: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
         run: |
           runtime="$RUNNER_TEMP/libmpv-runtime"
           args=()
@@ -163,6 +172,23 @@ jobs:
         with:
           name: media-${{ matrix.target }}
           path: ${{ runner.temp }}/verified-platform/*.tgz
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Prepare corresponding source and rebuilding materials
+        if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+        shell: bash
+        run: |
+          runtime="$RUNNER_TEMP/libmpv-runtime"
+          if [[ "$RUNNER_OS" == Windows ]]; then runtime="$RUNNER_TEMP/libmpv-engine"; fi
+          pnpm exec vp run pack:sources "$RUNNER_TEMP/verified-sources" --runtime "$runtime" --cache "$RUNNER_TEMP/upstream-archives"
+      - name: Retain corresponding source
+        if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: sources-${{ matrix.target }}
+          path: ${{ runner.temp }}/verified-sources
           compression-level: 0
           if-no-files-found: error
           retention-days: 1
