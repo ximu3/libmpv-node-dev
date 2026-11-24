@@ -28,7 +28,7 @@ async function pixels(provider: 'auto' | 'none', attachments: boolean) {
   })
   console.log('Checking subtitle fonts', provider, attachments)
   const trace: string[] = []
-  await using diagnostics = await player.observeLogs(
+  const diagnostics = await player.observeLogs(
     {
       next(record) {
         if (record.type === 'log-message') {
@@ -103,6 +103,7 @@ async function pixels(provider: 'auto' | 'none', attachments: boolean) {
       visible[y * 160 + x] = shot.data[y * stride + x * 4]! > 180 ? 1 : 0
     }
   }
+  await diagnostics.dispose()
   return visible
 }
 
