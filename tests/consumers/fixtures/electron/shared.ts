@@ -25,7 +25,11 @@ function handle(surface: NativeFrameSurface): SharedTextureHandle {
   }
 }
 
-export async function checkElectronFrame(frame: NativeFrame) {
+export async function sampleElectronFrame(
+  frame: NativeFrame,
+  points: readonly (readonly [number, number])[],
+  colorSpace = frame.target.colorSpace,
+): Promise<number[][]> {
   const window = new BrowserWindow({
     show: false,
     webPreferences: {
@@ -48,7 +52,7 @@ export async function checkElectronFrame(frame: NativeFrame) {
         codedSize: { width: frame.width, height: frame.height },
         visibleRect: frame.visibleRect,
         colorSpace: {
-          primaries: frame.target.colorSpace === 'srgb' ? 'bt709' : 'p3',
+          primaries: colorSpace === 'srgb' ? 'bt709' : 'p3',
           transfer: 'srgb',
           matrix: 'rgb',
           range: 'full',
@@ -63,26 +67,41 @@ export async function checkElectronFrame(frame: NativeFrame) {
     })
     const read = once(ipcMain, 'texture-read')
     try {
-      await sharedTexture.sendSharedTexture({
-        frame: window.webContents.mainFrame,
-        importedSharedTexture: texture,
-      })
+      await sharedTexture.sendSharedTexture(
+        {
+          frame: window.webContents.mainFrame,
+          importedSharedTexture: texture,
+        },
+        points,
+      )
     } finally {
       texture.release()
     }
-    const pixel: unknown = (await read)[1]
+    const pixels: unknown = (await read)[1]
+    if (pixels && typeof pixels === 'object' && 'error' in pixels) {
+      throw new Error(String(pixels.error))
+    }
     assert.equal(releases, 0)
     window.webContents.send('close-texture')
     await released.promise
     assert.equal(releases, 1)
     assert.ok(
-      Array.isArray(pixel) && pixel[0] > 200 && pixel[1] < 45 && pixel[2] < 45 && pixel[3] === 255,
-      'Unexpected sRGB canvas pixel: ' + JSON.stringify(pixel),
+      Array.isArray(pixels) &&
+        pixels.every(
+          (p: unknown) =>
+            Array.isArray(p) && p.length === 4 && p.every((v: unknown) => typeof v === 'number'),
+        ),
     )
-    console.log(
-      JSON.stringify({ target: frame.target.colorSpace, pixel, allReferencesReleased: releases }),
-    )
+    return pixels as number[][]
   } finally {
     window.destroy()
   }
+}
+
+export async function checkElectronFrame(frame: NativeFrame) {
+  const [pixel] = await sampleElectronFrame(frame, [[0.5, 0.5]])
+  assert.ok(
+    pixel && pixel[0]! > 200 && pixel[1]! < 45 && pixel[2]! < 45 && pixel[3] === 255,
+    JSON.stringify(pixel),
+  )
 }
