@@ -1,6 +1,7 @@
 pub mod client;
 mod environment;
 pub mod events;
+mod logs;
 mod values;
 
 use libmpv_core::{LoadError, Runtime};

@@ -1,3 +1,5 @@
+import type { InitializationLogs } from './initialization.js'
+import type { LogLevel, MpvLogRecord, MpvNativeLogRecord } from '../logs.js'
 import type { MpvValue, MpvNode } from '../values.js'
 import type {
   MpvSubscription,
@@ -32,13 +34,26 @@ export type Command =
   | { readonly name: string; readonly [key: string]: MpvValue }
 export type NativeCommand = Extract<MpvNode, { readonly format: 'array' | 'map' }>
 
-export type CreateMpvOptions = Options &
+export type CreateMpvOptions = CreateOptions & { readonly initializationLogs?: InitializationLogs }
+export type CreateOptions = Options &
   (
     | { readonly input?: 'javascript'; readonly options?: readonly (readonly [Name, MpvValue])[] }
     | { readonly input: 'native'; readonly options?: readonly (readonly [Name, MpvNode])[] }
   )
 
 export interface MpvControl {
+  observeLogs(
+    observer: MpvObserver<MpvLogRecord>,
+    options?: Options & { level?: LogLevel; output?: 'javascript' },
+  ): Promise<MpvSubscription>
+  observeLogs(
+    observer: MpvObserver<MpvNativeLogRecord>,
+    options: Options & { level?: LogLevel; output: 'native' },
+  ): Promise<MpvSubscription>
+  observeLogs(
+    observer: MpvObserver<MpvLogRecord | MpvNativeLogRecord>,
+    options: (Options & { level?: LogLevel; output?: Mode }) | undefined,
+  ): Promise<MpvSubscription>
   observeProperty<N extends Name>(
     name: N,
     observer: MpvObserver<PropertyState<PropertyValue<NoInfer<N>>>>,

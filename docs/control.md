@@ -29,3 +29,7 @@ Calls accept an optional `AbortSignal`. A submitted command may have taken effec
 Use `createClient({ name, signal })` for a separate control channel on the same player. It has its own client identity and directed messages. `dispose()` releases that channel. Closing the player also ends its channels.
 
 `observeEvents`, `observeProperty` and `observePropertyText` return an independently disposable subscription. Await registration before sending a directed message. The first callback runs after the subscription is delivered. Property notifications distinguish available values and unavailable state. Native event output preserves message arguments as byte arrays. A subscription can be cancelled with its signal, including from a callback.
+
+Use `observeLogs(observer, { level, output })` to receive diagnostics on an independent log channel. The default level is info. The `terminal-default` selection uses mpv's per-module settings. A gap precedes the next retained message after overflow. Its dropped count is exact for binding-only loss and null when mpv also reports an overflow.
+
+Pass `initializationLogs: { observer, level, output }` to the factory to receive startup diagnostics. Completion ends the logging interval. The factory separately reports initialization errors after cleanup. Native output returns the original prefix and message bytes.

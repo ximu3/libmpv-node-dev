@@ -1,3 +1,4 @@
+import type { LogLevel, MpvNativeLogRecord } from './logs.js'
 import { pipeline } from 'node:stream/promises'
 import { createHash } from 'node:crypto'
 import { createReadStream } from 'node:fs'
@@ -21,7 +22,8 @@ export interface NativeLibrary {
     options: readonly (readonly [Uint8Array, MpvNode])[],
     keepAlive: () => void,
     creation: { abort(): void },
-  ): Promise<{ client: NativeClient } | NativeFailure>
+    logLevel?: LogLevel,
+  ): Promise<({ client: NativeClient } | NativeFailure) & { logs?: readonly MpvNativeLogRecord[] }>
   loadLibrary(
     directory: string,
   ): Promise<{ version?: MpvClientApiVersion; error?: MpvBindingErrorCode }>

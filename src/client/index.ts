@@ -1,3 +1,8 @@
+import type { CreateOptions } from './contracts.js'
+import type { JavaScriptLogs, NativeLogs, DynamicLogs } from './initialization.js'
+import { initializationLogs } from './initialization.js'
+import type { LogLevel, MpvLogRecord, MpvNativeLogRecord } from '../logs.js'
+import { logLevel, logRecord } from '../logs.js'
 import type {
   Name,
   Mode,
@@ -56,13 +61,22 @@ function failed(error: NativeFailure, operation: MpvOperation, signal?: AbortSig
   throw new MpvBindingError(error.error, operation, error.submitted, creation)
 }
 
+export function createMpv(
+  configuration?: CreateOptions & { readonly initializationLogs?: JavaScriptLogs },
+): Promise<Mpv>
+export function createMpv(
+  configuration: CreateOptions & { readonly initializationLogs: NativeLogs },
+): Promise<Mpv>
+export function createMpv(
+  configuration: CreateOptions & { readonly initializationLogs: DynamicLogs },
+): Promise<Mpv>
 export async function createMpv(configuration: CreateMpvOptions = {}): Promise<Mpv> {
   const op = 'createMpv'
   if (!configuration || typeof configuration !== 'object' || Array.isArray(configuration)) {
     throw new MpvBindingError('invalidArgument', op, false, { stage: 'input' })
   }
   for (const key of Object.keys(configuration)) {
-    if (!['input', 'options', 'signal'].includes(key)) {
+    if (!['input', 'options', 'signal', 'initializationLogs'].includes(key)) {
       throw new MpvBindingError('invalidArgument', op, false, { stage: 'input' })
     }
   }
@@ -73,8 +87,10 @@ export async function createMpv(configuration: CreateMpvOptions = {}): Promise<M
     }
   }
   checkAbort('input')
+  let diagnostics: ReturnType<typeof initializationLogs>
   let options: (readonly [Uint8Array, MpvNode])[]
   try {
+    diagnostics = initializationLogs(configuration.initializationLogs)
     const input = mode(configuration.input, op)
     const entries = configuration.options === undefined ? [] : configuration.options
     if (!Array.isArray(entries)) {
@@ -101,8 +117,11 @@ export async function createMpv(configuration: CreateMpvOptions = {}): Promise<M
   const creation = binding.NativeCreation.start()
   const cancellation = signal && addAbortListener(signal, () => creation.abort())
   const result = await binding
-    .createClientCore(directory, options, () => {}, creation)
+    .createClientCore(directory, options, () => {}, creation, diagnostics?.level)
     .finally(() => cancellation?.[Symbol.dispose]())
+  if (diagnostics && result.logs) {
+    await diagnostics.deliver(result.logs, signal)
+  }
   if ('error' in result) {
     return failed(result, op, signal)
   }
@@ -332,6 +351,24 @@ class Control {
           value: output === 'native' ? node.value : (toJavaScript(node, op) as string),
         }
       },
+      (failure) => failed(failure, op, options.signal),
+    )
+  }
+
+  async observeLogs(
+    observer: MpvObserver<MpvLogRecord | MpvNativeLogRecord>,
+    options: Options & { level?: LogLevel; output?: Mode } = {},
+  ) {
+    const op = 'observeLogs'
+    const level = logLevel(options.level, op)
+    const output = mode(options.output, op)
+    return this.subscriptions.observe(
+      this.native,
+      op,
+      (wake, gate) => this.native.observeLogs(level, wake, gate),
+      observer,
+      options.signal,
+      (record) => logRecord(record!, output, op),
       (failure) => failed(failure, op, options.signal),
     )
   }

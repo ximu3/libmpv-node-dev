@@ -1,3 +1,4 @@
+use super::logs::{LogBuffer, LogRecord};
 mod record;
 pub use record::EngineEvent;
 
@@ -13,12 +14,13 @@ const MAX_BYTES: usize = 8 * 1024 * 1024;
 pub enum Selection {
     Property(CString, i32),
     Events(Vec<i32>),
+    Logs(CString),
 }
 
-#[derive(Clone)]
 pub enum Notice {
     Value(Arc<Value>),
     Event(Arc<EngineEvent>),
+    Log(LogRecord),
     Unavailable,
     End,
     Interrupted(&'static str),
@@ -38,6 +40,7 @@ impl Notice {
 struct Buffer {
     data: VecDeque<Notice>,
     terminal: Option<Notice>,
+    logs: LogBuffer,
     bytes: usize,
     ended: bool,
 }
@@ -86,6 +89,7 @@ impl Queue {
 
 pub struct Watch {
     id: u64,
+    internal: Mutex<Option<Client>>,
     shared: Weak<Shared>,
     queue: Arc<Queue>,
 }
@@ -93,6 +97,9 @@ pub struct Watch {
 impl Watch {
     pub fn next(&self) -> Option<Notice> {
         let mut buffer = self.queue.buffer.lock().unwrap();
+        if let Some(record) = buffer.logs.next() {
+            return Some(Notice::Log(record));
+        }
         if let Some(notice) = buffer.data.pop_front() {
             buffer.bytes -= notice.size();
             return Some(notice);
@@ -111,6 +118,7 @@ impl Watch {
                         // This handle owns the id and cannot be destroyed while state is locked.
                         unsafe { (shared.api.unobserve_property)(handle.0.as_ptr(), self.id) };
                     }
+                    Selection::Logs(_) => {}
                     Selection::Events(events) => {
                         for id in events {
                             if *id != 1 && !state.watches.values().any(|queue| queue.accepts(*id)) {
@@ -127,6 +135,11 @@ impl Watch {
         buffer.data.clear();
         buffer.bytes = 0;
         buffer.terminal = None;
+        buffer.logs = LogBuffer::default();
+        drop(buffer);
+        if let Some(internal) = self.internal.lock().unwrap().take() {
+            let _ = futures_executor::block_on(internal.close());
+        }
     }
 }
 
@@ -143,6 +156,17 @@ impl Queue {
 }
 
 impl Client {
+    pub fn observe_logs(
+        &self,
+        level: CString,
+        creation: &super::Creation,
+        notify: impl Fn() + Send + Sync + 'static,
+    ) -> Result<Watch, Error> {
+        let internal = self.child(None, creation)?;
+        let watch = internal.observe(Selection::Logs(level), creation, notify)?;
+        *watch.internal.lock().unwrap() = Some(internal);
+        Ok(watch)
+    }
     pub fn observe(
         &self,
         selection: Selection,
@@ -170,6 +194,17 @@ impl Client {
             submitted: failure.submitted,
         })?;
         match &selection {
+            Selection::Logs(level) => {
+                // This weak client belongs exclusively to the log registration.
+                let status =
+                    unsafe { (self.shared.api.request_log_messages)(handle, level.as_ptr()) };
+                if status < 0 {
+                    return Err(Error {
+                        reason: Failure::Native(status),
+                        submitted: true,
+                    });
+                }
+            }
             Selection::Property(name, format) => {
                 // libmpv copies the name during registration; state protects the handle and the first event's id.
                 let status = unsafe {
@@ -201,12 +236,14 @@ impl Client {
             buffer: Mutex::new(Buffer {
                 data: VecDeque::new(),
                 terminal: None,
+                logs: LogBuffer::default(),
                 bytes: 0,
                 ended: false,
             }),
         });
         state.watches.insert(id, queue.clone());
         Ok(Watch {
+            internal: Mutex::new(None),
             id,
             shared: Arc::downgrade(&self.shared),
             queue,
@@ -223,6 +260,27 @@ impl Shared {
     }
 
     pub(super) fn publish(&self, event: &Event) {
+        if event.id == 2 {
+            let queue = self
+                .lock()
+                .watches
+                .values()
+                .find(|queue| matches!(queue.selection, Selection::Logs(_)))
+                .cloned();
+            if let Some(queue) = queue {
+                let mut buffer = queue.buffer.lock().unwrap();
+                if !buffer.ended {
+                    let wake = buffer.logs.is_empty();
+                    // MPV_EVENT_LOG_MESSAGE owns these bytes until the reader advances its queue.
+                    unsafe { buffer.logs.copy(&*event.data.cast::<ffi::LogMessage>()) };
+                    drop(buffer);
+                    if wake {
+                        (queue.notify)();
+                    }
+                }
+            }
+            return;
+        }
         if event.id == 22 {
             let watch = self.lock().watches.get(&event.userdata).cloned();
             if let Some(queue) = watch {

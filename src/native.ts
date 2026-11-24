@@ -1,10 +1,11 @@
+import type { LogLevel, MpvNativeLogRecord } from './logs.js'
 import type { MpvNativeEvent, NativeWatch } from './subscriptions.js'
 import type { MpvNode } from './values.js'
 import type { MpvBindingErrorCode } from './errors.js'
 export interface NativeFailure {
   error: number | MpvBindingErrorCode
   submitted: boolean
-  stage?: 'core' | 'options' | 'initialize' | 'publish'
+  stage?: 'core' | 'options' | 'initializationLogs' | 'initialize' | 'publish'
   optionIndex?: number
 }
 export interface NativeClient {
@@ -30,6 +31,11 @@ export interface NativeClient {
     wake: () => void,
     gate: { abort(): void },
   ): Promise<{ watch: NativeWatch<MpvNativeEvent> } | NativeFailure>
+  observeLogs(
+    level: LogLevel,
+    wake: () => void,
+    gate: { abort(): void },
+  ): Promise<{ watch: NativeWatch<MpvNativeLogRecord> } | NativeFailure>
   setReferenced(value: boolean): void
   time(): bigint | null
   request(

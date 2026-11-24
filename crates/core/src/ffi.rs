@@ -51,6 +51,14 @@ pub struct Property {
 }
 
 #[repr(C)]
+pub struct LogMessage {
+    pub prefix: *const c_char,
+    pub level: *const c_char,
+    pub text: *const c_char,
+    pub level_code: c_int,
+}
+
+#[repr(C)]
 pub struct ClientMessage {
     pub num_args: c_int,
     pub args: *const *const c_char,
@@ -100,6 +108,7 @@ client_api! {
     command_node_async(Handle, u64, *mut Node) -> c_int,
     abort_async_command(Handle, u64) -> (),
     load_config_file(Handle, *const c_char) -> c_int,
+    request_log_messages(Handle, *const c_char) -> c_int,
     request_event(Handle, c_int, c_int) -> c_int,
     observe_property(Handle, u64, *const c_char, c_int) -> c_int,
     unobserve_property(Handle, u64) -> c_int,

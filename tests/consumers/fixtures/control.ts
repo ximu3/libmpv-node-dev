@@ -22,7 +22,47 @@ await assert.rejects(
     error.creation?.stage === 'options' &&
     error.creation.optionIndex === 0,
 )
+let failedStartupComplete = false
+await assert.rejects(
+  createMpv({
+    options: [['unknown-w08-option', 0]],
+    initializationLogs: {
+      observer: {
+        next() {},
+        error(error) {
+          throw error
+        },
+        complete() {
+          failedStartupComplete = true
+        },
+      },
+    },
+  }),
+  (error) => error instanceof MpvNativeError && error.creation?.stage === 'options',
+)
+assert.ok(failedStartupComplete)
+
+let initializationComplete = false
+let startupLines = 0
 const player = await createMpv({
+  initializationLogs: {
+    level: 'trace',
+    output: 'native',
+    observer: {
+      next(record) {
+        if (record.type === 'log-message') {
+          assert.ok(record.text instanceof Uint8Array)
+          startupLines++
+        }
+      },
+      error(error) {
+        throw error
+      },
+      complete() {
+        initializationComplete = true
+      },
+    },
+  },
   options: [
     ['load-scripts', false],
     ['vo', 'null'],
@@ -31,6 +71,21 @@ const player = await createMpv({
   ],
 })
 try {
+  assert.equal(initializationComplete, true)
+  assert.ok(startupLines > 0)
+  const logLine = Promise.withResolvers<string>()
+  const logs = await player.observeLogs({
+    next(record) {
+      if (record.type === 'log-message' && record.text.includes('w08-diagnostic-sample')) {
+        assert.equal(record.level, 'info')
+        logLine.resolve(record.text)
+      }
+    },
+    error: logLine.reject,
+  })
+  await player.command(['print-text', 'w08-diagnostic-sample'])
+  assert.equal(await logLine.promise, 'w08-diagnostic-sample\n')
+  await logs.dispose()
   assert.equal(player.hasRef(), true)
   assert.equal(player.unref().hasRef(), false)
   assert.equal(player.ref().hasRef(), true)
