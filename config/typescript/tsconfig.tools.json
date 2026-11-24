@@ -4,7 +4,7 @@
   "include": [
     "../../tools/**/*.ts",
     "../../tests/*.test.ts",
-    "../../tests/consumers/run.ts",
+    "../../tests/consumers/*.ts",
     "../../vite.config.ts"
   ]
 }

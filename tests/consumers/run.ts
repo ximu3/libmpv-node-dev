@@ -1,3 +1,4 @@
+import { verifyArchive } from './archive.ts'
 import { globSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import root from '../../package.json' with { type: 'json' }
@@ -100,6 +101,17 @@ execFileSync(
 )
 
 const env = { ...process.env }
+for (const key of [
+  'XDG_CONFIG_HOME',
+  'XDG_CACHE_HOME',
+  'XDG_DATA_HOME',
+  'XDG_STATE_HOME',
+  'MPV_HOME',
+]) {
+  const directory = join(consumer, 'profile-data', key)
+  await mkdir(directory, { recursive: true })
+  env[key] = directory
+}
 for (const key of ['NODE_PATH', 'NODE_OPTIONS', 'ELECTRON_RUN_AS_NODE']) {
   delete env[key]
 }
@@ -128,5 +140,6 @@ if (values.electron) {
   if (version !== fixture.devDependencies.electron) {
     throw new Error('Missing receipt from Electron ' + fixture.devDependencies.electron)
   }
-  console.log(`Electron ${version} completed the installed-package checks.`)
+  await verifyArchive(consumer, resolve(values.electron), env, platform)
+  console.log(`Electron ${version} completed the installed-package and ASAR checks.`)
 }
