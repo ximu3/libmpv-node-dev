@@ -239,8 +239,6 @@ export async function buildUnix(work: string, cache: string) {
     '-Diconv=enabled',
     '-Dzlib=enabled',
     '-Dlcms2=enabled',
-    '-Dshaderc=enabled',
-    '-Dspirv-cross=enabled',
   ]
   run(work, 'meson', [
     'setup',
