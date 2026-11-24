@@ -260,6 +260,14 @@ impl Shared {
     }
 
     pub(super) fn publish(&self, event: &Event) {
+        if event.id == 25 {
+            // Only the native event pump can read the hook payload before the next wait.
+            self.hook_event(Some(unsafe { (*event.data.cast::<ffi::HookEvent>()).id }));
+            return;
+        }
+        if event.id == 24 {
+            self.hook_event(None);
+        }
         if event.id == 2 {
             let queue = self
                 .lock()

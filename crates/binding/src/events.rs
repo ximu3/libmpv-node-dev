@@ -9,7 +9,7 @@ use napi::{Env, Error, Result, Status};
 use napi_derive::napi;
 use std::sync::Arc;
 
-type Wake = ThreadsafeFunction<(), (), (), Status, false, true, 1>;
+pub(super) type Wake = ThreadsafeFunction<(), (), (), Status, false, true, 1>;
 
 #[napi]
 pub struct NativeWatch(Arc<Watch>);

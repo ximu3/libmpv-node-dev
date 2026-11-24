@@ -7,6 +7,8 @@ export type MpvOperation =
   | 'createMpv'
   | 'createClient'
   | 'command'
+  | 'addHook'
+  | 'continueHook'
   | 'getProperty'
   | 'getPropertyText'
   | 'observeProperty'

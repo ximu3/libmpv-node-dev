@@ -1,3 +1,5 @@
+mod hooks;
+pub use hooks::{Hook, HookNotice};
 mod initialization;
 pub use initialization::Diagnostics;
 mod events;
@@ -101,6 +103,7 @@ struct State {
     children: Vec<Shutdown>,
     watches: HashMap<u64, Arc<events::Queue>>,
     next_watch: u64,
+    hook: Option<Arc<hooks::HookQueue>>,
     requests: HashMap<u32, Request>,
     bytes: usize,
     finished: Vec<oneshot::Sender<()>>,
@@ -302,6 +305,7 @@ impl Client {
                 children: Vec::new(),
                 watches: HashMap::new(),
                 next_watch: 1,
+                hook: None,
                 requests: HashMap::new(),
                 bytes: 0,
                 finished: Vec::new(),
@@ -534,7 +538,7 @@ impl OwnedClient {
             }
         }
 
-        let children = {
+        let (children, hook) = {
             let mut state = shared.lock();
             state.closing = true;
             state.handle = None;
@@ -546,8 +550,11 @@ impl OwnedClient {
                     }));
                 }
             }
-            std::mem::take(&mut state.children)
+            (std::mem::take(&mut state.children), state.hook.take())
         };
+        if let Some(hook) = hook {
+            hook.finish(self.api, self.handle.0.as_ptr());
+        }
         shared.end_watches();
         let closing: Vec<_> = children
             .into_iter()

@@ -1,6 +1,7 @@
 pub mod client;
 mod environment;
 pub mod events;
+pub mod hooks;
 mod logs;
 mod values;
 
