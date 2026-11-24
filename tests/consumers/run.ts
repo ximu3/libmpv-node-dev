@@ -73,7 +73,7 @@ await writeFile(
   `allowBuilds:\n  electron: false\noverrides:\n  "${platform}": ${JSON.stringify(dependencies[platform])}\n`,
 )
 await cp(join(projectRoot, 'tests/consumers/fixtures'), consumer, { recursive: true })
-await copyFile(join(projectRoot, 'examples/version.ts'), join(consumer, 'example.ts'))
+await cp(join(projectRoot, 'examples'), join(consumer, 'examples'), { recursive: true })
 runPnpm(['install', '--no-frozen-lockfile'], consumer)
 await writeJson(join(consumer, 'package.json'), { ...fixture, dependencies })
 runPnpm(['install', '--no-frozen-lockfile', '--offline'], consumer)
@@ -88,7 +88,7 @@ execFileSync(
     '--ignore-path',
     join(projectRoot, '.gitignore'),
     ...globSync('**/*.{ts,cts}', { cwd: join(projectRoot, 'tests/consumers/fixtures') }),
-    'example.ts',
+    ...globSync('examples/*.ts', { cwd: consumer }),
   ],
   { cwd: consumer, stdio: 'inherit' },
 )
@@ -106,6 +106,16 @@ execFileSync(process.execPath, [join(consumer, 'out/control.js')], {
   stdio: 'inherit',
   timeout: 60000,
 })
+const metadata = JSON.parse(
+  execFileSync(
+    process.execPath,
+    [join(consumer, 'out/examples/metadata.js'), join(consumer, 'media/subtitle-font.mkv')],
+    { cwd: consumer, env, encoding: 'utf8', timeout: 30000 },
+  ),
+) as { tracks: { type: string; codec: string }[] }
+if (!metadata.tracks.some((track) => track.type === 'video' && track.codec === 'ffv1')) {
+  throw new Error('The installed metadata example did not identify the FFV1 stream')
+}
 if (values.electron) {
   const receipt = join(consumer, 'electron-version')
   execFileSync(
