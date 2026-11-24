@@ -1,5 +1,13 @@
 import { execFileSync } from 'node:child_process'
-import { copyFile, mkdir, mkdtempDisposable, readFile, readdir, rename } from 'node:fs/promises'
+import {
+  copyFile,
+  mkdir,
+  mkdtempDisposable,
+  open,
+  readFile,
+  readdir,
+  rename,
+} from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { parseArgs } from 'node:util'
 import { downloadSources } from '../engine/posix/sources.ts'
@@ -68,9 +76,10 @@ for (const target of packageTargets) {
     await copyFile(kit.path, archive)
   } else {
     await using extract = await mkdtempDisposable(join(work.path, 'expand-'))
-    execFileSync('tar', ['-xf', name, '-C', extract.path], {
-      cwd: dirname(kit.path),
-      stdio: 'inherit',
+    await using input = await open(kit.path, 'r')
+    execFileSync('tar', ['-xf', '-'], {
+      cwd: extract.path,
+      stdio: [input.fd, 'inherit', 'inherit'],
     })
     await downloadSources(join(extract.path, 'source-materials'), cache)
     execFileSync('tar', ['-cf', name, 'source-materials'], { cwd: extract.path, stdio: 'inherit' })
