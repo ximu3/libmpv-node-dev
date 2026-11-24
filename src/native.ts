@@ -1,3 +1,4 @@
+import type { NativeProtocol } from './streams/contracts.js'
 import type { NativeHook } from './hooks.js'
 import type { LogLevel, MpvNativeLogRecord } from './logs.js'
 import type { MpvNativeEvent, NativeWatch } from './subscriptions.js'
@@ -43,6 +44,10 @@ export interface NativeClient {
     wake: () => void,
     gate: { abort(): void },
   ): Promise<{ hook: NativeHook } | NativeFailure>
+  registerProtocol(
+    name: Uint8Array<ArrayBuffer>,
+    wake: () => void,
+  ): Promise<{ protocol: NativeProtocol } | NativeFailure>
   setReferenced(value: boolean): void
   time(): bigint | null
   request(

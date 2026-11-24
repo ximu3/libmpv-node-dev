@@ -7,4 +7,13 @@ const player = await createMpv({
     ['ao', 'null'],
   ],
 })
-parentPort!.postMessage(player.clientId)
+await player.registerProtocol('worker-stream', {
+  open() {
+    parentPort!.postMessage(player.clientId)
+    return new Promise(() => {})
+  },
+  onError(failure) {
+    throw failure.reason
+  },
+})
+await player.command(['loadfile', 'worker-stream://pending'])

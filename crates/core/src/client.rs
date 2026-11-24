@@ -1,4 +1,5 @@
 mod hooks;
+pub mod streams;
 pub use hooks::{Hook, HookNotice};
 mod initialization;
 pub use initialization::Diagnostics;
@@ -101,6 +102,7 @@ struct State {
     destroyed: bool,
     deliveries: usize,
     children: Vec<Shutdown>,
+    protocols: Vec<Arc<streams::Protocol>>,
     watches: HashMap<u64, Arc<events::Queue>>,
     next_watch: u64,
     hook: Option<Arc<hooks::HookQueue>>,
@@ -170,6 +172,9 @@ impl Shared {
         let (sender, receiver) = oneshot::channel();
         if !state.destroyed {
             state.closing = true;
+            for protocol in &state.protocols {
+                protocol.stop();
+            }
             state.finished.push(sender);
             self.wake(&state);
         } else {
@@ -303,6 +308,7 @@ impl Client {
                 destroyed: false,
                 deliveries: 0,
                 children: Vec::new(),
+                protocols: Vec::new(),
                 watches: HashMap::new(),
                 next_watch: 1,
                 hook: None,
@@ -538,9 +544,12 @@ impl OwnedClient {
             }
         }
 
-        let (children, hook) = {
+        let (children, hook, protocols) = {
             let mut state = shared.lock();
             state.closing = true;
+            for protocol in &state.protocols {
+                protocol.stop();
+            }
             state.handle = None;
             for (_, request) in state.requests.drain() {
                 if let Some(sender) = request.sender {
@@ -550,7 +559,11 @@ impl OwnedClient {
                     }));
                 }
             }
-            (std::mem::take(&mut state.children), state.hook.take())
+            (
+                std::mem::take(&mut state.children),
+                state.hook.take(),
+                std::mem::take(&mut state.protocols),
+            )
         };
         if let Some(hook) = hook {
             hook.finish(self.api, self.handle.0.as_ptr());
@@ -564,6 +577,9 @@ impl OwnedClient {
             let _ = futures_executor::block_on(child);
         }
         drop(self);
+        for protocol in protocols {
+            protocol.end();
+        }
         on_close();
         let mut state = shared.lock();
         state.destroyed = true;
