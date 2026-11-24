@@ -1,3 +1,4 @@
+import type { PropertyValues, OptionInfo, Track } from './properties.js'
 import type { MpvValue } from '../values.js'
 import type { CommandDefinitions, OptionDefinitions, PropertyName } from './generated.js'
 
@@ -98,69 +99,45 @@ type Result<N> = N extends keyof CommandResults
     : MpvValue
 export type CommandResult<A> = Result<CommandName<A>>
 
-type Extensible = { readonly [key: string]: MpvValue }
-type Track = Extensible & {
-  readonly id: bigint
-  readonly type: 'video' | 'audio' | 'sub'
-  readonly selected: boolean
-}
-type PlaylistEntry = Extensible & { readonly filename: string; readonly id: bigint }
-type ActualProperties = {
-  'mpv-version': string
-  'ffmpeg-version': string
-  path: string
-  'media-title': string
-  'time-pos': number
-  duration: number
-  'playback-time': number
-  'time-remaining': number
-  'percent-pos': number
-  'eof-reached': boolean
-  'idle-active': boolean
-  'core-idle': boolean
-  'paused-for-cache': boolean
-  'track-list': readonly Track[]
-  playlist: readonly PlaylistEntry[]
-  'chapter-list': readonly (Extensible & { readonly time: number })[]
-  metadata: Readonly<Record<string, string>>
-  'property-list': readonly string[]
-  options: readonly string[]
-  'audio-params': Extensible
-  'video-params': Extensible
-  'video-out-params': Extensible
-}
-type DynamicProperty<N> = N extends `track-list/${number}/${infer K}`
-  ? K extends keyof Track
-    ? Track[K]
-    : MpvValue
-  : N extends `playlist/${number}/${infer K}`
-    ? K extends keyof PlaylistEntry
-      ? PlaylistEntry[K]
+type Subproperty<T, K extends string> = T extends readonly (infer V)[]
+  ? K extends 'count'
+    ? bigint
+    : K extends `${number}`
+      ? V
       : MpvValue
-    : N extends
-          | 'track-list/count'
-          | 'playlist/count'
-          | 'chapter-list/count'
-          | 'audio-params/samplerate'
-          | 'audio-params/channel-count'
-      ? bigint
-      : N extends `metadata/by-key/${string}`
-        ? string
-        : MpvValue
-export type PropertyRead<N> = N extends keyof ActualProperties
-  ? ActualProperties[N]
-  : N extends `options/${infer O extends keyof OptionDefinitions}`
+  : K extends keyof T
+    ? Exclude<T[K], undefined>
+    : MpvValue
+type Path<T, K extends string> = K extends `${infer Head}/${infer Tail}`
+  ? Path<Subproperty<T, Head>, Tail>
+  : Subproperty<T, K>
+type DynamicProperty<N> =
+  N extends `current-tracks/${'video' | 'audio' | 'sub' | 'sub2'}/${infer K}`
+    ? Path<Track, K>
+    : N extends `current-tracks/${'video' | 'audio' | 'sub' | 'sub2'}`
+      ? Track
+      : N extends `option-info/${string}/${infer K}`
+        ? Path<OptionInfo, K>
+        : N extends `option-info/${string}`
+          ? OptionInfo
+          : N extends `${'metadata' | 'chapter-metadata' | 'filtered-metadata'}/by-key/${string}`
+            ? string
+            : N extends `${infer Root extends keyof PropertyValues}/${infer K}`
+              ? Path<PropertyValues[Root], K>
+              : MpvValue
+export type PropertyRead<N> = N extends keyof PropertyValues
+  ? PropertyValues[N]
+  : N extends `${'options' | 'file-local-options'}/${infer O extends keyof OptionDefinitions}`
     ? OptionDefinitions[O]['read']
     : N extends keyof OptionDefinitions
       ? OptionDefinitions[N]['read']
       : DynamicProperty<N>
-export type PropertyWrite<N> = N extends keyof ActualProperties
-  ? ActualProperties[N]
-  : N extends `${'options' | 'file-local-options'}/${infer O extends keyof OptionDefinitions}`
+export type PropertyWrite<N> =
+  N extends `${'options' | 'file-local-options'}/${infer O extends keyof OptionDefinitions}`
     ? OptionDefinitions[O]['write']
     : N extends keyof OptionDefinitions
       ? OptionDefinitions[N]['write']
-      : DynamicProperty<N>
+      : PropertyRead<N>
 export type KnownProperty = PropertyName
 export type KnownOption = keyof OptionDefinitions
 export type KnownCommand = keyof CommandDefinitions<never>

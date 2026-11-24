@@ -889,6 +889,14 @@ export interface OptionDefinitions {
   aid: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
   alang: { read: readonly string[]; write: string | readonly string[] }
   'allow-delayed-peak-detect': { read: boolean; write: boolean | 'yes' | 'no' }
+  'alsa-buffer-time': { read: bigint; write: IntegerArgument }
+  'alsa-ignore-chmap': { read: boolean; write: boolean | 'yes' | 'no' }
+  'alsa-mixer-device': { read: string; write: string }
+  'alsa-mixer-index': { read: bigint; write: IntegerArgument }
+  'alsa-mixer-name': { read: string; write: string }
+  'alsa-non-interleaved': { read: boolean; write: boolean | 'yes' | 'no' }
+  'alsa-periods': { read: bigint; write: IntegerArgument }
+  'alsa-resample': { read: boolean; write: boolean | 'yes' | 'no' }
   ao: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
   'ao-null-broken-delay': { read: boolean; write: boolean | 'yes' | 'no' }
   'ao-null-broken-eof': { read: boolean; write: boolean | 'yes' | 'no' }
@@ -984,12 +992,53 @@ export interface OptionDefinitions {
   'clipboard-backends': { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
   'clipboard-monitor': { read: boolean; write: boolean | 'yes' | 'no' }
   'clipboard-xwayland': { read: boolean; write: boolean | 'yes' | 'no' }
+  'cocoa-cb-10bit-context': { read: boolean; write: boolean | 'yes' | 'no' }
+  'cocoa-cb-output-csp': {
+    read:
+      | 'auto'
+      | 'display-p3'
+      | 'display-p3-hlg'
+      | 'display-p3-pq'
+      | 'display-p3-linear'
+      | 'dci-p3'
+      | 'bt.2020'
+      | 'bt.2020-linear'
+      | 'bt.2100-hlg'
+      | 'bt.2100-pq'
+      | 'bt.709'
+      | 'srgb'
+      | 'srgb-linear'
+      | 'rgb-linear'
+      | 'adobe'
+    write:
+      | 'auto'
+      | 'display-p3'
+      | 'display-p3-hlg'
+      | 'display-p3-pq'
+      | 'display-p3-linear'
+      | 'dci-p3'
+      | 'bt.2020'
+      | 'bt.2020-linear'
+      | 'bt.2100-hlg'
+      | 'bt.2100-pq'
+      | 'bt.709'
+      | 'srgb'
+      | 'srgb-linear'
+      | 'rgb-linear'
+      | 'adobe'
+  }
+  'cocoa-cb-sw-renderer': {
+    read: 'auto' | true | false
+    write: 'auto' | 'no' | 'yes' | true | false
+  }
   config: { read: boolean; write: boolean | 'yes' | 'no' }
   'config-dir': { read: string; write: string }
   'container-fps-override': { read: number; write: RealArgument }
   contrast: { read: number; write: RealArgument }
   cookies: { read: boolean; write: boolean | 'yes' | 'no' }
   'cookies-file': { read: string; write: string }
+  'coreaudio-change-physical-format': { read: boolean; write: boolean | 'yes' | 'no' }
+  'coreaudio-spdif-hack': { read: boolean; write: boolean | 'yes' | 'no' }
   'corner-rounding': { read: number; write: RealArgument }
   'correct-downscaling': { read: boolean; write: boolean | 'yes' | 'no' }
   'correct-pts': { read: boolean; write: boolean | 'yes' | 'no' }
@@ -1292,6 +1341,23 @@ export interface OptionDefinitions {
     read: 'auto' | 'replace' | 'append' | 'insert-next' | false
     write: 'no' | 'auto' | 'replace' | 'append' | 'insert-next' | false
   }
+  'drm-connector': { read: string; write: string }
+  'drm-device': { read: string; write: string }
+  'drm-draw-plane': {
+    read: 'primary' | 'overlay' | bigint
+    write: 'primary' | 'overlay' | IntegerArgument
+  }
+  'drm-draw-surface-size': { read: string; write: string }
+  'drm-drmprime-video-plane': {
+    read: 'primary' | 'overlay' | bigint
+    write: 'primary' | 'overlay' | IntegerArgument
+  }
+  'drm-format': {
+    read: 'xrgb8888' | 'xrgb2101010' | 'xbgr8888' | 'xbgr2101010' | 'rgb565' | 'yuyv'
+    write: 'xrgb8888' | 'xrgb2101010' | 'xbgr8888' | 'xbgr2101010' | 'rgb565' | 'yuyv'
+  }
+  'drm-mode': { read: string; write: string }
+  'drm-vrr-enabled': { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
   dscale: {
     read:
       | ''
@@ -1415,6 +1481,33 @@ export interface OptionDefinitions {
   'dscale-wtaper': { read: number; write: RealArgument }
   'dump-stats': { read: string; write: string }
   edition: { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
+  'egl-config-id': { read: bigint; write: IntegerArgument }
+  'egl-output-format': {
+    read:
+      | 'auto'
+      | 'rgb8'
+      | 'rgba8'
+      | 'rgb10'
+      | 'rgb10_a2'
+      | 'rgb16'
+      | 'rgba16'
+      | 'rgb16f'
+      | 'rgba16f'
+      | 'rgb32f'
+      | 'rgba32f'
+    write:
+      | 'auto'
+      | 'rgb8'
+      | 'rgba8'
+      | 'rgb10'
+      | 'rgb10_a2'
+      | 'rgb16'
+      | 'rgba16'
+      | 'rgb16f'
+      | 'rgba16f'
+      | 'rgb32f'
+      | 'rgba32f'
+  }
   embeddedfonts: { read: boolean; write: boolean | 'yes' | 'no' }
   end: { read: string; write: string }
   'error-diffusion': { read: string; write: string }
@@ -1626,6 +1719,82 @@ export interface OptionDefinitions {
     read: 'auto' | 'native' | 'normalized' | 'conversion'
     write: 'auto' | 'native' | 'normalized' | 'conversion'
   }
+  'macos-app-activation-policy': {
+    read: 'regular' | 'accessory' | 'prohibited'
+    write: 'regular' | 'accessory' | 'prohibited'
+  }
+  'macos-bundle-path': { read: readonly string[]; write: string | readonly string[] }
+  'macos-force-dedicated-gpu': { read: boolean; write: boolean | 'yes' | 'no' }
+  'macos-fs-animation-duration': { read: 'default' | bigint; write: 'default' | IntegerArgument }
+  'macos-geometry-calculation': { read: 'visible' | 'whole'; write: 'visible' | 'whole' }
+  'macos-menu-shortcuts': { read: boolean; write: boolean | 'yes' | 'no' }
+  'macos-render-timer': {
+    read: 'callback' | 'precise' | 'system' | 'feedback'
+    write: 'callback' | 'precise' | 'system' | 'feedback'
+  }
+  'macos-title-bar-appearance': {
+    read:
+      | 'auto'
+      | 'aqua'
+      | 'darkAqua'
+      | 'vibrantLight'
+      | 'vibrantDark'
+      | 'aquaHighContrast'
+      | 'darkAquaHighContrast'
+      | 'vibrantLightHighContrast'
+      | 'vibrantDarkHighContrast'
+    write:
+      | 'auto'
+      | 'aqua'
+      | 'darkAqua'
+      | 'vibrantLight'
+      | 'vibrantDark'
+      | 'aquaHighContrast'
+      | 'darkAquaHighContrast'
+      | 'vibrantLightHighContrast'
+      | 'vibrantDarkHighContrast'
+  }
+  'macos-title-bar-color': { read: string; write: string }
+  'macos-title-bar-material': {
+    read:
+      | 'titlebar'
+      | 'selection'
+      | 'menu'
+      | 'popover'
+      | 'sidebar'
+      | 'headerView'
+      | 'sheet'
+      | 'windowBackground'
+      | 'hudWindow'
+      | 'fullScreen'
+      | 'toolTip'
+      | 'contentBackground'
+      | 'underWindowBackground'
+      | 'underPageBackground'
+      | 'dark'
+      | 'light'
+      | 'mediumLight'
+      | 'ultraDark'
+    write:
+      | 'titlebar'
+      | 'selection'
+      | 'menu'
+      | 'popover'
+      | 'sidebar'
+      | 'headerView'
+      | 'sheet'
+      | 'windowBackground'
+      | 'hudWindow'
+      | 'fullScreen'
+      | 'toolTip'
+      | 'contentBackground'
+      | 'underWindowBackground'
+      | 'underPageBackground'
+      | 'dark'
+      | 'light'
+      | 'mediumLight'
+      | 'ultraDark'
+  }
   mc: { read: number; write: RealArgument }
   'media-controls': { read: boolean; write: boolean | 'yes' | 'no' }
   'merge-files': { read: boolean; write: boolean | 'yes' | 'no' }
@@ -1664,8 +1833,15 @@ export interface OptionDefinitions {
     read: 'window' | 'system' | 'desktop' | bigint
     write: 'window' | 'system' | 'desktop' | IntegerArgument
   }
+  'opengl-check-pattern-a': { read: bigint; write: IntegerArgument }
+  'opengl-check-pattern-b': { read: bigint; write: IntegerArgument }
+  'opengl-early-flush': { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
+  'opengl-es': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
+  'opengl-glfinish': { read: boolean; write: boolean | 'yes' | 'no' }
   'opengl-pbo': { read: boolean; write: boolean | 'yes' | 'no' }
   'opengl-rectangle-textures': { read: boolean; write: boolean | 'yes' | 'no' }
+  'opengl-swapinterval': { read: bigint; write: IntegerArgument }
+  'opengl-waitvsync': { read: boolean; write: boolean | 'yes' | 'no' }
   orawts: { read: boolean; write: boolean | 'yes' | 'no' }
   'ordered-chapters': { read: boolean; write: boolean | 'yes' | 'no' }
   'ordered-chapters-files': { read: string; write: string }
@@ -1712,7 +1888,7 @@ export interface OptionDefinitions {
     read: 'auto' | 'left' | 'center' | 'right'
     write: 'auto' | 'left' | 'center' | 'right'
   }
-  'osd-level': { read: '0' | '1' | '2' | '3'; write: '0' | '1' | '2' | '3' }
+  'osd-level': { read: 0n | 1n | 2n | 3n; write: '0' | '1' | '2' | '3' | 0n | 1n | 2n | 3n }
   'osd-margin-x': { read: bigint; write: IntegerArgument }
   'osd-margin-y': { read: bigint; write: IntegerArgument }
   'osd-margin-y-offset': { read: bigint; write: IntegerArgument }
@@ -1779,6 +1955,10 @@ export interface OptionDefinitions {
     write: 'no' | 'realtime' | 'high' | 'abovenormal' | 'normal' | 'belownormal' | 'idle' | false
   }
   profile: { read: readonly string[]; write: string | readonly string[] }
+  'pulse-allow-suspended': { read: boolean; write: boolean | 'yes' | 'no' }
+  'pulse-buffer': { read: 'native' | bigint; write: 'native' | IntegerArgument }
+  'pulse-host': { read: string; write: string }
+  'pulse-latency-hacks': { read: boolean; write: boolean | 'yes' | 'no' }
   quiet: { read: boolean; write: boolean | 'yes' | 'no' }
   'really-quiet': { read: boolean; write: boolean | 'yes' | 'no' }
   'rebase-start-time': { read: boolean; write: boolean | 'yes' | 'no' }
@@ -1975,7 +2155,9 @@ export interface OptionDefinitions {
   slang: { read: readonly string[]; write: string | readonly string[] }
   'snap-window': { read: boolean; write: boolean | 'yes' | 'no' }
   speed: { read: number; write: RealArgument }
-  'spirv-compiler': { read: 'auto' | 'shaderc'; write: 'auto' | 'shaderc' }
+  'spirv-compiler':
+    | { read: 'auto'; write: 'auto' }
+    | { read: 'auto' | 'shaderc'; write: 'auto' | 'shaderc' }
   sstep: { read: number; write: RealArgument }
   start: { read: string; write: string }
   'stop-playback-on-init-failure': { read: boolean; write: boolean | 'yes' | 'no' }
@@ -2419,6 +2601,7 @@ export interface OptionDefinitions {
   'use-filedir-conf': { read: boolean; write: boolean | 'yes' | 'no' }
   'user-agent': { read: string; write: string }
   v: { read: boolean; write: boolean | 'yes' | 'no' }
+  'vaapi-device': { read: string; write: string }
   vd: { read: string; write: string }
   'vd-apply-cropping': { read: boolean; write: boolean | 'yes' | 'no' }
   'vd-lavc-assume-old-x264': { read: boolean; write: boolean | 'yes' | 'no' }
@@ -2563,6 +2746,17 @@ export interface OptionDefinitions {
   'volume-gain-max': { read: number; write: RealArgument }
   'volume-gain-min': { read: number; write: RealArgument }
   'volume-max': { read: number; write: RealArgument }
+  'vulkan-async-compute': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vulkan-async-transfer': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vulkan-device': { read: string; write: string }
+  'vulkan-display-display': { read: bigint; write: IntegerArgument }
+  'vulkan-display-mode': { read: bigint; write: IntegerArgument }
+  'vulkan-display-plane': { read: bigint; write: IntegerArgument }
+  'vulkan-queue-count': { read: bigint; write: IntegerArgument }
+  'vulkan-swap-mode': {
+    read: 'auto' | 'fifo' | 'fifo-relaxed' | 'mailbox' | 'immediate'
+    write: 'auto' | 'fifo' | 'fifo-relaxed' | 'mailbox' | 'immediate'
+  }
   'wasapi-exclusive-buffer': {
     read: 'default' | 'min' | bigint
     write: 'default' | 'min' | IntegerArgument
@@ -2615,6 +2809,14 @@ export type PropertyName =
   | 'aid'
   | 'alang'
   | 'allow-delayed-peak-detect'
+  | 'alsa-buffer-time'
+  | 'alsa-ignore-chmap'
+  | 'alsa-mixer-device'
+  | 'alsa-mixer-index'
+  | 'alsa-mixer-name'
+  | 'alsa-non-interleaved'
+  | 'alsa-periods'
+  | 'alsa-resample'
   | 'ambient-light'
   | 'ao'
   | 'ao-mute'
@@ -2711,6 +2913,9 @@ export type PropertyName =
   | 'clipboard-monitor'
   | 'clipboard-xwayland'
   | 'clock'
+  | 'cocoa-cb-10bit-context'
+  | 'cocoa-cb-output-csp'
+  | 'cocoa-cb-sw-renderer'
   | 'colormatrix'
   | 'colormatrix-gamma'
   | 'colormatrix-input-range'
@@ -2724,6 +2929,8 @@ export type PropertyName =
   | 'cookies'
   | 'cookies-file'
   | 'core-idle'
+  | 'coreaudio-change-physical-format'
+  | 'coreaudio-spdif-hack'
   | 'corner-rounding'
   | 'correct-downscaling'
   | 'correct-pts'
@@ -2841,6 +3048,14 @@ export type PropertyName =
   | 'dither-depth'
   | 'dither-size-fruit'
   | 'drag-and-drop'
+  | 'drm-connector'
+  | 'drm-device'
+  | 'drm-draw-plane'
+  | 'drm-draw-surface-size'
+  | 'drm-drmprime-video-plane'
+  | 'drm-format'
+  | 'drm-mode'
+  | 'drm-vrr-enabled'
   | 'dropped-files'
   | 'dscale'
   | 'dscale-antiring'
@@ -2859,6 +3074,8 @@ export type PropertyName =
   | 'edition'
   | 'edition-list'
   | 'editions'
+  | 'egl-config-id'
+  | 'egl-output-format'
   | 'embeddedfonts'
   | 'encoder-list'
   | 'end'
@@ -3016,6 +3233,16 @@ export type PropertyName =
   | 'loop-playlist'
   | 'lut'
   | 'lut-type'
+  | 'macos-app-activation-policy'
+  | 'macos-bundle-path'
+  | 'macos-force-dedicated-gpu'
+  | 'macos-fs-animation-duration'
+  | 'macos-geometry-calculation'
+  | 'macos-menu-shortcuts'
+  | 'macos-render-timer'
+  | 'macos-title-bar-appearance'
+  | 'macos-title-bar-color'
+  | 'macos-title-bar-material'
   | 'mc'
   | 'media-controls'
   | 'media-title'
@@ -3050,8 +3277,15 @@ export type PropertyName =
   | 'on-all-workspaces'
   | 'ontop'
   | 'ontop-level'
+  | 'opengl-check-pattern-a'
+  | 'opengl-check-pattern-b'
+  | 'opengl-early-flush'
+  | 'opengl-es'
+  | 'opengl-glfinish'
   | 'opengl-pbo'
   | 'opengl-rectangle-textures'
+  | 'opengl-swapinterval'
+  | 'opengl-waitvsync'
   | 'option-info'
   | 'options'
   | 'orawts'
@@ -3153,6 +3387,10 @@ export type PropertyName =
   | 'profile-list'
   | 'property-list'
   | 'protocol-list'
+  | 'pulse-allow-suspended'
+  | 'pulse-buffer'
+  | 'pulse-host'
+  | 'pulse-latency-hacks'
   | 'quiet'
   | 'really-quiet'
   | 'rebase-start-time'
@@ -3419,6 +3657,7 @@ export type PropertyName =
   | 'use-filedir-conf'
   | 'user-agent'
   | 'user-data'
+  | 'vaapi-device'
   | 'vd'
   | 'vd-apply-cropping'
   | 'vd-lavc-assume-old-x264'
@@ -3526,6 +3765,14 @@ export type PropertyName =
   | 'volume-max'
   | 'vsync-jitter'
   | 'vsync-ratio'
+  | 'vulkan-async-compute'
+  | 'vulkan-async-transfer'
+  | 'vulkan-device'
+  | 'vulkan-display-display'
+  | 'vulkan-display-mode'
+  | 'vulkan-display-plane'
+  | 'vulkan-queue-count'
+  | 'vulkan-swap-mode'
   | 'wasapi-exclusive-buffer'
   | 'watch-history-path'
   | 'watch-later-dir'
