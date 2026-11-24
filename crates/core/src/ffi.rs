@@ -90,6 +90,25 @@ pub struct StreamInfo {
     pub close: unsafe extern "C" fn(Handle),
     pub cancel: Option<unsafe extern "C" fn(Handle)>,
 }
+
+#[repr(C)]
+pub struct RenderParam {
+    pub kind: c_int,
+    pub data: Handle,
+}
+impl RenderParam {
+    pub fn end() -> Self {
+        Self {
+            kind: 0,
+            data: std::ptr::null_mut(),
+        }
+    }
+}
+#[repr(C)]
+pub struct FrameInfo {
+    pub flags: u64,
+    pub target_time: i64,
+}
 macro_rules! client_api {
     ($($name:ident($($arg:ty),*) -> $result:ty),+ $(,)?) => {
         pub struct Api {
@@ -111,6 +130,14 @@ macro_rules! client_api {
 }
 
 client_api! {
+    render_context_create(*mut Handle, Handle, *mut RenderParam) -> c_int,
+    render_context_update(Handle) -> u64,
+    render_context_get_info(Handle, RenderParam) -> c_int,
+    render_context_render(Handle,*mut RenderParam) -> c_int,
+    render_context_set_update_callback(Handle,Option<unsafe extern "C" fn(Handle)>,Handle) -> (),
+    render_context_report_swap(Handle) -> (),
+    render_context_free(Handle) -> (),
+    set_option_string(Handle,*const c_char,*const c_char) -> c_int,
     create() -> Handle,
     initialize(Handle) -> c_int,
     set_option(Handle, *const c_char, c_int, *mut c_void) -> c_int,
