@@ -1,3 +1,4 @@
+import { checkUnixModules } from './modules.js'
 import { checkSubtitleFonts } from './subtitle-fonts.js'
 import { checkGpuVideo } from './gpu.js'
 import { checkSoftwareVideo } from './software.js'
@@ -21,6 +22,7 @@ assert.deepEqual(versions, [
   { major: 2, minor: 6 },
   { major: 2, minor: 6 },
 ])
+await checkUnixModules()
 console.log(JSON.stringify({ host: process.versions.electron ?? process.version, versions }))
 
 const { createMpv, MpvBindingError, MpvAbortError, MpvConversionError, MpvNativeError } =
