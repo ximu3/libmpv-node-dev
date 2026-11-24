@@ -17,9 +17,9 @@ pub fn devices() -> Result<Vec<Device>, Failure> {
         let Some(name) = entry.file_name().into_string().ok() else {
             continue;
         };
-        if !name
+        if name
             .strip_prefix("renderD")
-            .is_some_and(|number| number.parse::<u32>().is_ok())
+            .is_none_or(|number| number.parse::<u32>().is_err())
         {
             continue;
         }

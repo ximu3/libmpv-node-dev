@@ -19,8 +19,8 @@ int libmpv_list_renderers(void *context, void (*visit)(void *, uint32_t, const c
             if (result != kCGLNoError) break;
 
             NSString *name = nil;
-            if (CGLDescribeRenderer(info, index, kCGLRPGPURegistryIDLow, &low) == kCGLNoError &&
-                CGLDescribeRenderer(info, index, kCGLRPGPURegistryIDHigh, &high) == kCGLNoError) {
+            if (CGLDescribeRenderer(info, index, kCGLRPRegistryIDLow, &low) == kCGLNoError &&
+                CGLDescribeRenderer(info, index, kCGLRPRegistryIDHigh, &high) == kCGLNoError) {
                 uint64_t registry = ((uint64_t)(uint32_t)high << 32) | (uint32_t)low;
                 for (id<MTLDevice> device in devices) {
                     if (device.registryID == registry) {
