@@ -1,14 +1,36 @@
 export { getClientApiVersion, type MpvClientApiVersion } from './library.js'
-export { createMpv } from './client/index.js'
-export type { Mpv, MpvClient, MpvControl, CreateMpvOptions } from './client/contracts.js'
+export { createMpv } from './client/create.js'
+export type {
+  Mpv,
+  MpvClient,
+  MpvControl,
+  CreateMpvOptions,
+  Format as MpvPropertyFormat,
+  Options as CallOptions,
+  NativeCommand as MpvCommandNode,
+  Command as MpvCommand,
+  MpvPropertyNode,
+  MpvPropertyValue,
+  ObserveOptions,
+  ObserveEventsOptions,
+  ObserveLogsOptions,
+  PropertyTextOptions,
+  VideoOutputOptions,
+  VideoOutput,
+} from './client/contracts.js'
 export {
   MpvError,
   MpvBindingError,
   MpvNativeError,
   MpvAbortError,
   MpvConversionError,
+  MpvObservationError,
+  MpvNotificationConversionError,
+  type Creation as MpvCreationContext,
+  type MpvOperation,
+  type MpvBindingErrorCode,
 } from './errors.js'
-export type { MpvValue, MpvNode } from './values.js'
+export type { MpvValue, MpvNode, MpvObject, ValueRepresentation } from './values.js'
 
 export type {
   MpvEvent,
@@ -18,7 +40,6 @@ export type {
   MpvSubscription,
   PropertyState,
 } from './subscriptions.js'
-export { MpvObservationError, MpvNotificationConversionError } from './errors.js'
 
 export type {
   MpvLogLevel,
@@ -59,22 +80,5 @@ export {
   type VideoTarget,
 } from './video/gpu.js'
 export { NativeFrame, type NativeDmaBufPlane, type NativeFrameSurface } from './video/frame.js'
-export type { VideoOutputOptions, VideoOutput } from './client/contracts.js'
 
 export type { KnownCommand, KnownOption, KnownProperty, Screenshot } from './catalog/types.js'
-
-export type { MpvObject } from './values.js'
-export type { Creation as MpvCreationContext, MpvOperation, MpvBindingErrorCode } from './errors.js'
-export type {
-  Mode as ValueRepresentation,
-  Format as MpvPropertyFormat,
-  Options as CallOptions,
-  NativeCommand as MpvCommandNode,
-  Command as MpvCommand,
-  MpvPropertyNode,
-  MpvPropertyValue,
-  ObserveOptions,
-  ObserveEventsOptions,
-  ObserveLogsOptions,
-  PropertyTextOptions,
-} from './client/contracts.js'

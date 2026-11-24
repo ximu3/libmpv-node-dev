@@ -13,7 +13,7 @@ import type { MpvStreamProvider } from '../streams/contracts.js'
 import type { MpvHookOptions, MpvHookHandler } from '../hooks.js'
 import type { InitializationLogs } from './initialization.js'
 import type { LogLevel, MpvLogRecord, MpvNativeLogRecord } from '../logs.js'
-import type { MpvValue, MpvNode } from '../values.js'
+import type { MpvValue, MpvNode, ValueRepresentation } from '../values.js'
 import type {
   MpvSubscription,
   MpvObserver,
@@ -24,7 +24,7 @@ import type {
 } from '../subscriptions.js'
 
 export type Name = string | Uint8Array<ArrayBuffer>
-export type Mode = 'native' | 'javascript'
+
 export type Format = 'node' | 'flag' | 'int64' | 'double'
 export type MpvPropertyValue<F extends Format, T = MpvValue> = F extends 'flag'
   ? boolean
@@ -36,9 +36,9 @@ export type MpvPropertyValue<F extends Format, T = MpvValue> = F extends 'flag'
 export type MpvPropertyNode<F extends Format> = F extends 'node'
   ? MpvNode
   : Extract<MpvNode, { readonly format: F }>
-type Output<T, M extends Mode> = M extends 'native' ? MpvNode : T
+type Output<T, M extends ValueRepresentation> = M extends 'native' ? MpvNode : T
 export type Options = { readonly signal?: AbortSignal }
-export type ObserveOptions = Options & { readonly output?: Mode }
+export type ObserveOptions = Options & { readonly output?: ValueRepresentation }
 export type ObserveEventsOptions = ObserveOptions & { readonly events?: readonly MpvEventName[] }
 export type ObserveLogsOptions = ObserveOptions & { readonly level?: LogLevel }
 export type PropertyTextOptions = ObserveOptions & { readonly format?: 'plain' | 'osd' }
@@ -89,7 +89,9 @@ export interface MpvControl {
   observeProperty<N extends Name>(
     name: N,
     observer: MpvObserver<PropertyState<PropertyRead<NoInfer<N>> | MpvNode>>,
-    options: (Options & { readonly format?: 'node'; readonly output?: Mode }) | undefined,
+    options:
+      | (Options & { readonly format?: 'node'; readonly output?: ValueRepresentation })
+      | undefined,
   ): Promise<MpvSubscription>
   observeProperty<N extends Name, F extends Format>(
     name: N,
@@ -108,7 +110,7 @@ export interface MpvControl {
         MpvPropertyValue<NoInfer<F>, PropertyRead<NoInfer<N>>> | MpvPropertyNode<NoInfer<F>>
       >
     >,
-    options: Options & { readonly format: F; readonly output?: Mode },
+    options: Options & { readonly format: F; readonly output?: ValueRepresentation },
   ): Promise<MpvSubscription>
   observeProperty(
     name: Name,
@@ -140,7 +142,7 @@ export interface MpvControl {
   observePropertyText(
     name: Name,
     observer: MpvObserver<PropertyState<string | Uint8Array<ArrayBuffer>>>,
-    options: (Options & { output?: Mode }) | undefined,
+    options: (Options & { output?: ValueRepresentation }) | undefined,
   ): Promise<MpvSubscription>
   readonly clientName: string
   readonly clientId: bigint
@@ -155,7 +157,9 @@ export interface MpvControl {
   ): Promise<MpvNode>
   getProperty<N extends Name>(
     name: N,
-    options: (Options & { readonly format?: 'node'; readonly output?: Mode }) | undefined,
+    options:
+      | (Options & { readonly format?: 'node'; readonly output?: ValueRepresentation })
+      | undefined,
   ): Promise<PropertyRead<N> | MpvNode>
   getProperty<N extends Name, F extends Format>(
     name: N,
@@ -167,13 +171,13 @@ export interface MpvControl {
   ): Promise<MpvPropertyNode<F>>
   getProperty<N extends Name, F extends Format>(
     name: N,
-    options: Options & { readonly format: F; readonly output?: Mode },
+    options: Options & { readonly format: F; readonly output?: ValueRepresentation },
   ): Promise<MpvPropertyValue<F, PropertyRead<N>> | MpvPropertyNode<F>>
   getPropertyText(
     name: Name,
     options?: Options & { format?: 'plain' | 'osd'; output?: 'javascript' },
   ): Promise<string>
-  getPropertyText<M extends Mode>(
+  getPropertyText<M extends ValueRepresentation>(
     name: Name,
     options: Options & { format?: 'plain' | 'osd'; output: M },
   ): Promise<M extends 'native' ? Uint8Array<ArrayBuffer> : string>
@@ -187,7 +191,7 @@ export interface MpvControl {
     args: A & CheckedCommand<NoInfer<A>>,
     options?: Options & { input?: 'javascript'; output?: 'javascript' },
   ): Promise<CommandResult<A>>
-  command<const A extends Command, M extends Mode>(
+  command<const A extends Command, M extends ValueRepresentation>(
     args: A & CheckedCommand<NoInfer<A>>,
     options: Options & { input?: 'javascript'; output: M },
   ): Promise<Output<CommandResult<A>, M>>
@@ -195,7 +199,7 @@ export interface MpvControl {
     args: NativeCommand,
     options: Options & { input: 'native'; output?: 'javascript' },
   ): Promise<MpvValue>
-  command<M extends Mode>(
+  command<M extends ValueRepresentation>(
     args: NativeCommand,
     options: Options & { input: 'native'; output: M },
   ): Promise<Output<MpvValue, M>>
@@ -221,7 +225,7 @@ export interface Mpv<V extends VideoOutput | null = VideoOutput | null> extends 
   registerProtocol(
     name: Name,
     provider: MpvStreamProvider<string | Uint8Array<ArrayBuffer>>,
-    options: { readonly output?: Mode } | undefined,
+    options: { readonly output?: ValueRepresentation } | undefined,
   ): Promise<void>
   readonly videoOutput: V
   createClient(options?: Options & { name?: string }): Promise<MpvClient>

@@ -1,6 +1,6 @@
 import { types } from 'node:util'
-import { MpvBindingError, MpvConversionError } from './errors.js'
-import type { MpvOperation } from './errors.js'
+import { MpvBindingError, MpvConversionError, type MpvOperation } from './errors.js'
+export type ValueRepresentation = 'native' | 'javascript'
 
 export interface MpvObject {
   readonly [key: string]: MpvValue
@@ -30,6 +30,16 @@ export type MpvNode =
 const decoder = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true })
 const encoder = new TextEncoder()
 export const none = { format: 'none' } as const
+
+export function valueMode(value: ValueRepresentation | undefined, op: MpvOperation) {
+  if (value === undefined || value === 'javascript') {
+    return 'javascript'
+  }
+  if (value === 'native') {
+    return value
+  }
+  throw new MpvBindingError('invalidArgument', op)
+}
 
 function invalid(operation: MpvOperation): never {
   throw new MpvBindingError('invalidArgument', operation)

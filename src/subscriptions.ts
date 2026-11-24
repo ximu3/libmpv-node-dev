@@ -1,4 +1,4 @@
-import type { CoreStreams } from './streams/index.js'
+import type { CoreStreams } from './streams/registry.js'
 import { AsyncResource } from 'node:async_hooks'
 import { addAbortListener } from 'node:events'
 import { MpvAbortError, MpvBindingError, MpvObservationError } from './errors.js'

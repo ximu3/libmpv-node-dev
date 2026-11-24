@@ -1,7 +1,6 @@
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { types } from 'node:util'
 import { MpvBindingError } from '../errors.js'
-import type { MpvOperation } from '../errors.js'
 import type { NativeClient, NativeFailure } from '../native.js'
 import type {
   Action,
@@ -12,8 +11,8 @@ import type {
   NativeProtocol,
   Reply,
 } from './contracts.js'
+import type { CoreStreams } from './registry.js'
 
-const running = new AsyncLocalStorage<CoreStreams>()
 type Source = {
   object: MpvStreamSource
   read: MpvStreamSource['read']
@@ -29,59 +28,7 @@ type Stream<T> = {
   cleanup?: Promise<void>
 }
 
-export class CoreStreams {
-  #registrations = new Set<{ cancel(): void; finished: Promise<void> }>()
-  #closing = false
-  #errors: unknown[] = []
-
-  check(operation: MpvOperation) {
-    if (running.getStore() === this) {
-      throw new MpvBindingError('reentrantStreamCall', operation)
-    }
-  }
-
-  cancel() {
-    this.#closing = true
-    for (const protocol of this.#registrations) {
-      protocol.cancel()
-    }
-  }
-
-  async finish() {
-    await Promise.all(Array.from(this.#registrations, (registration) => registration.finished))
-    if (this.#errors.length) {
-      throw new AggregateError(this.#errors.splice(0), 'Stream cleanup failed.')
-    }
-  }
-
-  async register<T>(
-    client: NativeClient,
-    name: Uint8Array<ArrayBuffer>,
-    provider: MpvStreamProvider<T>,
-    uri: (bytes: Uint8Array<ArrayBuffer>) => T,
-    fail: (failure: NativeFailure) => never,
-  ) {
-    this.check('registerProtocol')
-    if (
-      !provider ||
-      typeof provider.open !== 'function' ||
-      typeof provider.onError !== 'function'
-    ) {
-      throw new MpvBindingError('invalidArgument', 'registerProtocol')
-    }
-    if (this.#closing || client.closing) {
-      throw new MpvBindingError('closed', 'registerProtocol')
-    }
-    const protocol = new Provider(this, client, provider, uri, (reason) =>
-      this.#errors.push(reason),
-    )
-    this.#registrations.add(protocol)
-    void protocol.finished.then(() => this.#registrations.delete(protocol))
-    return protocol.register(name, fail)
-  }
-}
-
-class Provider<T> {
+export class StreamProvider<T> {
   #native?: NativeProtocol
   #closing = false
   #ended = false
@@ -154,7 +101,7 @@ class Provider<T> {
       try {
         const source = stream.source
         if (source) {
-          await this.#run(() => running.run(this.scope, () => source.close.call(source.object)))
+          await this.#run(() => this.scope.run(() => source.close.call(source.object)))
         }
       } catch (reason) {
         this.#report({ operation: 'close', request: stream.request, reason })
@@ -195,7 +142,7 @@ class Provider<T> {
           return
         }
         const object = await this.#run(() =>
-          running.run(this.scope, () => this.#open.call(this.provider, stream.request)),
+          this.scope.run(() => this.#open.call(this.provider, stream.request)),
         )
         if (!object || typeof object !== 'object') {
           throw new MpvBindingError('invalidStreamResult', 'openStream', true)
@@ -233,7 +180,7 @@ class Provider<T> {
         switch (action.kind) {
           case 'read': {
             const data = await this.#run(() =>
-              running.run(this.scope, () => source.read.call(source.object, action.max)),
+              this.scope.run(() => source.read.call(source.object, action.max)),
             )
             if (data === null) {
               result = { kind: 'eof' }
@@ -252,13 +199,13 @@ class Provider<T> {
           }
           case 'seek':
             await this.#run(() =>
-              running.run(this.scope, () => source.seek!.call(source.object, action.offset)),
+              this.scope.run(() => source.seek!.call(source.object, action.offset)),
             )
             result = { kind: 'ok' }
             break
           case 'getSize': {
             const size = await this.#run(() =>
-              running.run(this.scope, () => source.getSize!.call(source.object)),
+              this.scope.run(() => source.getSize!.call(source.object)),
             )
             if (size === null) {
               result = { kind: 'unknown' }

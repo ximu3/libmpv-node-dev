@@ -7,10 +7,9 @@ import { createReadStream } from 'node:fs'
 import { readFile, realpath } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { basename, dirname, join } from 'node:path'
-import { MpvBindingError } from './errors.js'
+import { MpvBindingError, type MpvOperation, type MpvBindingErrorCode } from './errors.js'
 import type { NativeClient, NativeFailure } from './native.js'
 import type { MpvNode } from './values.js'
-import type { MpvOperation, MpvBindingErrorCode } from './errors.js'
 
 export interface MpvClientApiVersion {
   readonly major: number
