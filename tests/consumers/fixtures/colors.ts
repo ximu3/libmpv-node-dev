@@ -1,6 +1,12 @@
 import assert from 'node:assert/strict'
 import { fileURLToPath } from 'node:url'
-import { createMpv, type NativeFrame, type VideoTarget, type MpvValue } from '@ximu3/libmpv-node'
+import {
+  createMpv,
+  MpvNativeError,
+  type NativeFrame,
+  type VideoTarget,
+  type MpvValue,
+} from '@ximu3/libmpv-node'
 
 const chart = [
   [255, 0, 0],
@@ -70,6 +76,10 @@ async function render(colorSpace: VideoTarget['colorSpace'], hdr: boolean, decod
       ['image-display-duration', 'inf'],
     ],
   })
+  await assert.rejects(
+    player.command(['screenshot-raw']),
+    (error) => error instanceof MpvNativeError && error.nativeName === 'MPV_ERROR_COMMAND',
+  )
   const messages: string[] = []
   if (decoder !== 'no') {
     await player.observeLogs(
