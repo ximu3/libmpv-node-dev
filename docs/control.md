@@ -45,3 +45,7 @@ Await provider work before returning it to the binding. Work on a stream cannot 
 For software rendering, pass `videoOutput: { renderer: 'software', width, height }` to `createMpv`. The default format is bgr0. The output accepts rgb0, bgr0, 0rgb, 0bgr and rgb24. `configure()` takes a complete width, height and pixel format. `observeFrames()` returns a disposable subscription to independent CPU byte arrays. Stride includes row padding, and the zero channel is unused. Delivered pixels remain valid after configuring or closing the player.
 
 The output owns its libmpv VO. A direct conflicting write fails with `renderConflict`. A conflict detected after applying a configuration file ends the output and leaves the core available for other operations. Use `reportSwap()` only when the host actually presents a frame.
+
+## Engine inventory
+
+The installed platform package contains `catalog.json`. It records the actual mpv, FFmpeg, libplacebo and libass versions, decoder and encoder entries, demuxers, protocols, commands, properties and option metadata. The `vo`, `ao`, `vf` and `af` option entries expose the choices compiled into that platform. Hardware availability is measured on the target device.

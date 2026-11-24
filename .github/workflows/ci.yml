@@ -124,15 +124,6 @@ jobs:
         with:
           path: ${{ runner.temp }}/libmpv-runtime
           key: ${{ steps.unix-media.outputs.cache-primary-key }}
-      - name: Consume the packaged Unix binding
-        if: runner.os != 'Windows'
-        shell: bash
-        run: |
-          if [[ "$RUNNER_OS" == Linux ]]; then
-            xvfb-run -a pnpm exec vp run verify:media "$RUNNER_TEMP/libmpv-runtime"
-          else
-            pnpm exec vp run verify:media "$RUNNER_TEMP/libmpv-runtime"
-          fi
       - name: Restore the exact media build
         id: media
         if: runner.os == 'Windows'
@@ -152,13 +143,157 @@ jobs:
         with:
           path: ${{ runner.temp }}/libmpv-engine
           key: ${{ steps.media.outputs.cache-primary-key }}
-      - name: Consume the packaged Windows binding
-        if: runner.os == 'Windows'
-        run: pnpm exec vp run verify:media "$env:RUNNER_TEMP/libmpv-engine"
+      - name: Prepare Linux audio devices for the full media check
+        if: runner.os == 'Linux' && github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+        run: |
+          sudo apt-get install -y pulseaudio pulseaudio-utils
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=libmpv_test
+          pactl set-default-sink libmpv_test
+          echo "LIBMPV_TEST_AUDIO=alsa,pulse" >> "$GITHUB_ENV"
+      - name: Verify the installed platform package
+        shell: bash
+        env:
+          ASSEMBLE: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'all' }}
+          LIBMPV_TEST_HTTPS: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+        run: |
+          runtime="$RUNNER_TEMP/libmpv-runtime"
+          args=()
+          if [[ "$RUNNER_OS" == Windows ]]; then runtime="$RUNNER_TEMP/libmpv-engine"; fi
+          if [[ "$ASSEMBLE" == true ]]; then args+=(--keep-platform "$RUNNER_TEMP/verified-platform"); fi
+          if [[ "$RUNNER_OS" == Linux ]]; then
+            xvfb-run -a pnpm exec vp run verify:media "$runtime" "${args[@]}"
+          else
+            pnpm exec vp run verify:media "$runtime" "${args[@]}"
+          fi
+      - name: Transfer the verified platform archive
+        if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: media-${{ matrix.target }}
+          path: ${{ runner.temp }}/verified-platform/*.tgz
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Prepare corresponding source and rebuilding materials
+        if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+        shell: bash
+        run: |
+          runtime="$RUNNER_TEMP/libmpv-runtime"
+          if [[ "$RUNNER_OS" == Windows ]]; then runtime="$RUNNER_TEMP/libmpv-engine"; fi
+          pnpm exec vp run pack:sources "$RUNNER_TEMP/verified-sources" --runtime "$runtime" --cache "$RUNNER_TEMP/upstream-archives" --inputs-only
+      - name: Retain corresponding source
+        if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: source-inputs-${{ matrix.target }}
+          path: ${{ runner.temp }}/verified-sources
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+
+  assemble:
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+    needs: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: media-*
+          path: ${{ runner.temp }}/platforms
+      - run: pnpm exec vp run build
+      - run: pnpm exec vp run pack:all "$RUNNER_TEMP/assembled" --platforms "$RUNNER_TEMP/platforms"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: media-main
+          path: |
+            ${{ runner.temp }}/assembled/ximu3-libmpv-node-0*.tgz
+            ${{ runner.temp }}/assembled/checksums.json
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+
+  sources:
+    if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+    needs: build
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          pattern: source-inputs-*
+          path: ${{ runner.temp }}/source-inputs
+      - uses: actions/cache@caa296126883cff596d87d8935842f9db880ef25
+        with:
+          path: ${{ runner.temp }}/upstream-archives
+          key: source-v1-${{ hashFiles('engine/posix/locks/**', 'tools/engine/posix/sources.ts') }}
+      - run: pnpm exec vp run pack:all-sources "$RUNNER_TEMP/candidate-sources" --inputs "$RUNNER_TEMP/source-inputs" --cache "$RUNNER_TEMP/upstream-archives"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: corresponding-sources
+          path: ${{ runner.temp }}/candidate-sources
+          compression-level: 0
+          if-no-files-found: error
+          retention-days: 1
+
+  consume:
+    needs: [plan, assemble]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - uses: pnpm/action-setup@fc06bc1257f339d1d5d8b3a19a8cae5388b55320
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: media-main
+          path: ${{ runner.temp }}/pair
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0
+        with:
+          name: media-${{ matrix.target }}
+          path: ${{ runner.temp }}/pair
+      - if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libegl1 libgbm1 libva-drm2 libvulkan1 libpulse0 xvfb xauth
+      - shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == Linux ]]; then
+            xvfb-run -a pnpm exec vp run verify:media "$RUNNER_TEMP/pair" --installed
+          else
+            pnpm exec vp run verify:media "$RUNNER_TEMP/pair" --installed
+          fi
   gate:
     name: ${{ github.event_name == 'workflow_dispatch' && 'Requested checks' || 'Required checks' }}
     runs-on: ubuntu-22.04
-    needs: [plan, workspace, build]
+    needs: [plan, workspace, build, assemble, sources, consume]
     if: always()
     steps:
       - env:
@@ -167,8 +302,15 @@ jobs:
           CODE: ${{ needs.plan.outputs.code }}
           WORKSPACE: ${{ needs.workspace.result }}
           BUILD: ${{ needs.build.result }}
+          FULL_CANDIDATE: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'all' }}
+          ASSEMBLY: ${{ needs.assemble.result }}
+          SOURCES: ${{ needs.sources.result }}
+          CONSUMERS: ${{ needs.consume.result }}
         run: |
           [[ "$PLAN" == success ]]
+          if [[ "$FULL_CANDIDATE" == true ]]; then
+            [[ "$ASSEMBLY" == success && "$SOURCES" == success && "$CONSUMERS" == success ]]
+          fi
           if [[ "$REUSED" == true ]]; then
             [[ "$WORKSPACE" == skipped && "$BUILD" == skipped ]]
           elif [[ "$CODE" == true ]]; then

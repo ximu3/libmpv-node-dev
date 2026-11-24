@@ -1,3 +1,5 @@
+import { checkNetwork } from './network.js'
+import { checkUnixModules } from './modules.js'
 import { checkSubtitleFonts } from './subtitle-fonts.js'
 import { checkColorOutput } from './colors.js'
 import { checkGpuVideo } from './gpu.js'
@@ -22,6 +24,7 @@ assert.deepEqual(versions, [
   { major: 2, minor: 6 },
   { major: 2, minor: 6 },
 ])
+await checkUnixModules()
 console.log(JSON.stringify({ host: process.versions.electron ?? process.version, versions }))
 
 const { createMpv, MpvBindingError, MpvAbortError, MpvConversionError, MpvNativeError } =
@@ -206,6 +209,7 @@ try {
   await writeFile(media, pcm)
   console.log('Checking checkStreams')
   await checkStreams(pcm)
+  await checkNetwork(pcm)
   await player.setProperty('pause', true)
   const started = Promise.withResolvers<AbortSignal>()
   const pendingHook = Promise.withResolvers<void>()
@@ -297,4 +301,8 @@ await checkControlLoad()
 if (process.env.LIBMPV_TEST_GRAPHICS === '1') {
   await checkGpuVideo()
   await checkColorOutput()
+  if (process.versions.electron) {
+    const { checkPresentation } = await import('./electron/presentation.js')
+    await checkPresentation()
+  }
 }

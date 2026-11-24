@@ -146,52 +146,60 @@ function definition(cmd: CommandInfo) {
   return id + ':{ args:readonly [' + positional.join(',') + ']; named:' + named + '}'
 }
 
-const optionTypes = new Map<string, Set<string>>()
-const commands = new Map<string, Set<string>>()
-const properties = new Set<string>()
-for (const path of process.argv.slice(2)) {
-  const catalog = JSON.parse(await readFile(requiredPath(path, 'catalog'), 'utf8')) as Catalog
-  for (const info of catalog.options) {
-    const { read, write } = option(info)
-    const types = optionTypes.get(info.name) ?? new Set<string>()
-    types.add('{read:' + read + ';write:' + write + '}')
-    optionTypes.set(info.name, types)
-  }
-  for (const cmd of catalog.commands) {
-    const forms = commands.get(cmd.name) ?? new Set<string>()
-    forms.add(definition(cmd))
-    commands.set(cmd.name, forms)
-  }
-  for (const name of catalog.properties) {
-    properties.add(name)
-  }
-}
-if (!commands.size) {
-  throw new Error('Expected at least one actual engine catalog')
-}
-const definitions = [...commands]
-  .sort(([a], [b]) => a.localeCompare(b, 'en'))
-  .map(([name, forms]) => {
-    if (forms.size !== 1) {
-      throw Error('Conflicting platform signatures for ' + name)
+export function declarations(catalogs: readonly Catalog[]) {
+  const optionTypes = new Map<string, Set<string>>()
+  const commands = new Map<string, Set<string>>()
+  const properties = new Set<string>()
+  for (const catalog of catalogs) {
+    for (const info of catalog.options) {
+      const { read, write } = option(info)
+      const types = optionTypes.get(info.name) ?? new Set<string>()
+      types.add('{read:' + read + ';write:' + write + '}')
+      optionTypes.set(info.name, types)
     }
-    return [...forms][0]
-  })
-const text = [
-  "import type { At, FlagInput, IntegerArgument, RealArgument } from './types.js'",
-  "import type { MpvValue } from '../values.js'",
-  'type ObjectSetting = { readonly name:string; readonly label?:string; readonly enabled?:boolean; readonly params?:Readonly<Record<string,string>> }',
-  'export interface CommandDefinitions<A> {',
-  ...definitions,
-  '}',
-  'export interface OptionDefinitions {',
-  ...[...optionTypes.keys()]
-    .sort()
-    .map((name) => quote(name) + ':' + [...optionTypes.get(name)!].join(' | ')),
-  '}',
-  'export type PropertyName = ' + union([...properties].sort()),
-  '',
-].join('\n')
-await writeFile(join(projectRoot, 'src/catalog/generated.ts'), text)
+    for (const cmd of catalog.commands) {
+      const forms = commands.get(cmd.name) ?? new Set<string>()
+      forms.add(definition(cmd))
+      commands.set(cmd.name, forms)
+    }
+    for (const name of catalog.properties) {
+      properties.add(name)
+    }
+  }
+  if (!commands.size) {
+    throw new Error('Expected at least one actual engine catalog')
+  }
+  const definitions = [...commands]
+    .sort(([a], [b]) => a.localeCompare(b, 'en'))
+    .map(([name, forms]) => {
+      if (forms.size !== 1) {
+        throw Error('Conflicting platform signatures for ' + name)
+      }
+      return [...forms][0]
+    })
+  const text = [
+    "import type { At, FlagInput, IntegerArgument, RealArgument } from './types.js'",
+    "import type { MpvValue } from '../values.js'",
+    'type ObjectSetting = { readonly name:string; readonly label?:string; readonly enabled?:boolean; readonly params?:Readonly<Record<string,string>> }',
+    'export interface CommandDefinitions<A> {',
+    ...definitions,
+    '}',
+    'export interface OptionDefinitions {',
+    ...[...optionTypes.keys()]
+      .sort()
+      .map((name) => quote(name) + ':' + [...optionTypes.get(name)!].join(' | ')),
+    '}',
+    'export type PropertyName = ' + union([...properties].sort()),
+    '',
+  ].join('\n')
+  return text
+}
 
-runPnpm(['exec', 'vp', 'fmt', '--write', 'src/catalog/generated.ts'], projectRoot)
+if (import.meta.main) {
+  const catalogs: Catalog[] = []
+  for (const path of process.argv.slice(2)) {
+    catalogs.push(JSON.parse(await readFile(requiredPath(path, 'catalog'), 'utf8')) as Catalog)
+  }
+  await writeFile(join(projectRoot, 'src/catalog/generated.ts'), declarations(catalogs))
+  runPnpm(['exec', 'vp', 'fmt', '--write', 'src/catalog/generated.ts'], projectRoot)
+}

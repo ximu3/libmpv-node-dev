@@ -35,8 +35,25 @@ export async function obtain(source: SourceArchive, cache: string) {
     if (remote.hostname === 'ftpmirror.gnu.org') {
       mirrors.add('https://mirrors.kernel.org/gnu' + remote.pathname)
     }
-    if (remote.hostname === 'ftp.gnu.org' && remote.pathname.startsWith('/gnu/')) {
-      mirrors.add('https://mirrors.kernel.org' + remote.pathname)
+    if (remote.hostname === 'ftp.gnu.org' && /^\/(?:pub\/)?gnu\//.test(remote.pathname)) {
+      const gnu = remote.pathname.replace(/^\/pub\//, '/')
+      mirrors.add('https://mirrors.kernel.org' + gnu)
+      mirrors.add('https://ftpmirror.gnu.org' + gnu.slice(4))
+    }
+    if (remote.hostname === 'github.com') {
+      const archive = remote.pathname.match(/^\/([^/]+)\/([^/]+)\/archive\/(.+)\.(zip|tar\.gz)$/)
+      if (archive) {
+        mirrors.add(
+          'https://codeload.github.com/' +
+            archive[1] +
+            '/' +
+            archive[2] +
+            '/' +
+            archive[4] +
+            '/' +
+            archive[3],
+        )
+      }
     }
     if (remote.hostname === 'zlib.net') {
       mirrors.add('https://zlib.net/fossils/' + basename(remote.pathname))
@@ -56,7 +73,9 @@ export async function obtain(source: SourceArchive, cache: string) {
           '--max-time',
           '300',
           '--retry',
-          '1',
+          '3',
+          '--retry-max-time',
+          '240',
           '--output',
           file,
           url,

@@ -7,3 +7,5 @@ Ahem was created by Todd Fahrner and Myles C. Maxfield and is dedicated to the p
 The 63 × 47 PNG contains six sRGB reference colors. The 224 × 64 lossless HEVC sample contains seven BT.2020 PQ gray steps from 0.1 to 4,000 nits. Its ASS sidecar paints an opaque red vector rectangle. The fixtures and independent Display P3 reference values come from the [SDR integration cases](https://github.com/ximu3/kisaki-dev/tree/main/refactor/verification/evidence/libmpv-sdr-integration).
 
 The hardware-decoding case uses a 12-frame, 896 × 256 HEVC Main 10 encoding of the PQ steps. The lossless source uses the HEVC range extensions profile. Each decoder is checked through the owning player's hwdec-current property.
+
+The two-second FFV1 motion pattern is generated from FFmpeg testsrc2 at 160 × 96 and 24 fps. The presentation consumer samples successive frames in one Electron window.

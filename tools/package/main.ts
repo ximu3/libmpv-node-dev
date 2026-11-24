@@ -3,6 +3,15 @@ import { join } from 'node:path'
 import metadata from '../../package.json' with { type: 'json' }
 import { projectRoot, writeJson } from '../files.ts'
 
+export const packageTargets = [
+  'darwin-arm64',
+  'darwin-x64',
+  'linux-arm64',
+  'linux-x64',
+  'win32-arm64',
+  'win32-x64',
+] as const
+
 export async function stageMain(main: string, targets: Readonly<Record<string, string>>) {
   const { name, version, description, license, type, exports, files } = metadata
   await mkdir(main, { recursive: true })

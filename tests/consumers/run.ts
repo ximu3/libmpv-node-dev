@@ -1,3 +1,4 @@
+import { verifyArchive } from './archive.ts'
 import { globSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import root from '../../package.json' with { type: 'json' }
@@ -27,6 +28,7 @@ await using temporary = await mkdtempDisposable(join(tmpdir(), 'libmpv 媒体 �
 const consumer = temporary.path
 await mkdir(join(consumer, 'archives'))
 let archiveIndex = 0
+const platform = root.name + '-' + process.platform + '-' + process.arch
 const dependencies: Record<string, string> = {}
 for (const name of await readdir(packages)) {
   if (!name.endsWith('.tgz')) {
@@ -49,11 +51,16 @@ for (const name of await readdir(packages)) {
   ) {
     throw new Error('Missing tarball package name')
   }
+  if (manifest.name !== root.name && manifest.name !== platform) {
+    continue
+  }
+  if (Object.hasOwn(dependencies, manifest.name)) {
+    throw new Error('Duplicate package ' + manifest.name)
+  }
   dependencies[manifest.name] = 'file:./' + fixtureArchive
 }
 
-const platform = Object.keys(dependencies).find((name) => name.startsWith(root.name + '-'))
-if (!platform || !dependencies[root.name]) {
+if (!dependencies[platform] || !dependencies[root.name]) {
   throw new Error('Expected paired library and platform packages')
 }
 const fixture = {
@@ -94,6 +101,17 @@ execFileSync(
 )
 
 const env = { ...process.env }
+for (const key of [
+  'XDG_CONFIG_HOME',
+  'XDG_CACHE_HOME',
+  'XDG_DATA_HOME',
+  'XDG_STATE_HOME',
+  'MPV_HOME',
+]) {
+  const directory = join(consumer, 'profile-data', key)
+  await mkdir(directory, { recursive: true })
+  env[key] = directory
+}
 for (const key of ['NODE_PATH', 'NODE_OPTIONS', 'ELECTRON_RUN_AS_NODE']) {
   delete env[key]
 }
@@ -117,10 +135,29 @@ if (!metadata.tracks.some((track) => track.type === 'video' && track.codec === '
   throw new Error('The installed metadata example did not identify the FFV1 stream')
 }
 if (values.electron) {
+  const display = env.LIBMPV_TEST_DISPLAY
+  const args: string[] = []
+  if (display !== undefined) {
+    if (process.platform !== 'linux' || (display !== 'x11' && display !== 'wayland')) {
+      throw new Error('Expected a Linux X11 or Wayland session')
+    }
+    if (display === 'wayland') {
+      if (!env.WAYLAND_DISPLAY) {
+        throw new Error('Missing Wayland display')
+      }
+      delete env.DISPLAY
+    } else {
+      if (!env.DISPLAY) {
+        throw new Error('Missing X11 display')
+      }
+      delete env.WAYLAND_DISPLAY
+    }
+    args.push('--ozone-platform=' + display)
+  }
   const receipt = join(consumer, 'electron-version')
   execFileSync(
     resolve(values.electron),
-    ['--user-data-dir=' + join(consumer, 'profile'), consumer],
+    [...args, '--user-data-dir=' + join(consumer, 'profile'), consumer],
     {
       cwd: consumer,
       env: { ...env, LIBMPV_TEST_RECEIPT: receipt },
@@ -132,5 +169,6 @@ if (values.electron) {
   if (version !== fixture.devDependencies.electron) {
     throw new Error('Missing receipt from Electron ' + fixture.devDependencies.electron)
   }
-  console.log(`Electron ${version} completed the installed-package checks.`)
+  await verifyArchive(consumer, resolve(values.electron), env, platform, args)
+  console.log(`Electron ${version} completed the installed-package and ASAR checks.`)
 }
