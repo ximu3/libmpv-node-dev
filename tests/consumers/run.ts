@@ -1,10 +1,18 @@
 import { fileURLToPath } from 'node:url'
 import root from '../../package.json' with { type: 'json' }
 import { execFileSync } from 'node:child_process'
-import { copyFile, cp, mkdtempDisposable, readFile, readdir, writeFile } from 'node:fs/promises'
+import {
+  copyFile,
+  cp,
+  mkdir,
+  mkdtempDisposable,
+  readFile,
+  readdir,
+  writeFile,
+} from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
-import { pathToFileURL } from 'node:url'
+
 import { parseArgs } from 'node:util'
 import { projectRoot, requiredPath, writeJson } from '../../tools/files.ts'
 import { runPnpm } from '../../tools/pnpm.ts'
@@ -14,6 +22,10 @@ const { values, positionals } = parseArgs({
   options: { electron: { type: 'string' } },
 })
 const packages = requiredPath(positionals[0], 'packages')
+await using temporary = await mkdtempDisposable(join(tmpdir(), 'libmpv 媒体 📚 '))
+const consumer = temporary.path
+await mkdir(join(consumer, 'archives'))
+let archiveIndex = 0
 const dependencies: Record<string, string> = {}
 for (const name of await readdir(packages)) {
   if (!name.endsWith('.tgz')) {
@@ -31,11 +43,11 @@ for (const name of await readdir(packages)) {
   ) {
     throw new Error('Missing tarball package name')
   }
-  dependencies[manifest.name] = pathToFileURL(archive).href
+  const fixtureArchive = 'archives/package-' + archiveIndex++ + '.tgz'
+  await copyFile(archive, join(consumer, fixtureArchive))
+  dependencies[manifest.name] = 'file:./' + fixtureArchive
 }
 
-await using temporary = await mkdtempDisposable(join(tmpdir(), 'libmpv 媒体 📚 '))
-const consumer = temporary.path
 const platform = Object.keys(dependencies).find((name) => name.startsWith(root.name + '-'))
 if (!platform || !dependencies[root.name]) {
   throw new Error('Expected paired library and platform packages')
@@ -71,11 +83,7 @@ execFileSync(
     join(projectRoot, 'vite.config.ts'),
     '--ignore-path',
     join(projectRoot, '.gitignore'),
-    'control.ts',
-    'worker.ts',
-    'subtitle-fonts.ts',
-    'example.ts',
-    'electron/main.ts',
+    '.',
   ],
   { cwd: consumer, stdio: 'inherit' },
 )

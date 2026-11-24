@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite-plus'
 
-const outputs = ['build/**', 'target/**', 'dist/**', '.cache/**', 'node_modules/**']
+const outputs = ['build/**', 'target/**', 'dist/**', 'out/**', '.cache/**', 'node_modules/**']
 export default defineConfig({
   run: {
     tasks: {

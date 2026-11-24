@@ -36,3 +36,10 @@ export {
   type VideoDeviceInfo,
   type VideoDeviceSelection,
 } from './video/devices.js'
+
+export type {
+  MpvStreamRequest,
+  MpvStreamSource,
+  MpvStreamFailure,
+  MpvStreamProvider,
+} from './streams/contracts.js'

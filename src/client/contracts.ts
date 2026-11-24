@@ -1,3 +1,4 @@
+import type { MpvStreamProvider } from '../streams/contracts.js'
 import type { MpvHookOptions, MpvHookHandler } from '../hooks.js'
 import type { InitializationLogs } from './initialization.js'
 import type { LogLevel, MpvLogRecord, MpvNativeLogRecord } from '../logs.js'
@@ -167,6 +168,21 @@ export interface MpvClient extends MpvControl {
 }
 
 export interface Mpv extends MpvControl {
+  registerProtocol(
+    name: Name,
+    provider: MpvStreamProvider<string>,
+    options?: { readonly output?: 'javascript' },
+  ): Promise<void>
+  registerProtocol(
+    name: Name,
+    provider: MpvStreamProvider<Uint8Array<ArrayBuffer>>,
+    options: { readonly output: 'native' },
+  ): Promise<void>
+  registerProtocol(
+    name: Name,
+    provider: MpvStreamProvider<string | Uint8Array<ArrayBuffer>>,
+    options: { readonly output?: Mode } | undefined,
+  ): Promise<void>
   readonly videoOutput: null
   createClient(options?: Options & { name?: string }): Promise<MpvClient>
   ref(): this

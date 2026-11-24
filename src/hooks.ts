@@ -69,6 +69,11 @@ export async function addHook(
     },
     finished: done.promise,
     dispose() {
+      try {
+        subscriptions.streams.check('disposeSubscription')
+      } catch (error) {
+        return Promise.reject(error)
+      }
       suppress = true
       return finish({ kind: 'stop' })
     },
@@ -188,7 +193,8 @@ export async function addHook(
     signal &&
     addAbortListener(signal, () => {
       if (hook) {
-        void subscription.dispose()
+        suppress = true
+        void finish({ kind: 'stop' })
       } else {
         gate.abort()
       }
