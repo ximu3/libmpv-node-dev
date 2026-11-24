@@ -1712,7 +1712,7 @@ export interface OptionDefinitions {
     read: 'auto' | 'left' | 'center' | 'right'
     write: 'auto' | 'left' | 'center' | 'right'
   }
-  'osd-level': { read: '0' | '1' | '2' | '3'; write: '0' | '1' | '2' | '3' }
+  'osd-level': { read: 0n | 1n | 2n | 3n; write: '0' | '1' | '2' | '3' | 0n | 1n | 2n | 3n }
   'osd-margin-x': { read: bigint; write: IntegerArgument }
   'osd-margin-y': { read: bigint; write: IntegerArgument }
   'osd-margin-y-offset': { read: bigint; write: IntegerArgument }

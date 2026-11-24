@@ -13,16 +13,17 @@ function choices(info: Argument | OptionInfo, numeric: boolean) {
   const bools = [names.includes('yes') ? 'true' : '', names.includes('no') ? 'false' : ''].filter(
     Boolean,
   )
-  const literals = names.filter((name) => name !== 'yes' && name !== 'no')
+  const integers = names.filter((n) => /^-?\d+$/.test(n)).map((n) => BigInt(n).toString() + 'n')
+  const literals = names.filter((name) => name !== 'yes' && name !== 'no' && !/^-?\d+$/.test(name))
   const input = [
     ...(names.length ? [union(names)] : []),
     ...bools,
-    ...(numeric ? ['IntegerArgument'] : []),
+    ...(numeric ? ['IntegerArgument'] : integers),
   ].join(' | ')
   const read = [
     ...(literals.length ? [union(literals)] : []),
     ...bools,
-    ...(numeric ? ['bigint'] : []),
+    ...(numeric ? ['bigint'] : integers),
   ].join(' | ')
   return { read: read || 'never', write: input || 'never' }
 }
