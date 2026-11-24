@@ -16,7 +16,12 @@ export async function declarations(player: Mpv, extension: string) {
       ['loop-file', 3n],
     ],
   })
+  await createMpv({ options: [['osd-level', 0n]] })
+  const level: 0n | 1n | 2n | 3n = await player.getProperty('osd-level')
   const duration: number = await player.getProperty('duration')
+  const codec: string = await player.getProperty('current-tracks/audio/codec')
+  const sampleRate: bigint = await player.getProperty('audio-out-params/samplerate')
+  const pngWidth: bigint = await player.getProperty('video-params/w')
   const id: bigint = await player.getProperty('track-list/0/id')
 
   // @ts-expect-error A known command requires its URL.
@@ -33,5 +38,5 @@ export async function declarations(player: Mpv, extension: string) {
   await createMpv({ options: [['force-window', 'later']] })
   // @ts-expect-error A property name fixes the type of its new value.
   await player.setProperty('pause', 5)
-  return { width, source, duration, id }
+  return { width, source, duration, id, codec, sampleRate, pngWidth, level }
 }
