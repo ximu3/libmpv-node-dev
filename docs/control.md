@@ -37,3 +37,7 @@ Pass `initializationLogs: { observer, level, output }` to the factory to receive
 `addHook(name, handler, { priority, signal })` registers an asynchronous hook on a dedicated client. The hook resumes once the value returned by `handler.run({ signal })` settles. Disposing the registration aborts the active signal and releases the native wait. A late handler rejection remains consumed. A handler failure is delivered to `handler.error` after registration cleanup, preserving the original reason.
 
 Use `getVideoDevices({ signal })` to enumerate device names and platform selection values before creating a player. Windows returns DXGI adapter LUIDs, macOS returns accelerated CGL renderer IDs, and Linux returns DRM render node paths. The device list reflects the current host environment.
+
+`registerProtocol(name, provider, { output })` registers a read-only protocol until the owning core is destroyed. Each open receives the original URI and an abort signal. The source supplies `read(maxBytes)` and `close()`, with optional absolute `seek(offset)` and `getSize()`. A nonempty byte array represents a short or full read, null is EOF, and null size means unknown.
+
+Await provider work before returning it to the binding. Work on a stream cannot control its own core, including via another client. Other cores remain available. Normal player close aborts outstanding work, releases native waits and waits for late opens and source cleanup. Per-operation failures go to `onError`; cleanup failures during player shutdown are also returned in an `AggregateError`.

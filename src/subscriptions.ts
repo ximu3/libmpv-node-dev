@@ -1,3 +1,4 @@
+import type { CoreStreams } from './streams/index.js'
 import { AsyncResource } from 'node:async_hooks'
 import { addAbortListener } from 'node:events'
 import { MpvAbortError, MpvBindingError, MpvObservationError } from './errors.js'
@@ -65,7 +66,10 @@ export interface NativeWatch<T> {
 export class Subscriptions {
   readonly active = new Set<{ dispose(): Promise<void>; finished: Promise<void> }>()
 
-  constructor(private readonly parent?: Subscriptions) {}
+  constructor(
+    readonly streams: CoreStreams,
+    private readonly parent?: Subscriptions,
+  ) {}
 
   track(subscription: { dispose(): Promise<void>; finished: Promise<void> }) {
     this.active.add(subscription)
@@ -88,6 +92,7 @@ export class Subscriptions {
     convert: (payload: P | null) => T,
     fail: (failure: NativeFailure) => never,
   ): Promise<MpvSubscription> {
+    this.streams.check(operation)
     if (
       !observer ||
       typeof observer.next !== 'function' ||
@@ -106,12 +111,18 @@ export class Subscriptions {
     let cleanup: Promise<void> | undefined
     let cancellation: Disposable | undefined
     const end = Promise.withResolvers<void>()
+    const core = this.streams
     const subscription = {
       get closed() {
         return stopped
       },
       finished: end.promise,
       dispose() {
+        try {
+          core.check('disposeSubscription')
+        } catch (error) {
+          return Promise.reject(error)
+        }
         stopped = true
         return release()
       },
@@ -198,7 +209,8 @@ export class Subscriptions {
       signal &&
       addAbortListener(signal, () => {
         if (handle) {
-          void subscription.dispose()
+          stopped = true
+          void release()
         } else {
           gate.abort()
         }

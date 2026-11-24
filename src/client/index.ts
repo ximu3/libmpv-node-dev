@@ -1,3 +1,5 @@
+import { CoreStreams } from '../streams/index.js'
+import type { MpvStreamProvider } from '../streams/contracts.js'
 import { addHook } from '../hooks.js'
 import type { MpvHookOptions, MpvHookHandler } from '../hooks.js'
 import type { CreateOptions } from './contracts.js'
@@ -142,11 +144,17 @@ class Control {
   readonly clientId: bigint
   #nextId = 1
   #closed?: Promise<void>
+  protected readonly streams: CoreStreams
   protected readonly subscriptions: Subscriptions
   protected readonly native: NativeClient
 
-  constructor(native: NativeClient, parentSubscriptions?: Subscriptions) {
-    this.subscriptions = new Subscriptions(parentSubscriptions)
+  constructor(
+    native: NativeClient,
+    parentSubscriptions?: Subscriptions,
+    streams = new CoreStreams(),
+  ) {
+    this.streams = streams
+    this.subscriptions = new Subscriptions(streams, parentSubscriptions)
     this.native = native
     this.clientName = native.clientName
     this.clientId = native.clientId
@@ -159,6 +167,7 @@ class Control {
     format: number,
     signal?: AbortSignal,
   ) {
+    this.streams.check(operation)
     if (this.#closed || this.native.closing) {
       throw new MpvBindingError('closed', operation)
     }
@@ -184,6 +193,7 @@ class Control {
   }
 
   getTimeNs() {
+    this.streams.check('getTimeNs')
     const time = this.native.time()
     if (time == null) {
       throw new MpvBindingError('closed', 'getTimeNs')
@@ -358,6 +368,7 @@ class Control {
   }
 
   async addHook(name: Name, handler: MpvHookHandler, options: MpvHookOptions = {}) {
+    this.streams.check('addHook')
     return addHook(
       this.native,
       this.subscriptions,
@@ -439,12 +450,18 @@ class Control {
 class Channel extends Control {
   #owner: Player | undefined
 
-  constructor(native: NativeClient, owner: Player, parentSubscriptions: Subscriptions) {
-    super(native, parentSubscriptions)
+  constructor(
+    native: NativeClient,
+    owner: Player,
+    parentSubscriptions: Subscriptions,
+    streams: CoreStreams,
+  ) {
+    super(native, parentSubscriptions, streams)
     this.#owner = owner
   }
 
   async dispose() {
+    this.streams.check('disposeClient')
     if (!this.#owner) {
       return
     }
@@ -458,8 +475,33 @@ class Channel extends Control {
 
 class Player extends Control {
   readonly videoOutput = null
+  #shutdown?: Promise<void>
+
+  async registerProtocol(
+    name: Name,
+    provider: MpvStreamProvider<string | Uint8Array<ArrayBuffer>>,
+    options: { readonly output?: Mode } = {},
+  ) {
+    const op = 'registerProtocol'
+    this.streams.check(op)
+    const output = mode(options.output, op)
+    const bytes = nameBytes(name, op)
+    return this.streams.register(
+      this.native,
+      bytes,
+      provider,
+      (uri) => {
+        if (output === 'native') {
+          return uri
+        }
+        return toJavaScript({ format: 'string', value: uri }, 'openStream') as string
+      },
+      (failure) => failed(failure, op),
+    )
+  }
 
   async createClient(options: Options & { name?: string } = {}): Promise<MpvClient> {
+    this.streams.check('createClient')
     if (this.native.closing) {
       throw new MpvBindingError('closed', 'createClient')
     }
@@ -487,7 +529,7 @@ class Player extends Control {
       }
       throw new MpvBindingError('closed', 'createClient', true)
     }
-    return new Channel(result.client, this, this.subscriptions) as MpvClient
+    return new Channel(result.client, this, this.subscriptions, this.streams) as MpvClient
   }
 
   ref() {
@@ -502,7 +544,29 @@ class Player extends Control {
     return this.native.hasRef && !this.native.closing
   }
   close() {
-    return this.finish()
+    try {
+      this.streams.check('close')
+    } catch (error) {
+      return Promise.reject(error)
+    }
+    if (!this.#shutdown) {
+      const done = Promise.withResolvers<void>()
+      this.#shutdown = done.promise
+      this.streams.cancel()
+      void Promise.allSettled([this.finish(), this.streams.finish()]).then((results) => {
+        const failures = results.flatMap((result) =>
+          result.status === 'rejected' ? [result.reason as unknown] : [],
+        )
+        if (failures.length > 1) {
+          done.reject(new AggregateError(failures, 'Player cleanup failed.'))
+        } else if (failures.length) {
+          done.reject(failures[0])
+        } else {
+          done.resolve()
+        }
+      })
+    }
+    return this.#shutdown
   }
   [Symbol.asyncDispose]() {
     return this.close()

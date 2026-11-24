@@ -72,6 +72,7 @@ execFileSync(
     join(projectRoot, '.gitignore'),
     'control.ts',
     'worker.ts',
+    'streams.ts',
     'example.ts',
     'electron/main.ts',
   ],

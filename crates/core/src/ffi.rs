@@ -79,6 +79,17 @@ pub struct EndFile {
     pub playlist_insert_num_entries: c_int,
 }
 
+pub type OpenStream = unsafe extern "C" fn(Handle, *mut c_char, *mut StreamInfo) -> c_int;
+
+#[repr(C)]
+pub struct StreamInfo {
+    pub cookie: Handle,
+    pub read: unsafe extern "C" fn(Handle, *mut c_char, u64) -> i64,
+    pub seek: Option<unsafe extern "C" fn(Handle, i64) -> i64>,
+    pub size: Option<unsafe extern "C" fn(Handle) -> i64>,
+    pub close: unsafe extern "C" fn(Handle),
+    pub cancel: Option<unsafe extern "C" fn(Handle)>,
+}
 macro_rules! client_api {
     ($($name:ident($($arg:ty),*) -> $result:ty),+ $(,)?) => {
         pub struct Api {
@@ -114,6 +125,7 @@ client_api! {
     command_node_async(Handle, u64, *mut Node) -> c_int,
     abort_async_command(Handle, u64) -> (),
     load_config_file(Handle, *const c_char) -> c_int,
+    stream_cb_add_ro(Handle, *const c_char, Handle, OpenStream) -> c_int,
     hook_add(Handle, u64, *const c_char, c_int) -> c_int,
     hook_continue(Handle, u64) -> c_int,
     request_log_messages(Handle, *const c_char) -> c_int,

@@ -3,6 +3,7 @@ mod environment;
 pub mod events;
 pub mod hooks;
 mod logs;
+pub mod streams;
 mod values;
 pub mod video;
 

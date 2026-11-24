@@ -1,3 +1,4 @@
+import { checkStreams } from './streams.js'
 import { Worker } from 'node:worker_threads'
 import { once } from 'node:events'
 import { writeFile } from 'node:fs/promises'
@@ -197,6 +198,7 @@ try {
   pcm.write('data', 36)
   pcm.writeUInt32LE(16000, 40)
   await writeFile(media, pcm)
+  await checkStreams(pcm)
   await player.setProperty('pause', true)
   const started = Promise.withResolvers<AbortSignal>()
   const pendingHook = Promise.withResolvers<void>()
