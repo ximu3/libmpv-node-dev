@@ -1,9 +1,9 @@
 import { mkdtempDisposable } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { projectRoot, requiredPath } from '../files.ts'
-import { runPnpm } from '../pnpm.ts'
-import { packWindows } from '../package/windows.ts'
+import { projectRoot, requiredPath } from '../../files.ts'
+import { runPnpm } from '../../pnpm.ts'
+import { packWindows } from '../../package/windows.ts'
 
 await using work = await mkdtempDisposable(join(tmpdir(), 'libmpv-media-'))
 const runtime = requiredPath(process.argv[2], 'runtime')

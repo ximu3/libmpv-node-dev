@@ -1,12 +1,12 @@
-export function imports(image: Buffer): string[] {
+export function imports(image: Buffer, machine: number): string[] {
   const header = image.readUInt32LE(0x3c)
   if (image.readUInt16LE(0) !== 0x5a4d || image.readUInt32LE(header) !== 0x4550) {
     throw new Error('Invalid PE image')
   }
   const coff = header + 4
   const optional = coff + 20
-  if (image.readUInt16LE(coff) !== 0x8664 || image.readUInt16LE(optional) !== 0x20b) {
-    throw new Error('Expected a 64-bit AMD64 PE image')
+  if (image.readUInt16LE(coff) !== machine || image.readUInt16LE(optional) !== 0x20b) {
+    throw new Error('PE machine or optional header does not match the target')
   }
   const sections = optional + image.readUInt16LE(coff + 16)
   const count = image.readUInt16LE(coff + 2)
