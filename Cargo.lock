@@ -201,6 +201,7 @@ dependencies = [
  "futures-channel",
  "futures-executor",
  "glow",
+ "libc",
  "libloading",
  "same-file",
  "windows",
