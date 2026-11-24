@@ -1,0 +1,450 @@
+[
+  {
+    "name": "diagnostic-0",
+    "source": "fixtures/black-pq-4000.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "diagnostic-1",
+    "source": "fixtures/black-pq-4000.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "clip"
+  },
+  {
+    "name": "diagnostic-2",
+    "source": "fixtures/black-pq-4000.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "hable"
+  },
+  {
+    "name": "diagnostic-3",
+    "source": "fixtures/black-pq-4000.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 4000,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "diagnostic-4",
+    "source": "fixtures/black-pq-4000.mkv",
+    "primaries": "bt.2020",
+    "transfer": "pq",
+    "peak": 418,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "diagnostic-5",
+    "source": "fixtures/black-pq-4000.mkv",
+    "primaries": "bt.2020",
+    "transfer": "srgb",
+    "peak": 203,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "diagnostic-6",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-7",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "clip",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-8",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "hable",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-9",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "linear",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-10",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "mobius",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-11",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 202,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-12",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 203,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-13",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "pq",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-14",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "srgb",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-15",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-16",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 203,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-17",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "srgb",
+    "peak": 203,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-18",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-19",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-20",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-21",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "diagnostic-22",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.709",
+    "transfer": "srgb",
+    "peak": 203,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "composition-base",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "composition-subtitles",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass"
+  },
+  {
+    "name": "composition-osd",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "overlay": true
+  },
+  {
+    "name": "composition-both",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "composition-output-hook",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true,
+    "shader": "fixtures/video-only.glsl"
+  },
+  {
+    "name": "composition-both-low-peak",
+    "source": "../../consumers/fixtures/media/pq-steps.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "composition-srgb-linear",
+    "source": "fixtures/colors-pq-4000.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "composition-p3-linear",
+    "source": "fixtures/colors-pq-4000.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/composition.ass",
+    "overlay": true
+  },
+  {
+    "name": "edges-bt.709-100-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-bt.709-100-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  },
+  {
+    "name": "edges-bt.709-203-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 203,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-bt.709-203-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 203,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  },
+  {
+    "name": "edges-bt.709-418-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-bt.709-418-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.709",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  },
+  {
+    "name": "edges-display-p3-100-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-display-p3-100-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  },
+  {
+    "name": "edges-display-p3-203-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 203,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-display-p3-203-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 203,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  },
+  {
+    "name": "edges-display-p3-418-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-display-p3-418-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "display-p3",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  },
+  {
+    "name": "edges-bt.2020-100-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-bt.2020-100-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 100,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  },
+  {
+    "name": "edges-bt.2020-203-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 203,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-bt.2020-203-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 203,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  },
+  {
+    "name": "edges-bt.2020-418-base",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto"
+  },
+  {
+    "name": "edges-bt.2020-418-subtitles",
+    "source": "fixtures/gray-bt709-sdr.mkv",
+    "primaries": "bt.2020",
+    "transfer": "linear",
+    "peak": 418,
+    "toneMapping": "auto",
+    "subtitle": "fixtures/edges.ass"
+  }
+]

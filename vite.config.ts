@@ -54,6 +54,12 @@ export default defineConfig({
       'check:package': { command: 'node tools/package/check.ts', cache: false },
       'pack:sources': { command: 'node tools/package/materials.ts', cache: false },
       'pack:all': { command: 'node tools/package/assemble.ts', cache: false },
+      'test:prepare-tone-engines': {
+        command: 'node tests/engine/tone-map/engines.ts',
+        cache: false,
+      },
+      'test:prepare-tone-probe': { command: 'node tests/engine/tone-map/prepare.ts', cache: false },
+      'test:tone-map': { command: 'node tests/engine/tone-map/index.ts', cache: false },
       'test:consumers': { command: 'node tests/consumers/run.ts', cache: false },
     },
   },
