@@ -1,3 +1,5 @@
+#[path = "windows/surface.rs"]
+pub(crate) mod surface;
 use super::{Device, DeviceSelection};
 use crate::client::Failure;
 use windows::Win32::Graphics::Dxgi::{

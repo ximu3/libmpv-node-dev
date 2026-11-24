@@ -42,6 +42,8 @@ pub(super) fn error(env: &Env, failure: CallError) -> Result<Object<'_>> {
             "error",
             match reason {
                 Failure::Native(_) => unreachable!(),
+                Failure::UnsupportedCapability => "unsupportedCapability",
+                Failure::RenderFailed => "renderFailed",
                 Failure::RenderConflict => "renderConflict",
                 Failure::Limit => "resourceLimit",
                 Failure::Closed => "closed",
@@ -63,14 +65,14 @@ pub fn create_client_core<'a>(
     keep_alive: KeepAlive,
     creation: &NativeCreation,
     log_level: Option<String>,
-    software: Option<crate::software::SoftwareConfiguration>,
+    video: Option<crate::video::output::VideoRequest>,
 ) -> Result<PromiseRaw<'a, Object<'a>>> {
     let options = options
         .into_iter()
         .map(|(name, value)| Ok((values::string(name)?, values::read(value, 0)?)))
         .collect::<Result<_>>()?;
-    let video = software
-        .map(crate::software::SoftwareConfiguration::config)
+    let video = video
+        .map(crate::video::output::VideoRequest::options)
         .transpose()?;
     let mut diagnostics =
         libmpv_core::client::Diagnostics::new(log_level.map(std::ffi::CString::new).transpose()?);

@@ -1,3 +1,4 @@
+import type { NativeGpu } from './video/gpu.js'
 import type { NativeSoftware } from './video/software.js'
 import type { NativeProtocol } from './streams/contracts.js'
 import type { NativeHook } from './hooks.js'
@@ -12,7 +13,7 @@ export interface NativeFailure {
   optionIndex?: number
 }
 export interface NativeClient {
-  readonly videoOutput?: NativeSoftware
+  readonly videoOutput?: NativeSoftware | NativeGpu
   readonly clientName: string
   readonly clientId: bigint
   readonly closing: boolean
