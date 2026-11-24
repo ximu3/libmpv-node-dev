@@ -243,6 +243,20 @@ impl Client {
         };
         let handle = raw.as_ptr();
         let registration = diagnostics.register(api, handle, creation)?;
+        #[cfg(target_os = "linux")]
+        {
+            // Set the GnuTLS trust source before the caller's ordered options and without changing the process environment.
+            let status = unsafe {
+                (api.set_option_string)(
+                    handle,
+                    c"tls-ca-file".as_ptr(),
+                    runtime.tls_ca_file.as_ptr(),
+                )
+            };
+            if status < 0 {
+                return Err(creation.stop(Failure::Native(status)));
+            }
+        }
         for (index, (name, value)) in options.iter().enumerate() {
             creation.enter("options", Some(index))?;
             let status = NodeInput::with(value, |node| {
