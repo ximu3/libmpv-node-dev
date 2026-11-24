@@ -156,6 +156,13 @@ jobs:
           pactl load-module module-null-sink sink_name=libmpv_test
           pactl set-default-sink libmpv_test
           echo "LIBMPV_TEST_AUDIO=alsa,pulse" >> "$GITHUB_ENV"
+      - name: Exercise the Windows ARM64 display adapter
+        if: matrix.target == 'windows-arm64'
+        shell: pwsh
+        run: |
+          Get-CimInstance Win32_VideoController | Format-Table Name, AdapterCompatibility, DriverVersion
+          "LIBMPV_TEST_GRAPHICS=1" >> $env:GITHUB_ENV
+          "LIBMPV_TEST_VISIBLE=1" >> $env:GITHUB_ENV
       - name: Verify the installed platform package
         shell: bash
         env:

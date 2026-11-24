@@ -299,6 +299,10 @@ console.log('Checking checkSoftwareVideo')
 await checkSoftwareVideo()
 await checkControlLoad()
 if (process.env.LIBMPV_TEST_GRAPHICS === '1') {
+  console.log(
+    'DXGI adapters:',
+    devices.map((device) => device.name),
+  )
   await checkGpuVideo()
   await checkColorOutput()
   if (process.versions.electron) {
