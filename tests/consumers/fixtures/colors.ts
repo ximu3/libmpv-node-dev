@@ -54,7 +54,7 @@ function compare(
   }
 }
 
-async function render(colorSpace: VideoTarget['colorSpace'], hdr: boolean) {
+async function render(colorSpace: VideoTarget['colorSpace'], hdr: boolean, decoder = 'no') {
   const points = hdr ? [...steps, [0.1, 0.82] as const] : positions
   await using player = await createMpv({
     videoOutput: { width: hdr ? 224 : 63, height: hdr ? 64 : 47, target: { colorSpace } },
@@ -66,10 +66,27 @@ async function render(colorSpace: VideoTarget['colorSpace'], hdr: boolean) {
       ['keepaspect', false],
       ['osd-level', 0n],
       ['dither-depth', 'no'],
-      ['hwdec', 'no'],
+      ['hwdec', decoder],
       ['image-display-duration', 'inf'],
     ],
   })
+  const messages: string[] = []
+  if (decoder !== 'no') {
+    await player.observeLogs(
+      {
+        next(record) {
+          if (
+            record.type === 'log-message' &&
+            /d3d|hardware|hwdec|hevc|decoder/i.test(record.text)
+          ) {
+            messages.push(record.prefix + ' ' + record.text.trim())
+          }
+        },
+        error: console.error,
+      },
+      { level: 'v' },
+    )
+  }
   const ready = Promise.withResolvers<void>()
   await using events = await player.observeEvents(
     {
@@ -88,15 +105,16 @@ async function render(colorSpace: VideoTarget['colorSpace'], hdr: boolean) {
   if (hdr) {
     options['sub-file'] = file('chart-overlay.ass')
   }
-  await player.command([
-    'loadfile',
-    file(hdr ? 'pq-steps.mkv' : 'color-chart.png'),
-    'replace',
-    -1n,
-    options,
-  ])
+  let media = hdr ? 'pq-steps.mkv' : 'color-chart.png'
+  if (decoder !== 'no') {
+    media = 'pq-main10.mkv'
+  }
+  await player.command(['loadfile', file(media), 'replace', -1n, options])
   await ready.promise
   await events.dispose()
+  if (decoder !== 'no') {
+    assert.equal(await player.getProperty('hwdec-current'), decoder, messages.join('\n'))
+  }
   const normal = readShot(await player.command(['screenshot-raw', 'subtitles', 'rgba']), points)
   assert.equal(normal.source, 'vo')
   if (hdr) {
@@ -151,11 +169,15 @@ async function render(colorSpace: VideoTarget['colorSpace'], hdr: boolean) {
   await player.setProperty('screenshot-sw', true)
   const software = readShot(await player.command(['screenshot-raw', 'subtitles', 'rgba']), points)
   assert.equal(software.source, 'software')
-  console.log(JSON.stringify({ colorSpace, hdr, vo: normal.samples, software: software.source }))
+  console.log(
+    JSON.stringify({ colorSpace, hdr, decoder, vo: normal.samples, software: software.source }),
+  )
 }
 
 export async function checkColorOutput() {
   await render('srgb', false)
   await render('display-p3', false)
   await render('srgb', true)
+  const decoder = { win32: 'd3d11va', darwin: 'videotoolbox', linux: 'vaapi' } as const
+  await render('srgb', true, decoder[process.platform as keyof typeof decoder])
 }
