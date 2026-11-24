@@ -29,6 +29,13 @@ export interface OptionInfo {
 export interface Catalog {
   target: string
   mpvCommit: string
+  media: {
+    versions: { mpv: string; ffmpeg: string; libplacebo: string; libass: string }
+    decoders: readonly { codec: string; driver: string; description: string }[]
+    encoders: readonly { codec: string; driver: string; description: string }[]
+    demuxers: readonly string[]
+    protocols: readonly string[]
+  }
   commands: CommandInfo[]
   properties: string[]
   options: OptionInfo[]
@@ -134,6 +141,18 @@ export async function collectCatalog(
   const catalog: Catalog = {
     target,
     mpvCommit,
+    media: {
+      versions: {
+        mpv: await player.getProperty('mpv-version'),
+        ffmpeg: await player.getProperty('ffmpeg-version'),
+        libplacebo: await player.getProperty('libplacebo-version'),
+        libass: '0x' + (await player.getProperty('libass-version')).toString(16).padStart(8, '0'),
+      },
+      decoders: await player.getProperty('decoder-list'),
+      encoders: await player.getProperty('encoder-list'),
+      demuxers: await player.getProperty('demuxer-lavf-list'),
+      protocols: await player.getProperty('protocol-list'),
+    },
     commands: commands(await player.getProperty('command-list')),
     properties: list(await player.getProperty('property-list')).map(string),
     options: [],
