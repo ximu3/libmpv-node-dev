@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process'
 import { cp, copyFile, mkdir, mkdtempDisposable, readFile, rename } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { parseArgs } from 'node:util'
@@ -84,6 +85,24 @@ export async function packWindows(destination: string, runtime: string) {
     optionalDependencies: { [platformName]: version },
   })
 
+  execFileSync(
+    process.execPath,
+    [
+      join(projectRoot, 'tools/catalog/collect.ts'),
+      main,
+      platform,
+      platformName,
+      target,
+      receipt.mpvCommit,
+    ],
+    { stdio: 'inherit' },
+  )
+  files['catalog.json'] = await digest(join(platform, 'catalog.json'))
+  await writeJson(join(platform, 'runtime.json'), { files, engine: await digest(receiptPath) })
+  await writeJson(join(main, 'dist/build.json'), {
+    version,
+    targets: { [target]: await digest(join(platform, 'runtime.json')) },
+  })
   const output = join(work.path, 'packages')
   await mkdir(output)
   for (const directory of [platform, main]) {

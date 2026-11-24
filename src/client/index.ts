@@ -16,7 +16,7 @@ import { CoreStreams } from '../streams/index.js'
 import type { MpvStreamProvider } from '../streams/contracts.js'
 import { addHook } from '../hooks.js'
 import type { MpvHookOptions, MpvHookHandler } from '../hooks.js'
-import type { CreateOptions } from './contracts.js'
+import type { CreateOptions, OptionEntries } from './contracts.js'
 import type { JavaScriptLogs, NativeLogs, DynamicLogs } from './initialization.js'
 import { initializationLogs } from './initialization.js'
 import type { LogLevel, MpvLogRecord, MpvNativeLogRecord } from '../logs.js'
@@ -95,15 +95,26 @@ type CreatedMpv<V> = Mpv<
       : null
 >
 export function createMpv(): Promise<Mpv<null>>
-export function createMpv<const V extends VideoOutputOptions | undefined = undefined>(
-  configuration: CreateOptions &
+export function createMpv<
+  const V extends VideoOutputOptions | undefined = undefined,
+  const P extends OptionEntries = OptionEntries,
+>(
+  configuration: CreateOptions<P> &
     OutputSelection<V> & { readonly initializationLogs?: JavaScriptLogs },
 ): Promise<CreatedMpv<V>>
-export function createMpv<const V extends VideoOutputOptions | undefined = undefined>(
-  configuration: CreateOptions & OutputSelection<V> & { readonly initializationLogs: NativeLogs },
+export function createMpv<
+  const V extends VideoOutputOptions | undefined = undefined,
+  const P extends OptionEntries = OptionEntries,
+>(
+  configuration: CreateOptions<P> &
+    OutputSelection<V> & { readonly initializationLogs: NativeLogs },
 ): Promise<CreatedMpv<V>>
-export function createMpv<const V extends VideoOutputOptions | undefined = undefined>(
-  configuration: CreateOptions & OutputSelection<V> & { readonly initializationLogs: DynamicLogs },
+export function createMpv<
+  const V extends VideoOutputOptions | undefined = undefined,
+  const P extends OptionEntries = OptionEntries,
+>(
+  configuration: CreateOptions<P> &
+    OutputSelection<V> & { readonly initializationLogs: DynamicLogs },
 ): Promise<CreatedMpv<V>>
 export async function createMpv(configuration: CreateMpvOptions = {}): Promise<Mpv> {
   const op = 'createMpv'

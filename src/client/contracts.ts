@@ -1,3 +1,12 @@
+import type {
+  Command,
+  CheckedCommand,
+  CommandResult,
+  PropertyRead,
+  PropertyWrite,
+  OptionInput,
+} from '../catalog/types.js'
+export type { Command } from '../catalog/types.js'
 import type { GpuVideoOptions, GpuVideoOutput } from '../video/gpu.js'
 import type { SoftwareVideoOutput, SoftwareVideoOptions } from '../video/software.js'
 import type { MpvStreamProvider } from '../streams/contracts.js'
@@ -26,16 +35,6 @@ type FormatValue<F extends Format> = F extends 'flag'
       : MpvValue
 type Output<T, M extends Mode> = M extends 'native' ? MpvNode : T
 export type Options = { readonly signal?: AbortSignal }
-type PropertyValue<N> = N extends 'pause'
-  ? boolean
-  : N extends 'volume' | 'time-pos' | 'duration'
-    ? number
-    : N extends 'path' | 'mpv-version'
-      ? string
-      : MpvValue
-export type Command =
-  | readonly [string, ...MpvValue[]]
-  | { readonly name: string; readonly [key: string]: MpvValue }
 export type NativeCommand = Extract<MpvNode, { readonly format: 'array' | 'map' }>
 
 export type VideoOutputOptions = SoftwareVideoOptions | GpuVideoOptions
@@ -44,9 +43,15 @@ export type CreateMpvOptions = CreateOptions & {
   readonly initializationLogs?: InitializationLogs
   readonly videoOutput?: VideoOutputOptions | undefined
 }
-export type CreateOptions = Options &
+export type OptionEntries = readonly (readonly [Name, MpvValue])[]
+type ValidOptions<P extends OptionEntries> = {
+  readonly [I in keyof P]: P[I] extends readonly [infer N, unknown]
+    ? readonly [N, OptionInput<N>]
+    : never
+}
+export type CreateOptions<P extends OptionEntries = OptionEntries> = Options &
   (
-    | { readonly input?: 'javascript'; readonly options?: readonly (readonly [Name, MpvValue])[] }
+    | { readonly input?: 'javascript'; readonly options?: P & ValidOptions<NoInfer<P>> }
     | { readonly input: 'native'; readonly options?: readonly (readonly [Name, MpvNode])[] }
   )
 
@@ -66,7 +71,7 @@ export interface MpvControl {
   ): Promise<MpvSubscription>
   observeProperty<N extends Name>(
     name: N,
-    observer: MpvObserver<PropertyState<PropertyValue<NoInfer<N>>>>,
+    observer: MpvObserver<PropertyState<PropertyRead<NoInfer<N>>>>,
     options?: Options & { format?: 'node'; output?: 'javascript' },
   ): Promise<MpvSubscription>
   observeProperty<F extends Format>(
@@ -113,7 +118,7 @@ export interface MpvControl {
   ): Promise<MpvSubscription>
   observeProperty<N extends Name>(
     name: N,
-    observer: MpvObserver<PropertyState<PropertyValue<NoInfer<N>> | MpvNode>>,
+    observer: MpvObserver<PropertyState<PropertyRead<NoInfer<N>> | MpvNode>>,
     options: (Options & { format?: 'node'; output?: Mode }) | undefined,
   ): Promise<MpvSubscription>
   observeProperty<F extends Format>(
@@ -127,7 +132,7 @@ export interface MpvControl {
   getProperty<N extends Name>(
     name: N,
     options?: Options & { format?: 'node'; output?: 'javascript' },
-  ): Promise<PropertyValue<N>>
+  ): Promise<PropertyRead<N>>
   getProperty<F extends Format>(
     name: Name,
     options: Options & { format: F; output?: 'javascript' },
@@ -146,18 +151,18 @@ export interface MpvControl {
   ): Promise<M extends 'native' ? Uint8Array<ArrayBuffer> : string>
   setProperty<N extends Name>(
     name: N,
-    value: PropertyValue<NoInfer<N>>,
+    value: PropertyWrite<NoInfer<N>>,
     options?: Options & { input?: 'javascript' },
   ): Promise<void>
   setProperty(name: Name, value: MpvNode, options: Options & { input: 'native' }): Promise<void>
-  command(
-    args: Command,
+  command<const A extends Command>(
+    args: A & CheckedCommand<NoInfer<A>>,
     options?: Options & { input?: 'javascript'; output?: 'javascript' },
-  ): Promise<MpvValue>
-  command<M extends Mode>(
-    args: Command,
+  ): Promise<CommandResult<A>>
+  command<const A extends Command, M extends Mode>(
+    args: A & CheckedCommand<NoInfer<A>>,
     options: Options & { input?: 'javascript'; output: M },
-  ): Promise<Output<MpvValue, M>>
+  ): Promise<Output<CommandResult<A>, M>>
   command(
     args: NativeCommand,
     options: Options & { input: 'native'; output?: 'javascript' },
