@@ -184,6 +184,7 @@ try {
   await player.setProperty('pause', false)
   const worker = new Worker(new URL('./worker.js', import.meta.url))
   await once(worker, 'message')
+  console.log('Checking worker.terminate')
   await worker.terminate()
   assert.equal(await player.getProperty('pause'), false)
   const media = fileURLToPath(new URL('./sample.wav', import.meta.url))
@@ -201,6 +202,7 @@ try {
   pcm.write('data', 36)
   pcm.writeUInt32LE(16000, 40)
   await writeFile(media, pcm)
+  console.log('Checking checkStreams')
   await checkStreams(pcm)
   await player.setProperty('pause', true)
   const started = Promise.withResolvers<AbortSignal>()
@@ -285,7 +287,9 @@ await assert.rejects(
   (error) => error instanceof MpvBindingError && error.code === 'closed' && !error.submitted,
 )
 
+console.log('Checking checkSubtitleFonts')
 await checkSubtitleFonts()
+console.log('Checking checkSoftwareVideo')
 await checkSoftwareVideo()
 if (process.env.LIBMPV_TEST_GRAPHICS === '1') {
   await checkGpuVideo()

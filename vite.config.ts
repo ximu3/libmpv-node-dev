@@ -40,6 +40,10 @@ export default defineConfig({
       },
       verify: { command: ['vp run test', 'node tools/engine/verify.ts'], cache: false },
       clean: { command: 'node tools/clean.ts', cache: false },
+      'engine:unix': { command: 'node tools/engine/posix/index.ts', cache: false },
+      'engine:unix-sources': { command: 'node tools/engine/posix/sources.ts', cache: false },
+      'pack:unix': { command: 'node tools/package/unix.ts', cache: false },
+      'verify:unix-media': { command: 'node tools/engine/posix/verify.ts', cache: false },
       'check:windows-media': { command: 'node tools/engine/windows/check.ts', cache: false },
       'verify:windows-media': {
         command: 'node tools/engine/windows/verify.ts',
