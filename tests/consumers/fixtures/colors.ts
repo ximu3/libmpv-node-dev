@@ -64,7 +64,7 @@ async function render(colorSpace: VideoTarget['colorSpace'], hdr: boolean, decod
       ['pause', true],
       ['keep-open', 'yes'],
       ['keepaspect', false],
-      ['osd-level', 0n],
+      ['osd-level', '0'],
       ['dither-depth', 'no'],
       ['hwdec', decoder],
       ['image-display-duration', 'inf'],
