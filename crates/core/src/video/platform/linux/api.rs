@@ -24,6 +24,7 @@ macro_rules! driver_api {
 driver_api!(Gbm, "libgbm.so.1", {
     fn gbm_create_device(fd: i32) -> Handle;
     fn gbm_device_destroy(device: Handle);
+    fn gbm_device_is_format_supported(device: Handle, format: u32, usage: u32) -> i32;
     fn gbm_bo_create_with_modifiers2(
         device: Handle,
         width: u32,
