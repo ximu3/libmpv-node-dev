@@ -69,7 +69,7 @@ function option(info: OptionInfo) {
     case 'Choice':
       return choices(info, info.min !== undefined && info.max !== undefined)
     case 'Flag':
-      return { read: 'boolean', write: 'boolean | "yes" | "no"' }
+      return { read: 'boolean', write: 'boolean' }
     case 'Integer':
     case 'Integer64':
       return { read: 'bigint', write: 'IntegerArgument' }
@@ -84,8 +84,8 @@ function option(info: OptionInfo) {
           typeof info.max === 'object' &&
           'double' in info.max &&
           info.max.double === 'Infinity'
-            ? 'RealArgument | "inf"'
-            : 'RealArgument',
+            ? 'number | "inf"'
+            : 'number',
       }
     case 'Aspect':
     case 'Time':

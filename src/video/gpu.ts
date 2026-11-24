@@ -18,7 +18,7 @@ export interface VideoTarget {
 }
 export interface GpuVideoOptions extends Dimensions {
   readonly renderer?: 'gpu'
-  readonly target?: VideoTarget
+  readonly target?: VideoTarget | undefined
   readonly frameCapacity?: number
   readonly device?: VideoDeviceSelection
 }

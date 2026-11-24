@@ -11,6 +11,7 @@ import {
   type GpuVideoOutput,
 } from '../video/gpu.js'
 import type { WireConfiguration } from '../video/output.js'
+import type { VideoTarget } from '../video/gpu.js'
 import type { VideoOutput, VideoOutputOptions } from './contracts.js'
 import { CoreStreams } from '../streams/index.js'
 import type { MpvStreamProvider } from '../streams/contracts.js'
@@ -79,13 +80,20 @@ function failed(error: NativeFailure, operation: MpvOperation, signal?: AbortSig
   throw new MpvBindingError(error.error, operation, error.submitted, creation)
 }
 
+type CheckedTarget<T> = T extends VideoTarget
+  ? T & Record<Exclude<keyof T, keyof VideoTarget>, never>
+  : T
+type CheckedVideo<V> = V extends SoftwareVideoOptions
+  ? V & Record<Exclude<keyof V, keyof SoftwareVideoOptions>, never>
+  : V extends GpuVideoOptions
+    ? V &
+        Record<Exclude<keyof V, keyof GpuVideoOptions>, never> &
+        (V extends { readonly target?: infer Target }
+          ? { readonly target?: CheckedTarget<Target> | undefined }
+          : {})
+    : V
 type OutputSelection<V extends VideoOutputOptions | undefined> = {
-  readonly videoOutput?: V &
-    (V extends SoftwareVideoOptions
-      ? Record<Exclude<keyof V, keyof SoftwareVideoOptions>, never>
-      : V extends GpuVideoOptions
-        ? Record<Exclude<keyof V, keyof GpuVideoOptions>, never>
-        : unknown)
+  readonly videoOutput?: V & CheckedVideo<NoInfer<V>>
 } & (undefined extends V ? {} : { readonly videoOutput: V })
 type CreatedMpv<V> = Mpv<
   V extends SoftwareVideoOptions
@@ -94,7 +102,7 @@ type CreatedMpv<V> = Mpv<
       ? GpuVideoOutput
       : null
 >
-export function createMpv(): Promise<Mpv<null>>
+export function createMpv(configuration?: undefined): Promise<Mpv<null>>
 export function createMpv<
   const V extends VideoOutputOptions | undefined = undefined,
   const P extends OptionEntries = OptionEntries,
