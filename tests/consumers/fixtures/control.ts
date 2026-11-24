@@ -1,3 +1,4 @@
+import { checkSubtitleFonts } from './subtitle-fonts.js'
 import { checkSoftwareVideo } from './software.js'
 import { checkStreams } from './streams.js'
 import { Worker } from 'node:worker_threads'
@@ -283,4 +284,5 @@ await assert.rejects(
   (error) => error instanceof MpvBindingError && error.code === 'closed' && !error.submitted,
 )
 
+await checkSubtitleFonts()
 await checkSoftwareVideo()
