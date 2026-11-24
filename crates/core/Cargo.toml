@@ -30,3 +30,6 @@ features = [
 
 [target."cfg(unix)".dependencies]
 glow = "=0.18.0"
+
+[target.'cfg(all(target_os = "linux", target_env = "gnu"))'.dependencies]
+libc = "=0.2.191"

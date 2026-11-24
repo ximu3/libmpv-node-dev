@@ -39,7 +39,16 @@ fn open(path: &Path) -> Result<Library, LoadError> {
     .map_err(|_| LoadError::LibraryLoadFailed)
 }
 
-#[cfg(unix)]
+#[cfg(all(target_os = "linux", target_env = "gnu"))]
+fn open(path: &Path) -> Result<Library, LoadError> {
+    use libloading::os::unix::{Library as UnixLibrary, RTLD_LOCAL, RTLD_NOW};
+    // Electron exports a second set of FFmpeg symbols. Resolve against the complete private media group first.
+    unsafe { UnixLibrary::open(Some(path), RTLD_NOW | RTLD_LOCAL | libc::RTLD_DEEPBIND) }
+        .map(Into::into)
+        .map_err(|_| LoadError::LibraryLoadFailed)
+}
+
+#[cfg(all(unix, not(all(target_os = "linux", target_env = "gnu"))))]
 fn open(path: &Path) -> Result<Library, LoadError> {
     // The package loader verified the file against its paired manifest before calling into core.
     unsafe { Library::new(path) }.map_err(|_| LoadError::LibraryLoadFailed)
