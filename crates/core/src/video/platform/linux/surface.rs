@@ -38,7 +38,7 @@ const EGL_NONE: i32 = 0x3038;
 
 #[path = "api.rs"]
 mod api;
-use api::{EglApi, Gbm};
+use api::{EglApi, Gbm, drivers};
 struct Buffer<'a>(Handle, &'a Gbm);
 impl Drop for Buffer<'_> {
     fn drop(&mut self) {
@@ -68,9 +68,9 @@ impl FrameSurface for Surface {
 }
 
 pub(crate) struct Egl {
-    gbm_api: Gbm,
-    egl: EglApi,
-    gles: libloading::Library,
+    gbm_api: &'static Gbm,
+    egl: &'static EglApi,
+    gles: &'static libloading::Library,
     device: Device,
     node: File,
     gbm: Handle,
@@ -93,6 +93,7 @@ impl Drop for Egl {
             if !self.display.is_null() {
                 (self.egl.eglTerminate)(self.display);
             }
+            (self.egl.eglReleaseThread)();
             (self.gbm_api.gbm_device_destroy)(self.gbm);
         }
     }
@@ -197,10 +198,10 @@ impl Egl {
             .open(path)
             .map_err(|_| Failure::Creation)?;
         unsafe {
-            let gbm_api = Gbm::load()?;
-            let egl = EglApi::load()?;
-            let gles = libloading::Library::new("libGLESv2.so.2")
-                .map_err(|_| Failure::UnsupportedCapability)?;
+            let driver = drivers()?;
+            let gbm_api = &driver.gbm;
+            let egl = &driver.egl;
+            let gles = &driver.gles;
             let bind = (egl.eglGetProcAddress)(c"glEGLImageTargetTexture2DOES".as_ptr());
             if bind.is_null() {
                 return Err(Failure::UnsupportedCapability);
@@ -237,7 +238,7 @@ impl Egl {
                 return Err(Failure::UnsupportedCapability);
             }
             result.require_linear_argb()?;
-            result.context = create_es_context(&result.egl, display)?;
+            result.context = create_es_context(result.egl, display)?;
             if (result.egl.eglMakeCurrent)(
                 display,
                 ptr::null_mut(),
@@ -329,7 +330,7 @@ impl Display for Egl {
             if bo.is_null() {
                 return Err(Failure::UnsupportedCapability);
             }
-            let bo = Buffer(bo, &self.gbm_api);
+            let bo = Buffer(bo, self.gbm_api);
             let modifier = (self.gbm_api.gbm_bo_get_modifier)(bo.0);
             let format = (self.gbm_api.gbm_bo_get_format)(bo.0);
             if (self.gbm_api.gbm_bo_get_plane_count)(bo.0) != 1
@@ -408,7 +409,8 @@ mod tests {
     #[ignore = "requires Mesa surfaceless EGL on Linux"]
     fn offscreen_context_uses_opengl_es3() {
         const EGL_PLATFORM_SURFACELESS_MESA: u32 = 0x31dd;
-        let egl = EglApi::load().unwrap();
+        let driver = drivers().unwrap();
+        let egl = &driver.egl;
         unsafe {
             let display = (egl.eglGetPlatformDisplay)(
                 EGL_PLATFORM_SURFACELESS_MESA,
@@ -420,9 +422,9 @@ mod tests {
                 (egl.eglInitialize)(display, ptr::null_mut(), ptr::null_mut()),
                 0
             );
-            let context = create_es_context(&egl, display).unwrap();
+            let context = create_es_context(egl, display).unwrap();
             let current = (egl.eglMakeCurrent)(display, ptr::null_mut(), ptr::null_mut(), context);
-            let library = libloading::Library::new("libGLESv2.so.2").unwrap();
+            let library = &driver.gles;
             let version = if current == 0 {
                 None
             } else {
@@ -435,6 +437,7 @@ mod tests {
             (egl.eglMakeCurrent)(display, ptr::null_mut(), ptr::null_mut(), ptr::null_mut());
             (egl.eglDestroyContext)(display, context);
             (egl.eglTerminate)(display);
+            (egl.eglReleaseThread)();
             let version = version.expect("Expected an active EGL context");
             assert!(version.starts_with("OpenGL ES 3."), "{version}");
             println!("{version}");
