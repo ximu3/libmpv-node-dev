@@ -60,3 +60,5 @@ export {
 } from './video/gpu.js'
 export { NativeFrame, type NativeDmaBufPlane, type NativeFrameSurface } from './video/frame.js'
 export type { VideoOutputOptions, VideoOutput } from './client/contracts.js'
+
+export type { KnownCommand, KnownOption, KnownProperty, Screenshot } from './catalog/types.js'
