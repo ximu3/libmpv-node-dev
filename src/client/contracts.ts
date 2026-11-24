@@ -1,3 +1,4 @@
+import type { SoftwareVideoOutput, SoftwareVideoOptions } from '../video/software.js'
 import type { MpvStreamProvider } from '../streams/contracts.js'
 import type { MpvHookOptions, MpvHookHandler } from '../hooks.js'
 import type { InitializationLogs } from './initialization.js'
@@ -36,7 +37,10 @@ export type Command =
   | { readonly name: string; readonly [key: string]: MpvValue }
 export type NativeCommand = Extract<MpvNode, { readonly format: 'array' | 'map' }>
 
-export type CreateMpvOptions = CreateOptions & { readonly initializationLogs?: InitializationLogs }
+export type CreateMpvOptions = CreateOptions & {
+  readonly initializationLogs?: InitializationLogs
+  readonly videoOutput?: SoftwareVideoOptions | undefined
+}
 export type CreateOptions = Options &
   (
     | { readonly input?: 'javascript'; readonly options?: readonly (readonly [Name, MpvValue])[] }
@@ -167,7 +171,9 @@ export interface MpvClient extends MpvControl {
   [Symbol.asyncDispose](): Promise<void>
 }
 
-export interface Mpv extends MpvControl {
+export interface Mpv<
+  V extends SoftwareVideoOutput | null = SoftwareVideoOutput | null,
+> extends MpvControl {
   registerProtocol(
     name: Name,
     provider: MpvStreamProvider<string>,
@@ -183,7 +189,7 @@ export interface Mpv extends MpvControl {
     provider: MpvStreamProvider<string | Uint8Array<ArrayBuffer>>,
     options: { readonly output?: Mode } | undefined,
   ): Promise<void>
-  readonly videoOutput: null
+  readonly videoOutput: V
   createClient(options?: Options & { name?: string }): Promise<MpvClient>
   ref(): this
   unref(): this

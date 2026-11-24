@@ -289,6 +289,23 @@ impl Shared {
             }
             return;
         }
+        if event.id == 22
+            && event.userdata == 0
+            && let Some(output) = &self.output
+        {
+            // This reserved observation is installed on the primary client for the active managed VO.
+            let property = unsafe { &*event.data.cast::<ffi::Property>() };
+            let actual = unsafe {
+                super::CopyBudget::new(64 * 1024).property(property.format, property.data)
+            };
+            if !actual
+                .as_ref()
+                .is_ok_and(crate::video::options::compatible_vo)
+            {
+                output.stop(Some(Failure::RenderConflict));
+            }
+            return;
+        }
         if event.id == 22 {
             let watch = self.lock().watches.get(&event.userdata).cloned();
             if let Some(queue) = watch {
