@@ -3,7 +3,7 @@ https://conda.anaconda.org/conda-forge/linux-aarch64/_openmp_mutex-4.5-20_gnu.co
 https://conda.anaconda.org/conda-forge/linux-aarch64/alsa-lib-1.2.16.1-h5bc82ec_1.conda#ac5d76b14009cd6591f39dd4e07ea641a91bb3759889fed34f7750e7a7e9a929
 https://conda.anaconda.org/conda-forge/linux-aarch64/bzip2-1.0.8-h4777abc_10.conda#24eacc8a20fd7c4616566178562bef7f9344eb4a8700cfc3180fa75a6ff9d39f
 https://conda.anaconda.org/conda-forge/linux-aarch64/cairo-1.18.6-hca320e2_0.conda#8cb719a45d778510fe5636025fbeea72c3f0776d33ea914223d2cfff32bd6b40
-https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-1.5.5-haa8b2a1_0.conda#f9d4157fcf85978da9a69ec09b4ccfcda2ac11a693920d14c1ed80d649a3f8f1
+https://conda.anaconda.org/conda-forge/linux-aarch64/dav1d-devel-1.5.5-h44a274d_0.conda#c8fa43c8ac1e2114afd602873ab9b77beb7da69068616826869e1d75494ce5b0
 https://conda.anaconda.org/conda-forge/linux-aarch64/dbus-1.16.2-h5208175_2.conda#c5ba09c967c1fd7706f12a58f211558e73a140749abe4fc890db17d6cd7e7870
 https://conda.anaconda.org/conda-forge/linux-aarch64/fontconfig-2.18.4-ha4b22b4_0.conda#8453f5225903af2468ae479c1ba421dc6de64a22f9d67a2771dfd8536ce44d1d
 https://conda.anaconda.org/conda-forge/linux-aarch64/freetype-2.14.3-h8af1aa0_2.conda#7af9e368efdaf59e0709ae89c2e7f0ce0e1067a857958f367318ff3c27209a64
@@ -61,6 +61,7 @@ https://conda.anaconda.org/conda-forge/linux-aarch64/libwebp-base-1.6.0-ha2e29f5
 https://conda.anaconda.org/conda-forge/linux-aarch64/libxcb-1.17.0-h3f04742_3.conda#946a799e25b9e43553ae827e6559b452b733c69f0478f9fd12bb4919b598e4b3
 https://conda.anaconda.org/conda-forge/linux-aarch64/libxml2-16-2.15.4-h2e5089f_1.conda#96bce6a0c8eae2e1d22e09473b9e54bb13a736b4997ddd7a111eeaef16734708
 https://conda.anaconda.org/conda-forge/linux-aarch64/libxml2-2.15.4-h92b9305_1.conda#f714cfffb6009f1bd028a06d237e6f4550ff4ffb3f4209a9bfaeb2b36f7c6a56
+https://conda.anaconda.org/conda-forge/linux-aarch64/libxml2-devel-2.15.4-h92b9305_1.conda#4f7c070624ded2c92301df9949d08f8834b1fd06776aafae4af78d534ff0c731
 https://conda.anaconda.org/conda-forge/linux-aarch64/libzlib-1.3.2-hdc9db2a_3.conda#76efa6cc9d7e6f5ee3bbca0939f64054af2bdfb3c3632531f8e633cf6c2ea41e
 https://conda.anaconda.org/conda-forge/linux-aarch64/luajit-2.1.1744318430-h80f16a2_0.conda#5dcc1b13460cededda1d86d877fe16d60864cfa795513a712a31b382b667c066
 https://conda.anaconda.org/conda-forge/linux-aarch64/make-4.4.1-hfbd14cd_4.conda#d2accef9d131077ad74894e05e533038e843739bd8bc3cb97a209d9f49bd176c

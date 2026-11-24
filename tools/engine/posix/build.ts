@@ -200,16 +200,26 @@ export async function buildUnix(work: string, cache: string) {
     '--enable-libplacebo',
     '--enable-vulkan',
   ]
-  run(ffmpeg, join(sources, 'ffmpeg/configure'), [
-    '--prefix=' + prefix,
-    '--cc=' + cc,
-    '--extra-cflags=' + env.CPPFLAGS,
-    '--extra-ldflags=' + env.LDFLAGS,
-    ...codecFlags,
-    ...(mac
-      ? ['--enable-securetransport', '--enable-videotoolbox', '--enable-audiotoolbox']
-      : ['--enable-gnutls', '--enable-vaapi', '--enable-libdrm', '--enable-alsa']),
-  ])
+  try {
+    run(ffmpeg, join(sources, 'ffmpeg/configure'), [
+      '--prefix=' + prefix,
+      '--cc=' + cc,
+      '--extra-cflags=' + env.CPPFLAGS,
+      '--extra-ldflags=' + env.LDFLAGS,
+      ...codecFlags,
+      ...(mac
+        ? ['--enable-securetransport', '--enable-videotoolbox', '--enable-audiotoolbox']
+        : ['--enable-gnutls', '--enable-vaapi', '--enable-libdrm', '--enable-alsa']),
+    ])
+  } catch (error) {
+    console.error(
+      (await readFile(join(ffmpeg, 'ffbuild/config.log'), 'utf8'))
+        .split('\n')
+        .slice(-65)
+        .join('\n'),
+    )
+    throw error
+  }
   make(ffmpeg)
   const engineFlags = [
     '-Dlibmpv=true',

@@ -11,7 +11,7 @@ https://conda.anaconda.org/conda-forge/noarch/python_abi-3.15-9_cp315.conda#976c
 https://conda.anaconda.org/conda-forge/noarch/tzdata-2026e-h5d301ff_0.conda#2b7ca858879f183ce2dcc65b300f48a0133d5430550f35b23d80d405a0788dbf
 https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-h374f1ed_10.conda#4ed83961876dc8844a6f0df49c07b408efbaea275ffb0b37133e24c006990b3a
 https://conda.anaconda.org/conda-forge/osx-64/cairo-1.18.6-h5791faa_0.conda#5f7bf2bfd42cb6d955b196d5ab9ba74c1bb075977703aafd244c0af6f9c6cee2
-https://conda.anaconda.org/conda-forge/osx-64/dav1d-1.5.5-hb4c69ff_0.conda#812ebc23a0016119268556364e9af0aad019825cd80a9cd5a98f15d869a45415
+https://conda.anaconda.org/conda-forge/osx-64/dav1d-devel-1.5.5-h3f3248f_0.conda#f843a0e31eb389ef1cb167157d43870947fc79d8b7cabfbd68f592d0f3f10e8c
 https://conda.anaconda.org/conda-forge/osx-64/fontconfig-2.18.4-h0555eca_0.conda#3da12c657f47e964f66d7613e9affc3bc5d1fb309085f3cc35ffc878dcef653c
 https://conda.anaconda.org/conda-forge/osx-64/freetype-2.14.3-h694c41f_2.conda#a9f6d77b27b67e681d4b3e214a0861a9d4aa87e0e824d8ef6c5bbfcf0cbb556e
 https://conda.anaconda.org/conda-forge/osx-64/fribidi-1.0.18-hd115831_0.conda#68d20cc00d624e784b97a7b02fbcb640cfaa0d2ebd9a505174f1c22ae218b5f6
@@ -52,6 +52,7 @@ https://conda.anaconda.org/conda-forge/osx-64/libvulkan-loader-1.4.357.0-h66869c
 https://conda.anaconda.org/conda-forge/osx-64/libwebp-base-1.6.0-hb276fe9_1.conda#96263e9134164b6ca015a8cfba3a4cac9ca2429ddfebd25c120817fa608d2fdc
 https://conda.anaconda.org/conda-forge/osx-64/libxml2-16-2.15.4-h8376fb4_1.conda#527dbe5b2bfd4440339358ee276284a19b170603bb06471d806d4b05cc9dc95f
 https://conda.anaconda.org/conda-forge/osx-64/libxml2-2.15.4-hb56241c_1.conda#53f41cb4773ad084757efef24dd0268d6f0250c2fc5f1b394a7b9d6aa1cec603
+https://conda.anaconda.org/conda-forge/osx-64/libxml2-devel-2.15.4-hb56241c_1.conda#bd90af9df6f717b8edb17fa1aace1e65b8f49a44f1cca84bc46e9dde7141bd6b
 https://conda.anaconda.org/conda-forge/osx-64/libzlib-1.3.2-hbb4bfdb_3.conda#b2dba286dd6632292b12296e761193b5ef9fb0eaeecaa481f5ba9af72c0c18e1
 https://conda.anaconda.org/conda-forge/osx-64/llvm-openmp-23.1.6-h8c1e6b9_0.conda#d458fdf3a2ec34ba44f20c79ed9d10301d80fa7b48323d29a0fe5567305b8aee
 https://conda.anaconda.org/conda-forge/osx-64/luajit-2.1.1744318430-ha3d0635_0.conda#6a3d047c18b879867bb63c2ce44c36b3561c76d22ee173cbd710113433ac8454
