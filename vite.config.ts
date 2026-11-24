@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite-plus'
 
-const outputs = ['build/**', 'target/**', 'dist/**', '.cache/**', 'node_modules/**']
+const outputs = ['build/**', 'target/**', 'dist/**', 'out/**', '.cache/**', 'node_modules/**']
 export default defineConfig({
   run: {
     tasks: {
@@ -40,6 +40,9 @@ export default defineConfig({
       },
       verify: { command: ['vp run test', 'node tools/engine/verify.ts'], cache: false },
       clean: { command: 'node tools/clean.ts', cache: false },
+      'engine:unix': { command: 'node tools/engine/posix/index.ts', cache: false },
+      'pack:unix': { command: 'node tools/package/unix.ts', cache: false },
+      'verify:unix-media': { command: 'node tools/engine/posix/verify.ts', cache: false },
       'engine:source': { command: 'node tools/engine/source.ts', cache: false },
       'engine:windows': { command: 'node tools/engine/windows.ts', cache: false },
       'pack:windows': { command: 'node tools/package/windows.ts', cache: false },

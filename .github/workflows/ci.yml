@@ -87,7 +87,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ${{ matrix.runner }}
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
@@ -102,6 +102,24 @@ jobs:
         env:
           MACOSX_DEPLOYMENT_TARGET: '13.0'
 
+      - name: Prepare Linux system interfaces
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdrm-dev libegl1-mesa-dev libgbm-dev libva-dev libasound2-dev libpulse-dev xvfb xauth
+      - name: Build the pinned Unix media runtime
+        if: runner.os != 'Windows'
+        shell: bash
+        run: pnpm exec vp run engine:unix "$RUNNER_TEMP/libmpv-runtime" --cache "$RUNNER_TEMP/media-cache"
+      - name: Consume the packaged Unix binding
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          if [[ "$RUNNER_OS" == Linux ]]; then
+            xvfb-run -a pnpm exec vp run verify:unix-media "$RUNNER_TEMP/libmpv-runtime"
+          else
+            pnpm exec vp run verify:unix-media "$RUNNER_TEMP/libmpv-runtime"
+          fi
   gate:
     name: ${{ github.event_name == 'workflow_dispatch' && 'Requested checks' || 'Required checks' }}
     runs-on: ubuntu-22.04
