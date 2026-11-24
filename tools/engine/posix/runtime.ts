@@ -1,21 +1,12 @@
+import { materials, type Package } from './materials.ts'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { chmod, copyFile, cp, mkdir, readFile, readdir, realpath, stat } from 'node:fs/promises'
+import { chmod, copyFile, mkdir, readFile, readdir, realpath, stat } from 'node:fs/promises'
 import { basename, dirname, join, relative } from 'node:path'
 import { digest, projectRoot, writeJson } from '../../files.ts'
 import upstream from '../../../engine/mpv/source.json' with { type: 'json' }
-import sources from '../../../engine/media-sources.json' with { type: 'json' }
 import type { Target } from './build.ts'
 
-interface Package {
-  name: string
-  url: string
-  sha256: string
-  license?: string
-  files: string[]
-  version: string
-  build: string
-}
 interface Entry {
   name: string
   path: string
@@ -64,6 +55,7 @@ export async function assembleUnix(
     // The first load command is the library's own install name.
     return lines.slice(1)
   }
+  const used = new Map<string, Package>()
   const entries = new Map<string, Entry>()
   const external = new Set<string>()
   const pending = [engine]
@@ -78,7 +70,11 @@ export async function assembleUnix(
     if (!(await exists(path))) {
       throw new Error('Unclassified media dependency: ' + name)
     }
-    const owner = built ? 'source' : packages.get(relative(build.deps, path))?.name
+    const pkg = built ? undefined : packages.get(relative(build.deps, await realpath(path)))
+    if (pkg) {
+      used.set(pkg.name, pkg)
+    }
+    const owner = built ? 'source' : pkg?.name
     if (!owner) {
       throw new Error('Missing package owner: ' + name)
     }
@@ -106,7 +102,6 @@ export async function assembleUnix(
   }
   await mkdir(runtime, { recursive: true })
   const files: Record<string, { sha256: string; source: string; input: string }> = {}
-  const used = new Map<string, Package>()
   for (const entry of entries.values()) {
     const name = outputName(entry.name)
     const file = join(runtime, name)
@@ -135,10 +130,6 @@ export async function assembleUnix(
       run(patch, [...args, file])
     }
     files[name] = { sha256: await digest(file), source: entry.owner, input: entry.input }
-    if (entry.owner !== 'source') {
-      const pkg = packages.get(relative(build.deps, entry.path))!
-      used.set(pkg.name, pkg)
-    }
   }
   if (!mac) {
     const config = join(runtime, 'fonts.conf')
@@ -146,53 +137,7 @@ export async function assembleUnix(
     const hash = await digest(config)
     files['fonts.conf'] = { sha256: hash, input: hash, source: 'libmpv-node' }
   }
-  const notices = join(runtime, 'third-party')
-  await mkdir(notices)
-  const list = []
-  for (const pkg of used.values()) {
-    const target = join(notices, pkg.name)
-    await mkdir(target)
-    const root = join(
-      build.cache,
-      'mamba',
-      'pkgs',
-      pkg.name + '-' + pkg.version + '-' + pkg.build,
-      'info',
-    )
-    const pkgInfo = join(root, 'licenses')
-    if ((await stat(pkgInfo, { throwIfNoEntry: false }))?.isDirectory()) {
-      await cp(pkgInfo, join(target, 'licenses'), { recursive: true })
-    }
-    const recipe = join(root, 'recipe')
-    if ((await stat(recipe, { throwIfNoEntry: false }))?.isDirectory()) {
-      await cp(recipe, join(target, 'recipe'), { recursive: true })
-    }
-    list.push({
-      name: pkg.name,
-      version: pkg.version,
-      archive: pkg.url,
-      sha256: pkg.sha256,
-      license: pkg.license,
-    })
-  }
-  for (const [name, documents] of Object.entries({
-    mpv: ['Copyright', 'LICENSE.LGPL', 'LICENSE.GPL'],
-    ffmpeg: ['LICENSE.md', 'COPYING.LGPLv2.1', 'COPYING.LGPLv3', 'CREDITS'],
-    mujs: ['COPYING', 'AUTHORS'],
-    libass: ['COPYING'],
-  })) {
-    await mkdir(join(notices, name), { recursive: true })
-    for (const doc of documents) {
-      await copyFile(join(build.sources, name, doc), join(notices, name, doc))
-    }
-  }
-  if (!mac) {
-    await copyFile(
-      join(projectRoot, 'engine/posix/fontconfig/libass-config.patch'),
-      join(notices, 'libass/libass-config.patch'),
-    )
-  }
-  await writeJson(join(notices, 'components.json'), { upstream, sources, packages: list })
+  await materials(build, runtime, used.values())
   await writeJson(join(runtime, 'engine.json'), {
     target: build.platform,
     mpvCommit: upstream.commit,
