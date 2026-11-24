@@ -108,6 +108,7 @@ export abstract class MpvError extends Error {
 }
 
 export class MpvNativeError extends MpvError {
+  declare readonly submitted: true
   readonly source = 'mpv' as const
   readonly nativeName: string | null
   constructor(
@@ -140,6 +141,8 @@ export class MpvBindingError extends MpvError {
 }
 
 export class MpvAbortError extends MpvBindingError {
+  declare readonly name: 'AbortError'
+  declare readonly cause: unknown
   declare readonly code: 'ABORT_ERR'
   constructor(operation: MpvOperation, submitted: boolean, reason: unknown, creation?: Creation) {
     super('ABORT_ERR', operation, submitted, creation, { cause: reason })
@@ -148,6 +151,7 @@ export class MpvAbortError extends MpvBindingError {
 }
 
 export class MpvConversionError extends MpvBindingError {
+  declare readonly submitted: true
   declare readonly code: 'valueConversion'
   #node: MpvNode
   constructor(
@@ -164,6 +168,7 @@ export class MpvConversionError extends MpvBindingError {
 }
 
 export class MpvObservationError extends MpvBindingError {
+  declare readonly submitted: true
   declare readonly code: 'observationInterrupted'
   constructor(
     readonly reason: 'nativeQueueOverflow' | 'deliveryQueueOverflow',
@@ -174,6 +179,7 @@ export class MpvObservationError extends MpvBindingError {
 }
 
 export class MpvNotificationConversionError extends MpvBindingError {
+  declare readonly submitted: true
   declare readonly code: 'notificationConversion'
   readonly reason = 'invalidUtf8' as const
   #notification: MpvNativeEvent | MpvNativeLogMessage

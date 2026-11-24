@@ -872,61 +872,61 @@ export interface OptionDefinitions {
   'ab-loop-a': { read: number; write: number | bigint | string }
   'ab-loop-b': { read: number; write: number | bigint | string }
   'ab-loop-count': { read: 'inf' | bigint; write: 'inf' | IntegerArgument }
-  'access-references': { read: boolean; write: boolean | 'yes' | 'no' }
+  'access-references': { read: boolean; write: boolean }
   ad: { read: string; write: string }
-  'ad-lavc-ac3drc': { read: number; write: RealArgument }
-  'ad-lavc-downmix': { read: boolean; write: boolean | 'yes' | 'no' }
+  'ad-lavc-ac3drc': { read: number; write: number }
+  'ad-lavc-downmix': { read: boolean; write: boolean }
   'ad-lavc-o': {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
   'ad-lavc-threads': { read: bigint; write: IntegerArgument }
-  'ad-queue-enable': { read: boolean; write: boolean | 'yes' | 'no' }
+  'ad-queue-enable': { read: boolean; write: boolean }
   'ad-queue-max-bytes': { read: bigint; write: bigint | string }
   'ad-queue-max-samples': { read: bigint; write: IntegerArgument }
-  'ad-queue-max-secs': { read: number; write: RealArgument }
+  'ad-queue-max-secs': { read: number; write: number }
   af: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
   aid: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
   alang: { read: readonly string[]; write: string | readonly string[] }
-  'allow-delayed-peak-detect': { read: boolean; write: boolean | 'yes' | 'no' }
+  'allow-delayed-peak-detect': { read: boolean; write: boolean }
   'alsa-buffer-time': { read: bigint; write: IntegerArgument }
-  'alsa-ignore-chmap': { read: boolean; write: boolean | 'yes' | 'no' }
+  'alsa-ignore-chmap': { read: boolean; write: boolean }
   'alsa-mixer-device': { read: string; write: string }
   'alsa-mixer-index': { read: bigint; write: IntegerArgument }
   'alsa-mixer-name': { read: string; write: string }
-  'alsa-non-interleaved': { read: boolean; write: boolean | 'yes' | 'no' }
+  'alsa-non-interleaved': { read: boolean; write: boolean }
   'alsa-periods': { read: bigint; write: IntegerArgument }
-  'alsa-resample': { read: boolean; write: boolean | 'yes' | 'no' }
+  'alsa-resample': { read: boolean; write: boolean }
   ao: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  'ao-null-broken-delay': { read: boolean; write: boolean | 'yes' | 'no' }
-  'ao-null-broken-eof': { read: boolean; write: boolean | 'yes' | 'no' }
-  'ao-null-buffer': { read: number; write: RealArgument }
+  'ao-null-broken-delay': { read: boolean; write: boolean }
+  'ao-null-broken-eof': { read: boolean; write: boolean }
+  'ao-null-buffer': { read: number; write: number }
   'ao-null-channel-layouts': { read: string; write: string }
   'ao-null-format': { read: string; write: string }
-  'ao-null-latency': { read: number; write: RealArgument }
+  'ao-null-latency': { read: number; write: number }
   'ao-null-outburst': { read: bigint; write: IntegerArgument }
-  'ao-null-speed': { read: number; write: RealArgument }
-  'ao-null-untimed': { read: boolean; write: boolean | 'yes' | 'no' }
-  'ao-pcm-append': { read: boolean; write: boolean | 'yes' | 'no' }
+  'ao-null-speed': { read: number; write: number }
+  'ao-null-untimed': { read: boolean; write: boolean }
+  'ao-pcm-append': { read: boolean; write: boolean }
   'ao-pcm-file': { read: string; write: string }
-  'ao-pcm-waveheader': { read: boolean; write: boolean | 'yes' | 'no' }
+  'ao-pcm-waveheader': { read: boolean; write: boolean }
   'archive-exts': { read: readonly string[]; write: string | readonly string[] }
   audio: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
   'audio-backward-batch': { read: bigint; write: IntegerArgument }
   'audio-backward-overlap': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
-  'audio-buffer': { read: number; write: RealArgument }
+  'audio-buffer': { read: number; write: number }
   'audio-channels': { read: string; write: string }
   'audio-client-name': { read: string; write: string }
-  'audio-delay': { read: number; write: RealArgument }
+  'audio-delay': { read: number; write: number }
   'audio-demuxer': { read: string; write: string }
   'audio-device': { read: string; write: string }
   'audio-display': {
     read: 'embedded-first' | 'external-first' | false
     write: 'no' | 'embedded-first' | 'external-first' | false
   }
-  'audio-exclusive': { read: boolean; write: boolean | 'yes' | 'no' }
+  'audio-exclusive': { read: boolean; write: boolean }
   'audio-exts': { read: readonly string[]; write: string | readonly string[] }
-  'audio-fallback-to-null': { read: boolean; write: boolean | 'yes' | 'no' }
+  'audio-fallback-to-null': { read: boolean; write: boolean }
   'audio-file': { read: MpvValue; write: MpvValue }
   'audio-file-auto': {
     read: 'exact' | 'fuzzy' | 'all' | false
@@ -936,24 +936,24 @@ export interface OptionDefinitions {
   'audio-file-paths': { read: readonly string[]; write: string | readonly string[] }
   'audio-files': { read: readonly string[]; write: string | readonly string[] }
   'audio-format': { read: string; write: string }
-  'audio-normalize-downmix': { read: boolean; write: boolean | 'yes' | 'no' }
-  'audio-pitch-correction': { read: boolean; write: boolean | 'yes' | 'no' }
-  'audio-resample-cutoff': { read: number; write: RealArgument }
+  'audio-normalize-downmix': { read: boolean; write: boolean }
+  'audio-pitch-correction': { read: boolean; write: boolean }
+  'audio-resample-cutoff': { read: number; write: number }
   'audio-resample-filter-size': { read: bigint; write: IntegerArgument }
-  'audio-resample-linear': { read: boolean; write: boolean | 'yes' | 'no' }
-  'audio-resample-max-output-size': { read: number; write: RealArgument }
+  'audio-resample-linear': { read: boolean; write: boolean }
+  'audio-resample-max-output-size': { read: number; write: number }
   'audio-resample-phase-shift': { read: bigint; write: IntegerArgument }
   'audio-reversal-buffer': { read: bigint; write: bigint | string }
   'audio-samplerate': { read: bigint; write: IntegerArgument }
-  'audio-set-media-role': { read: boolean; write: boolean | 'yes' | 'no' }
+  'audio-set-media-role': { read: boolean; write: boolean }
   'audio-spdif': { read: string; write: string }
-  'audio-stream-silence': { read: boolean; write: boolean | 'yes' | 'no' }
+  'audio-stream-silence': { read: boolean; write: boolean }
   'audio-swresample-o': {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  'audio-wait-open': { read: number; write: RealArgument }
-  'auto-window-resize': { read: boolean; write: boolean | 'yes' | 'no' }
+  'audio-wait-open': { read: number; write: number }
+  'auto-window-resize': { read: boolean; write: boolean }
   'autocreate-playlist': {
     read: 'filter' | 'same' | false
     write: 'no' | 'filter' | 'same' | false
@@ -961,38 +961,38 @@ export interface OptionDefinitions {
   autofit: { read: string; write: string }
   'autofit-larger': { read: string; write: string }
   'autofit-smaller': { read: string; write: string }
-  'autoload-files': { read: boolean; write: boolean | 'yes' | 'no' }
+  'autoload-files': { read: boolean; write: boolean }
   autosync: { read: false | bigint; write: 'no' | false | IntegerArgument }
   'backdrop-type': {
     read: 'auto' | 'none' | 'mica' | 'acrylic' | 'mica-alt'
     write: 'auto' | 'none' | 'mica' | 'acrylic' | 'mica-alt'
   }
   background: { read: 'none' | 'color' | 'tiles'; write: 'none' | 'color' | 'tiles' }
-  'background-blur-radius': { read: number; write: RealArgument }
+  'background-blur-radius': { read: number; write: number }
   'background-color': { read: string; write: string }
   'background-tile-color-0': { read: string; write: string }
   'background-tile-color-1': { read: string; write: string }
   'background-tile-size': { read: bigint; write: IntegerArgument }
   'blend-subtitles': { read: 'video' | true | false; write: 'no' | 'yes' | 'video' | true | false }
-  border: { read: boolean; write: boolean | 'yes' | 'no' }
+  border: { read: boolean; write: boolean }
   'border-background': {
     read: 'none' | 'color' | 'tiles' | 'blur'
     write: 'none' | 'color' | 'tiles' | 'blur'
   }
-  brightness: { read: number; write: RealArgument }
+  brightness: { read: number; write: number }
   cache: { read: 'auto' | true | false; write: 'no' | 'auto' | 'yes' | true | false }
-  'cache-on-disk': { read: boolean; write: boolean | 'yes' | 'no' }
-  'cache-pause': { read: boolean; write: boolean | 'yes' | 'no' }
-  'cache-pause-initial': { read: boolean; write: boolean | 'yes' | 'no' }
-  'cache-pause-wait': { read: number; write: RealArgument }
-  'cache-secs': { read: number; write: RealArgument }
+  'cache-on-disk': { read: boolean; write: boolean }
+  'cache-pause': { read: boolean; write: boolean }
+  'cache-pause-initial': { read: boolean; write: boolean }
+  'cache-pause-wait': { read: number; write: number }
+  'cache-secs': { read: number; write: number }
   'chapter-merge-threshold': { read: bigint; write: IntegerArgument }
-  'chapter-seek-threshold': { read: number; write: RealArgument }
+  'chapter-seek-threshold': { read: number; write: number }
   'chapters-file': { read: string; write: string }
   'clipboard-backends': { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  'clipboard-monitor': { read: boolean; write: boolean | 'yes' | 'no' }
-  'clipboard-xwayland': { read: boolean; write: boolean | 'yes' | 'no' }
-  'cocoa-cb-10bit-context': { read: boolean; write: boolean | 'yes' | 'no' }
+  'clipboard-monitor': { read: boolean; write: boolean }
+  'clipboard-xwayland': { read: boolean; write: boolean }
+  'cocoa-cb-10bit-context': { read: boolean; write: boolean }
   'cocoa-cb-output-csp': {
     read:
       | 'auto'
@@ -1031,17 +1031,17 @@ export interface OptionDefinitions {
     read: 'auto' | true | false
     write: 'auto' | 'no' | 'yes' | true | false
   }
-  config: { read: boolean; write: boolean | 'yes' | 'no' }
+  config: { read: boolean; write: boolean }
   'config-dir': { read: string; write: string }
-  'container-fps-override': { read: number; write: RealArgument }
-  contrast: { read: number; write: RealArgument }
-  cookies: { read: boolean; write: boolean | 'yes' | 'no' }
+  'container-fps-override': { read: number; write: number }
+  contrast: { read: number; write: number }
+  cookies: { read: boolean; write: boolean }
   'cookies-file': { read: string; write: string }
-  'coreaudio-change-physical-format': { read: boolean; write: boolean | 'yes' | 'no' }
-  'coreaudio-spdif-hack': { read: boolean; write: boolean | 'yes' | 'no' }
-  'corner-rounding': { read: number; write: RealArgument }
-  'correct-downscaling': { read: boolean; write: boolean | 'yes' | 'no' }
-  'correct-pts': { read: boolean; write: boolean | 'yes' | 'no' }
+  'coreaudio-change-physical-format': { read: boolean; write: boolean }
+  'coreaudio-spdif-hack': { read: boolean; write: boolean }
+  'corner-rounding': { read: number; write: number }
+  'correct-downscaling': { read: boolean; write: boolean }
+  'correct-pts': { read: boolean; write: boolean }
   'cover-art-auto': {
     read: 'exact' | 'fuzzy' | 'all' | false
     write: 'no' | 'exact' | 'fuzzy' | 'all' | false
@@ -1134,13 +1134,13 @@ export interface OptionDefinitions {
       | 'blackman'
       | 'sphinx'
   }
-  'cscale-antiring': { read: number; write: RealArgument }
-  'cscale-blur': { read: number; write: RealArgument }
-  'cscale-clamp': { read: number; write: RealArgument }
-  'cscale-param1': { read: number; write: RealArgument }
-  'cscale-param2': { read: number; write: RealArgument }
-  'cscale-radius': { read: number; write: RealArgument }
-  'cscale-taper': { read: number; write: RealArgument }
+  'cscale-antiring': { read: number; write: number }
+  'cscale-blur': { read: number; write: number }
+  'cscale-clamp': { read: number; write: number }
+  'cscale-param1': { read: number; write: number }
+  'cscale-param2': { read: number; write: number }
+  'cscale-radius': { read: number; write: number }
+  'cscale-taper': { read: number; write: number }
   'cscale-window': {
     read:
       | ''
@@ -1169,21 +1169,21 @@ export interface OptionDefinitions {
       | 'sphinx'
       | 'jinc'
   }
-  'cscale-wparam': { read: number; write: RealArgument }
-  'cscale-wtaper': { read: number; write: RealArgument }
+  'cscale-wparam': { read: number; write: number }
+  'cscale-wtaper': { read: number; write: number }
   'cursor-autohide': {
     read: 'always' | false | bigint
     write: 'no' | 'always' | false | IntegerArgument
   }
-  'cursor-autohide-fs-only': { read: boolean; write: boolean | 'yes' | 'no' }
+  'cursor-autohide-fs-only': { read: boolean; write: boolean }
   'd3d11-adapter': { read: string; write: string }
   'd3d11-composition-size': { read: string; write: string }
-  'd3d11-exclusive-fs': { read: boolean; write: boolean | 'yes' | 'no' }
+  'd3d11-exclusive-fs': { read: boolean; write: boolean }
   'd3d11-feature-level': {
     read: '12_1' | '12_0' | '11_1' | '11_0' | '10_1' | '10_0' | '9_3' | '9_2' | '9_1'
     write: '12_1' | '12_0' | '11_1' | '11_0' | '10_1' | '10_0' | '9_3' | '9_2' | '9_1'
   }
-  'd3d11-flip': { read: boolean; write: boolean | 'yes' | 'no' }
+  'd3d11-flip': { read: boolean; write: boolean }
   'd3d11-output-csp': {
     read: 'auto' | 'srgb' | 'linear' | 'pq' | 'bt.2020'
     write: 'auto' | 'srgb' | 'linear' | 'pq' | 'bt.2020'
@@ -1198,30 +1198,30 @@ export interface OptionDefinitions {
   }
   'd3d11-sync-interval': { read: bigint; write: IntegerArgument }
   'd3d11-warp': { read: 'auto' | true | false; write: 'auto' | 'no' | 'yes' | true | false }
-  'd3d11va-zero-copy': { read: boolean; write: boolean | 'yes' | 'no' }
-  deband: { read: boolean; write: boolean | 'yes' | 'no' }
-  'deband-grain': { read: number; write: RealArgument }
+  'd3d11va-zero-copy': { read: boolean; write: boolean }
+  deband: { read: boolean; write: boolean }
+  'deband-grain': { read: number; write: number }
   'deband-iterations': { read: bigint; write: IntegerArgument }
-  'deband-range': { read: number; write: RealArgument }
-  'deband-threshold': { read: number; write: RealArgument }
+  'deband-range': { read: number; write: number }
+  'deband-threshold': { read: number; write: number }
   deinterlace: { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
   'deinterlace-field-parity': { read: 'tff' | 'bff' | 'auto'; write: 'tff' | 'bff' | 'auto' }
   demuxer: { read: string; write: string }
-  'demuxer-backward-playback-step': { read: number; write: RealArgument }
+  'demuxer-backward-playback-step': { read: number; write: number }
   'demuxer-cache-dir': { read: string; write: string }
   'demuxer-cache-unlink-files': {
     read: 'immediate' | 'whendone' | false
     write: 'immediate' | 'whendone' | 'no' | false
   }
-  'demuxer-cache-wait': { read: boolean; write: boolean | 'yes' | 'no' }
-  'demuxer-donate-buffer': { read: boolean; write: boolean | 'yes' | 'no' }
+  'demuxer-cache-wait': { read: boolean; write: boolean }
+  'demuxer-donate-buffer': { read: boolean; write: boolean }
   'demuxer-hysteresis-bytes': { read: bigint; write: bigint | string }
-  'demuxer-hysteresis-secs': { read: number; write: RealArgument }
-  'demuxer-lavf-allow-mimetype': { read: boolean; write: boolean | 'yes' | 'no' }
-  'demuxer-lavf-analyzeduration': { read: number; write: RealArgument }
+  'demuxer-hysteresis-secs': { read: number; write: number }
+  'demuxer-lavf-allow-mimetype': { read: boolean; write: boolean }
+  'demuxer-lavf-analyzeduration': { read: number; write: number }
   'demuxer-lavf-buffersize': { read: bigint; write: bigint | string }
   'demuxer-lavf-format': { read: string; write: string }
-  'demuxer-lavf-hacks': { read: boolean; write: boolean | 'yes' | 'no' }
+  'demuxer-lavf-hacks': { read: boolean; write: boolean }
   'demuxer-lavf-linearize-timestamps': {
     read: 'auto' | true | false
     write: 'no' | 'auto' | 'yes' | true | false
@@ -1236,11 +1236,11 @@ export interface OptionDefinitions {
   }
   'demuxer-lavf-probescore': { read: bigint; write: IntegerArgument }
   'demuxer-lavf-probesize': { read: bigint; write: bigint | string }
-  'demuxer-lavf-propagate-opts': { read: boolean; write: boolean | 'yes' | 'no' }
+  'demuxer-lavf-propagate-opts': { read: boolean; write: boolean }
   'demuxer-max-back-bytes': { read: bigint; write: bigint | string }
   'demuxer-max-bytes': { read: bigint; write: bigint | string }
-  'demuxer-mkv-crop-compat': { read: boolean; write: boolean | 'yes' | 'no' }
-  'demuxer-mkv-probe-start-time': { read: boolean; write: boolean | 'yes' | 'no' }
+  'demuxer-mkv-crop-compat': { read: boolean; write: boolean }
+  'demuxer-mkv-probe-start-time': { read: boolean; write: boolean }
   'demuxer-mkv-probe-video-duration': {
     read: 'full' | true | false
     write: 'no' | 'yes' | 'full' | true | false
@@ -1249,8 +1249,8 @@ export interface OptionDefinitions {
     read: 'index' | true | false
     write: 'no' | 'yes' | 'index' | true | false
   }
-  'demuxer-mkv-subtitle-preroll-secs': { read: number; write: RealArgument }
-  'demuxer-mkv-subtitle-preroll-secs-index': { read: number; write: RealArgument }
+  'demuxer-mkv-subtitle-preroll-secs': { read: number; write: number }
+  'demuxer-mkv-subtitle-preroll-secs-index': { read: number; write: number }
   'demuxer-rawaudio-channels': { read: string; write: string }
   'demuxer-rawaudio-format': {
     read:
@@ -1311,25 +1311,25 @@ export interface OptionDefinitions {
   'demuxer-rawaudio-rate': { read: bigint; write: IntegerArgument }
   'demuxer-rawvideo-codec': { read: string; write: string }
   'demuxer-rawvideo-format': { read: string; write: string }
-  'demuxer-rawvideo-fps': { read: number; write: RealArgument }
+  'demuxer-rawvideo-fps': { read: number; write: number }
   'demuxer-rawvideo-h': { read: bigint; write: IntegerArgument }
   'demuxer-rawvideo-mp-format': { read: string; write: string }
   'demuxer-rawvideo-size': { read: bigint; write: IntegerArgument }
   'demuxer-rawvideo-w': { read: bigint; write: IntegerArgument }
-  'demuxer-readahead-secs': { read: number; write: RealArgument }
+  'demuxer-readahead-secs': { read: number; write: number }
   'demuxer-seekable-cache': {
     read: 'auto' | true | false
     write: 'auto' | 'no' | 'yes' | true | false
   }
-  'demuxer-termination-timeout': { read: number; write: RealArgument }
-  'demuxer-thread': { read: boolean; write: boolean | 'yes' | 'no' }
+  'demuxer-termination-timeout': { read: number; write: number }
+  'demuxer-thread': { read: boolean; write: boolean }
   'directory-filter-types': { read: readonly string[]; write: string | readonly string[] }
   'directory-mode': {
     read: 'auto' | 'lazy' | 'recursive' | 'ignore'
     write: 'auto' | 'lazy' | 'recursive' | 'ignore'
   }
-  'disc-menu': { read: boolean; write: boolean | 'yes' | 'no' }
-  'display-fps-override': { read: number; write: RealArgument }
+  'disc-menu': { read: boolean; write: boolean }
+  'display-fps-override': { read: number; write: number }
   'display-tags': { read: readonly string[]; write: string | readonly string[] }
   dither: {
     read: 'fruit' | 'ordered' | 'error-diffusion' | false
@@ -1442,13 +1442,13 @@ export interface OptionDefinitions {
       | 'blackman'
       | 'sphinx'
   }
-  'dscale-antiring': { read: number; write: RealArgument }
-  'dscale-blur': { read: number; write: RealArgument }
-  'dscale-clamp': { read: number; write: RealArgument }
-  'dscale-param1': { read: number; write: RealArgument }
-  'dscale-param2': { read: number; write: RealArgument }
-  'dscale-radius': { read: number; write: RealArgument }
-  'dscale-taper': { read: number; write: RealArgument }
+  'dscale-antiring': { read: number; write: number }
+  'dscale-blur': { read: number; write: number }
+  'dscale-clamp': { read: number; write: number }
+  'dscale-param1': { read: number; write: number }
+  'dscale-param2': { read: number; write: number }
+  'dscale-radius': { read: number; write: number }
+  'dscale-taper': { read: number; write: number }
   'dscale-window': {
     read:
       | ''
@@ -1477,8 +1477,8 @@ export interface OptionDefinitions {
       | 'sphinx'
       | 'jinc'
   }
-  'dscale-wparam': { read: number; write: RealArgument }
-  'dscale-wtaper': { read: number; write: RealArgument }
+  'dscale-wparam': { read: number; write: number }
+  'dscale-wtaper': { read: number; write: number }
   'dump-stats': { read: string; write: string }
   edition: { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
   'egl-config-id': { read: bigint; write: IntegerArgument }
@@ -1508,36 +1508,36 @@ export interface OptionDefinitions {
       | 'rgb32f'
       | 'rgba32f'
   }
-  embeddedfonts: { read: boolean; write: boolean | 'yes' | 'no' }
+  embeddedfonts: { read: boolean; write: boolean }
   end: { read: string; write: string }
   'error-diffusion': { read: string; write: string }
   'external-file': { read: MpvValue; write: MpvValue }
   'external-files': { read: readonly string[]; write: string | readonly string[] }
   'fbo-format': { read: string; write: string }
-  'flatten-editions': { read: boolean; write: boolean | 'yes' | 'no' }
+  'flatten-editions': { read: boolean; write: boolean }
   'focus-on': { read: 'never' | 'open' | 'all'; write: 'never' | 'open' | 'all' }
   'focus-on-open': { read: MpvValue; write: MpvValue }
   'force-media-title': { read: string; write: string }
-  'force-render': { read: boolean; write: boolean | 'yes' | 'no' }
-  'force-rgba-osd-rendering': { read: boolean; write: boolean | 'yes' | 'no' }
-  'force-seekable': { read: boolean; write: boolean | 'yes' | 'no' }
+  'force-render': { read: boolean; write: boolean }
+  'force-rgba-osd-rendering': { read: boolean; write: boolean }
+  'force-seekable': { read: boolean; write: boolean }
   'force-window': {
     read: 'immediate' | true | false
     write: 'no' | 'yes' | 'immediate' | true | false
   }
-  'force-window-position': { read: boolean; write: boolean | 'yes' | 'no' }
+  'force-window-position': { read: boolean; write: boolean }
   framedrop: {
     read: 'vo' | 'decoder' | 'decoder+vo' | false
     write: 'no' | 'vo' | 'decoder' | 'decoder+vo' | false
   }
   frames: { read: 'all' | bigint; write: 'all' | IntegerArgument }
-  fs: { read: boolean; write: boolean | 'yes' | 'no' }
+  fs: { read: boolean; write: boolean }
   'fs-screen': { read: 'all' | 'current' | bigint; write: 'all' | 'current' | IntegerArgument }
   'fs-screen-name': { read: string; write: string }
-  fullscreen: { read: boolean; write: boolean | 'yes' | 'no' }
-  gamma: { read: number; write: RealArgument }
-  'gamma-auto': { read: boolean; write: boolean | 'yes' | 'no' }
-  'gamma-factor': { read: number; write: RealArgument }
+  fullscreen: { read: boolean; write: boolean }
+  gamma: { read: number; write: number }
+  'gamma-auto': { read: boolean; write: boolean }
+  'gamma-factor': { read: number; write: number }
   'gamut-clipping': { read: MpvValue; write: MpvValue }
   'gamut-mapping-mode': {
     read:
@@ -1574,27 +1574,27 @@ export interface OptionDefinitions {
   'glsl-shaders': { read: readonly string[]; write: string | readonly string[] }
   'gpu-api': { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
   'gpu-context': { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  'gpu-debug': { read: boolean; write: boolean | 'yes' | 'no' }
+  'gpu-debug': { read: boolean; write: boolean }
   'gpu-dumb-mode': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
   'gpu-hwdec-interop': { read: string; write: string }
-  'gpu-shader-cache': { read: boolean; write: boolean | 'yes' | 'no' }
+  'gpu-shader-cache': { read: boolean; write: boolean }
   'gpu-shader-cache-dir': { read: string; write: string }
-  'gpu-sw': { read: boolean; write: boolean | 'yes' | 'no' }
+  'gpu-sw': { read: boolean; write: boolean }
   'gpu-tex-pad-x': { read: bigint; write: IntegerArgument }
   'gpu-tex-pad-y': { read: bigint; write: IntegerArgument }
   h: { read: string; write: string }
   'hdr-compute-peak': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
-  'hdr-contrast-recovery': { read: number; write: RealArgument }
-  'hdr-contrast-smoothness': { read: number; write: RealArgument }
-  'hdr-film-strength': { read: number; write: RealArgument }
-  'hdr-mastering-clip': { read: number; write: RealArgument }
-  'hdr-peak-decay-rate': { read: number; write: RealArgument }
-  'hdr-peak-percentile': { read: number; write: RealArgument }
+  'hdr-contrast-recovery': { read: number; write: number }
+  'hdr-contrast-smoothness': { read: number; write: number }
+  'hdr-film-strength': { read: number; write: number }
+  'hdr-mastering-clip': { read: number; write: number }
+  'hdr-peak-decay-rate': { read: number; write: number }
+  'hdr-peak-percentile': { read: number; write: number }
   'hdr-reference-white': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
-  'hdr-scene-threshold-high': { read: number; write: RealArgument }
-  'hdr-scene-threshold-low': { read: number; write: RealArgument }
+  'hdr-scene-threshold-high': { read: number; write: number }
+  'hdr-scene-threshold-low': { read: number; write: number }
   help: { read: string; write: string }
-  'hidpi-window-scale': { read: boolean; write: boolean | 'yes' | 'no' }
+  'hidpi-window-scale': { read: boolean; write: boolean }
   'hls-bitrate': {
     read: 'min' | 'max' | false | bigint
     write: 'no' | 'min' | 'max' | false | IntegerArgument
@@ -1603,11 +1603,11 @@ export interface OptionDefinitions {
     read: 'absolute' | 'always' | 'default' | true | false
     write: 'no' | 'absolute' | 'yes' | 'always' | 'default' | true | false
   }
-  'hr-seek-demuxer-offset': { read: number; write: RealArgument }
-  'hr-seek-framedrop': { read: boolean; write: boolean | 'yes' | 'no' }
+  'hr-seek-demuxer-offset': { read: number; write: number }
+  'hr-seek-framedrop': { read: boolean; write: boolean }
   'http-header-fields': { read: readonly string[]; write: string | readonly string[] }
   'http-proxy': { read: string; write: string }
-  hue: { read: number; write: RealArgument }
+  hue: { read: number; write: number }
   hwdec: { read: readonly string[]; write: string | readonly string[] }
   'hwdec-codecs': { read: string; write: string }
   'hwdec-extra-frames': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
@@ -1618,7 +1618,7 @@ export interface OptionDefinitions {
   }
   'hwdec-threads': { read: bigint; write: IntegerArgument }
   'icc-3dlut-size': { read: string; write: string }
-  'icc-cache': { read: boolean; write: boolean | 'yes' | 'no' }
+  'icc-cache': { read: boolean; write: boolean }
   'icc-cache-dir': { read: string; write: string }
   'icc-force-contrast': {
     read: 'inf' | false | bigint
@@ -1626,11 +1626,11 @@ export interface OptionDefinitions {
   }
   'icc-intent': { read: bigint; write: IntegerArgument }
   'icc-profile': { read: string; write: string }
-  'icc-profile-auto': { read: boolean; write: boolean | 'yes' | 'no' }
-  'icc-use-luma': { read: boolean; write: boolean | 'yes' | 'no' }
+  'icc-profile-auto': { read: boolean; write: boolean }
+  'icc-use-luma': { read: boolean; write: boolean }
   idle: { read: 'once' | true | false; write: 'no' | 'once' | 'yes' | true | false }
-  'ignore-path-in-watch-later-config': { read: boolean; write: boolean | 'yes' | 'no' }
-  'image-display-duration': { read: number; write: RealArgument | 'inf' }
+  'ignore-path-in-watch-later-config': { read: boolean; write: boolean }
+  'image-display-duration': { read: number; write: number | 'inf' }
   'image-exts': { read: readonly string[]; write: string | readonly string[] }
   'image-lut': { read: string; write: string }
   'image-lut-type': {
@@ -1641,66 +1641,66 @@ export interface OptionDefinitions {
     read: 'sdr' | 'video' | 'video-static' | 'video-dynamic' | bigint
     write: 'sdr' | 'video' | 'video-static' | 'video-dynamic' | IntegerArgument
   }
-  'image-subs-video-resolution': { read: boolean; write: boolean | 'yes' | 'no' }
+  'image-subs-video-resolution': { read: boolean; write: boolean }
   include: { read: string; write: string }
   index: { read: 'default' | 'recreate'; write: 'default' | 'recreate' }
-  'initial-audio-sync': { read: boolean; write: boolean | 'yes' | 'no' }
+  'initial-audio-sync': { read: boolean; write: boolean }
   'input-ar-delay': { read: bigint; write: IntegerArgument }
   'input-ar-rate': { read: bigint; write: IntegerArgument }
-  'input-builtin-bindings': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-builtin-drag-and-drop': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-builtin-dragging': { read: boolean; write: boolean | 'yes' | 'no' }
+  'input-builtin-bindings': { read: boolean; write: boolean }
+  'input-builtin-drag-and-drop': { read: boolean; write: boolean }
+  'input-builtin-dragging': { read: boolean; write: boolean }
   'input-cmdlist': { read: MpvValue; write: string }
   'input-commands': { read: readonly string[]; write: string | readonly string[] }
   'input-conf': { read: string; write: string }
-  'input-cursor': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-cursor-passthrough': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-default-bindings': { read: boolean; write: boolean | 'yes' | 'no' }
+  'input-cursor': { read: boolean; write: boolean }
+  'input-cursor-passthrough': { read: boolean; write: boolean }
+  'input-default-bindings': { read: boolean; write: boolean }
   'input-doubleclick-time': { read: bigint; write: IntegerArgument }
   'input-dragging-deadzone': { read: bigint; write: IntegerArgument }
-  'input-ime': { read: boolean; write: boolean | 'yes' | 'no' }
+  'input-ime': { read: boolean; write: boolean }
   'input-ipc-client': { read: string; write: string }
   'input-ipc-server': { read: string; write: string }
   'input-key-fifo-size': { read: bigint; write: IntegerArgument }
   'input-keylist': { read: MpvValue; write: string }
-  'input-media-keys': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-preprocess-wheel': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-right-alt-gr': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-tablet-emulate-mouse': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-terminal': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-test': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-touch-emulate-mouse': { read: boolean; write: boolean | 'yes' | 'no' }
-  'input-vo-keyboard': { read: boolean; write: boolean | 'yes' | 'no' }
-  interpolation: { read: boolean; write: boolean | 'yes' | 'no' }
-  'interpolation-preserve': { read: boolean; write: boolean | 'yes' | 'no' }
-  'interpolation-threshold': { read: number; write: RealArgument }
-  'inverse-tone-mapping': { read: boolean; write: boolean | 'yes' | 'no' }
-  'js-memory-report': { read: boolean; write: boolean | 'yes' | 'no' }
+  'input-media-keys': { read: boolean; write: boolean }
+  'input-preprocess-wheel': { read: boolean; write: boolean }
+  'input-right-alt-gr': { read: boolean; write: boolean }
+  'input-tablet-emulate-mouse': { read: boolean; write: boolean }
+  'input-terminal': { read: boolean; write: boolean }
+  'input-test': { read: boolean; write: boolean }
+  'input-touch-emulate-mouse': { read: boolean; write: boolean }
+  'input-vo-keyboard': { read: boolean; write: boolean }
+  interpolation: { read: boolean; write: boolean }
+  'interpolation-preserve': { read: boolean; write: boolean }
+  'interpolation-threshold': { read: number; write: number }
+  'inverse-tone-mapping': { read: boolean; write: boolean }
+  'js-memory-report': { read: boolean; write: boolean }
   'keep-open': { read: 'always' | true | false; write: 'no' | 'yes' | 'always' | true | false }
-  'keep-open-pause': { read: boolean; write: boolean | 'yes' | 'no' }
-  keepaspect: { read: boolean; write: boolean | 'yes' | 'no' }
-  'keepaspect-window': { read: boolean; write: boolean | 'yes' | 'no' }
+  'keep-open-pause': { read: boolean; write: boolean }
+  keepaspect: { read: boolean; write: boolean }
+  'keepaspect-window': { read: boolean; write: boolean }
   'lavfi-complex': { read: string; write: string }
   length: { read: string; write: string }
   'libplacebo-opts': {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  'linear-downscaling': { read: boolean; write: boolean | 'yes' | 'no' }
-  'linear-upscaling': { read: boolean; write: boolean | 'yes' | 'no' }
-  'list-options': { read: boolean; write: boolean | 'yes' | 'no' }
-  'list-properties': { read: boolean; write: boolean | 'yes' | 'no' }
+  'linear-downscaling': { read: boolean; write: boolean }
+  'linear-upscaling': { read: boolean; write: boolean }
+  'list-options': { read: boolean; write: boolean }
+  'list-properties': { read: boolean; write: boolean }
   'list-protocols': { read: MpvValue; write: string }
   'load-auto-profiles': { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
-  'load-commands': { read: boolean; write: boolean | 'yes' | 'no' }
-  'load-console': { read: boolean; write: boolean | 'yes' | 'no' }
-  'load-context-menu': { read: boolean; write: boolean | 'yes' | 'no' }
-  'load-osd-console': { read: boolean; write: boolean | 'yes' | 'no' }
-  'load-positioning': { read: boolean; write: boolean | 'yes' | 'no' }
-  'load-scripts': { read: boolean; write: boolean | 'yes' | 'no' }
-  'load-select': { read: boolean; write: boolean | 'yes' | 'no' }
-  'load-stats-overlay': { read: boolean; write: boolean | 'yes' | 'no' }
-  'load-unsafe-playlists': { read: boolean; write: boolean | 'yes' | 'no' }
+  'load-commands': { read: boolean; write: boolean }
+  'load-console': { read: boolean; write: boolean }
+  'load-context-menu': { read: boolean; write: boolean }
+  'load-osd-console': { read: boolean; write: boolean }
+  'load-positioning': { read: boolean; write: boolean }
+  'load-scripts': { read: boolean; write: boolean }
+  'load-select': { read: boolean; write: boolean }
+  'load-stats-overlay': { read: boolean; write: boolean }
+  'load-unsafe-playlists': { read: boolean; write: boolean }
   'log-file': { read: string; write: string }
   loop: {
     read: 'inf' | true | false | bigint
@@ -1724,10 +1724,10 @@ export interface OptionDefinitions {
     write: 'regular' | 'accessory' | 'prohibited'
   }
   'macos-bundle-path': { read: readonly string[]; write: string | readonly string[] }
-  'macos-force-dedicated-gpu': { read: boolean; write: boolean | 'yes' | 'no' }
+  'macos-force-dedicated-gpu': { read: boolean; write: boolean }
   'macos-fs-animation-duration': { read: 'default' | bigint; write: 'default' | IntegerArgument }
   'macos-geometry-calculation': { read: 'visible' | 'whole'; write: 'visible' | 'whole' }
-  'macos-menu-shortcuts': { read: boolean; write: boolean | 'yes' | 'no' }
+  'macos-menu-shortcuts': { read: boolean; write: boolean }
   'macos-render-timer': {
     read: 'callback' | 'precise' | 'system' | 'feedback'
     write: 'callback' | 'precise' | 'system' | 'feedback'
@@ -1795,40 +1795,40 @@ export interface OptionDefinitions {
       | 'mediumLight'
       | 'ultraDark'
   }
-  mc: { read: number; write: RealArgument }
-  'media-controls': { read: boolean; write: boolean | 'yes' | 'no' }
-  'merge-files': { read: boolean; write: boolean | 'yes' | 'no' }
+  mc: { read: number; write: number }
+  'media-controls': { read: boolean; write: boolean }
+  'merge-files': { read: boolean; write: boolean }
   'metadata-codepage': { read: string; write: string }
-  'mf-fps': { read: number; write: RealArgument }
+  'mf-fps': { read: number; write: number }
   'mf-type': { read: string; write: string }
-  monitoraspect: { read: number; write: RealArgument }
-  monitorpixelaspect: { read: number; write: RealArgument }
-  'msg-color': { read: boolean; write: boolean | 'yes' | 'no' }
+  monitoraspect: { read: number; write: number }
+  monitorpixelaspect: { read: number; write: number }
+  'msg-color': { read: boolean; write: boolean }
   'msg-level': {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  'msg-module': { read: boolean; write: boolean | 'yes' | 'no' }
-  'msg-time': { read: boolean; write: boolean | 'yes' | 'no' }
-  mute: { read: boolean; write: boolean | 'yes' | 'no' }
-  'native-fs': { read: boolean; write: boolean | 'yes' | 'no' }
-  'native-keyrepeat': { read: boolean; write: boolean | 'yes' | 'no' }
-  'native-touch': { read: boolean; write: boolean | 'yes' | 'no' }
-  'network-timeout': { read: number; write: RealArgument }
+  'msg-module': { read: boolean; write: boolean }
+  'msg-time': { read: boolean; write: boolean }
+  mute: { read: boolean; write: boolean }
+  'native-fs': { read: boolean; write: boolean }
+  'native-keyrepeat': { read: boolean; write: boolean }
+  'native-touch': { read: boolean; write: boolean }
+  'network-timeout': { read: number; write: number }
   o: { read: string; write: string }
   oac: { read: string; write: string }
   oacopts: {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  'ocopy-metadata': { read: boolean; write: boolean | 'yes' | 'no' }
+  'ocopy-metadata': { read: boolean; write: boolean }
   of: { read: string; write: string }
   ofopts: {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  'on-all-workspaces': { read: boolean; write: boolean | 'yes' | 'no' }
-  ontop: { read: boolean; write: boolean | 'yes' | 'no' }
+  'on-all-workspaces': { read: boolean; write: boolean }
+  ontop: { read: boolean; write: boolean }
   'ontop-level': {
     read: 'window' | 'system' | 'desktop' | bigint
     write: 'window' | 'system' | 'desktop' | IntegerArgument
@@ -1837,37 +1837,37 @@ export interface OptionDefinitions {
   'opengl-check-pattern-b': { read: bigint; write: IntegerArgument }
   'opengl-early-flush': { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
   'opengl-es': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
-  'opengl-glfinish': { read: boolean; write: boolean | 'yes' | 'no' }
-  'opengl-pbo': { read: boolean; write: boolean | 'yes' | 'no' }
-  'opengl-rectangle-textures': { read: boolean; write: boolean | 'yes' | 'no' }
+  'opengl-glfinish': { read: boolean; write: boolean }
+  'opengl-pbo': { read: boolean; write: boolean }
+  'opengl-rectangle-textures': { read: boolean; write: boolean }
   'opengl-swapinterval': { read: bigint; write: IntegerArgument }
-  'opengl-waitvsync': { read: boolean; write: boolean | 'yes' | 'no' }
-  orawts: { read: boolean; write: boolean | 'yes' | 'no' }
-  'ordered-chapters': { read: boolean; write: boolean | 'yes' | 'no' }
+  'opengl-waitvsync': { read: boolean; write: boolean }
+  orawts: { read: boolean; write: boolean }
+  'ordered-chapters': { read: boolean; write: boolean }
   'ordered-chapters-files': { read: string; write: string }
   'oremove-metadata': { read: readonly string[]; write: string | readonly string[] }
-  osc: { read: boolean; write: boolean | 'yes' | 'no' }
+  osc: { read: boolean; write: boolean }
   'osd-align-x': { read: 'left' | 'center' | 'right'; write: 'left' | 'center' | 'right' }
   'osd-align-y': { read: 'top' | 'center' | 'bottom'; write: 'top' | 'center' | 'bottom' }
   'osd-back-color': { read: string; write: string }
-  'osd-bar': { read: boolean; write: boolean | 'yes' | 'no' }
-  'osd-bar-align-x': { read: number; write: RealArgument }
-  'osd-bar-align-y': { read: number; write: RealArgument }
-  'osd-bar-border-size': { read: number; write: RealArgument }
-  'osd-bar-h': { read: number; write: RealArgument }
-  'osd-bar-marker-min-size': { read: number; write: RealArgument }
-  'osd-bar-marker-scale': { read: number; write: RealArgument }
+  'osd-bar': { read: boolean; write: boolean }
+  'osd-bar-align-x': { read: number; write: number }
+  'osd-bar-align-y': { read: number; write: number }
+  'osd-bar-border-size': { read: number; write: number }
+  'osd-bar-h': { read: number; write: number }
+  'osd-bar-marker-min-size': { read: number; write: number }
+  'osd-bar-marker-scale': { read: number; write: number }
   'osd-bar-marker-style': {
     read: 'none' | 'triangle' | 'line'
     write: 'none' | 'triangle' | 'line'
   }
-  'osd-bar-outline-size': { read: number; write: RealArgument }
-  'osd-bar-w': { read: number; write: RealArgument }
+  'osd-bar-outline-size': { read: number; write: number }
+  'osd-bar-w': { read: number; write: number }
   'osd-bitmap-max-size': { read: bigint; write: IntegerArgument }
-  'osd-blur': { read: number; write: RealArgument }
-  'osd-bold': { read: boolean; write: boolean | 'yes' | 'no' }
+  'osd-blur': { read: number; write: number }
+  'osd-bold': { read: boolean; write: boolean }
   'osd-border-color': { read: string; write: string }
-  'osd-border-size': { read: number; write: RealArgument }
+  'osd-border-size': { read: number; write: number }
   'osd-border-style': {
     read: 'outline-and-shadow' | 'opaque-box' | 'background-box'
     write: 'outline-and-shadow' | 'opaque-box' | 'background-box'
@@ -1879,11 +1879,11 @@ export interface OptionDefinitions {
     read: 'auto' | 'none' | 'fontconfig'
     write: 'auto' | 'none' | 'fontconfig'
   }
-  'osd-font-size': { read: number; write: RealArgument }
+  'osd-font-size': { read: number; write: number }
   'osd-fonts-dir': { read: string; write: string }
-  'osd-fractions': { read: boolean; write: boolean | 'yes' | 'no' }
+  'osd-fractions': { read: boolean; write: boolean }
   'osd-glyph-limit': { read: bigint; write: IntegerArgument }
-  'osd-italic': { read: boolean; write: boolean | 'yes' | 'no' }
+  'osd-italic': { read: boolean; write: boolean }
   'osd-justify': {
     read: 'auto' | 'left' | 'center' | 'right'
     write: 'auto' | 'left' | 'center' | 'right'
@@ -1900,22 +1900,22 @@ export interface OptionDefinitions {
     write: 'no' | 'bar' | 'msg' | 'msg-bar' | false
   }
   'osd-outline-color': { read: string; write: string }
-  'osd-outline-size': { read: number; write: RealArgument }
+  'osd-outline-size': { read: number; write: number }
   'osd-playing-msg': { read: string; write: string }
   'osd-playing-msg-duration': { read: bigint; write: IntegerArgument }
   'osd-playlist-entry': {
     read: 'title' | 'filename' | 'both'
     write: 'title' | 'filename' | 'both'
   }
-  'osd-prune-delay': { read: number; write: RealArgument }
-  'osd-scale': { read: number; write: RealArgument }
-  'osd-scale-by-window': { read: boolean; write: boolean | 'yes' | 'no' }
+  'osd-prune-delay': { read: number; write: number }
+  'osd-scale': { read: number; write: number }
+  'osd-scale-by-window': { read: boolean; write: boolean }
   'osd-selected-color': { read: string; write: string }
   'osd-selected-outline-color': { read: string; write: string }
   'osd-shadow-color': { read: string; write: string }
-  'osd-shadow-offset': { read: number; write: RealArgument }
+  'osd-shadow-offset': { read: number; write: number }
   'osd-shaper': { read: 'simple' | 'complex'; write: 'simple' | 'complex' }
-  'osd-spacing': { read: number; write: RealArgument }
+  'osd-spacing': { read: number; write: number }
   'osd-status-msg': { read: string; write: string }
   'oset-metadata': {
     read: Readonly<Record<string, string>>
@@ -1926,10 +1926,10 @@ export interface OptionDefinitions {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  'override-display-fps': { read: number; write: RealArgument }
-  panscan: { read: number; write: RealArgument }
-  pause: { read: boolean; write: boolean | 'yes' | 'no' }
-  pitch: { read: number; write: RealArgument }
+  'override-display-fps': { read: number; write: number }
+  panscan: { read: number; write: number }
+  pause: { read: boolean; write: boolean }
+  pitch: { read: number; write: number }
   'play-dir': {
     read: 'forward' | '+' | 'backward' | '-'
     write: 'forward' | '+' | 'backward' | '-'
@@ -1949,36 +1949,36 @@ export interface OptionDefinitions {
     read: 'auto' | false | bigint
     write: 'auto' | 'no' | false | IntegerArgument
   }
-  'prefetch-playlist': { read: boolean; write: boolean | 'yes' | 'no' }
+  'prefetch-playlist': { read: boolean; write: boolean }
   priority: {
     read: 'realtime' | 'high' | 'abovenormal' | 'normal' | 'belownormal' | 'idle' | false
     write: 'no' | 'realtime' | 'high' | 'abovenormal' | 'normal' | 'belownormal' | 'idle' | false
   }
   profile: { read: readonly string[]; write: string | readonly string[] }
-  'pulse-allow-suspended': { read: boolean; write: boolean | 'yes' | 'no' }
+  'pulse-allow-suspended': { read: boolean; write: boolean }
   'pulse-buffer': { read: 'native' | bigint; write: 'native' | IntegerArgument }
   'pulse-host': { read: string; write: string }
-  'pulse-latency-hacks': { read: boolean; write: boolean | 'yes' | 'no' }
-  quiet: { read: boolean; write: boolean | 'yes' | 'no' }
-  'really-quiet': { read: boolean; write: boolean | 'yes' | 'no' }
-  'rebase-start-time': { read: boolean; write: boolean | 'yes' | 'no' }
+  'pulse-latency-hacks': { read: boolean; write: boolean }
+  quiet: { read: boolean; write: boolean }
+  'really-quiet': { read: boolean; write: boolean }
+  'rebase-start-time': { read: boolean; write: boolean }
   referrer: { read: string; write: string }
-  register: { read: boolean; write: boolean | 'yes' | 'no' }
+  register: { read: boolean; write: boolean }
   'register-rpath': { read: string; write: string }
   replaygain: { read: 'track' | 'album' | false; write: 'no' | 'track' | 'album' | false }
-  'replaygain-clip': { read: boolean; write: boolean | 'yes' | 'no' }
-  'replaygain-fallback': { read: number; write: RealArgument }
-  'replaygain-preamp': { read: number; write: RealArgument }
+  'replaygain-clip': { read: boolean; write: boolean }
+  'replaygain-fallback': { read: number; write: number }
+  'replaygain-preamp': { read: number; write: number }
   'reset-on-next-file': { read: readonly string[]; write: string | readonly string[] }
-  'resume-playback': { read: boolean; write: boolean | 'yes' | 'no' }
-  'resume-playback-check-mtime': { read: boolean; write: boolean | 'yes' | 'no' }
+  'resume-playback': { read: boolean; write: boolean }
+  'resume-playback-check-mtime': { read: boolean; write: boolean }
   'rtsp-transport': {
     read: 'lavf' | 'udp' | 'tcp' | 'http' | 'udp_multicast'
     write: 'lavf' | 'udp' | 'tcp' | 'http' | 'udp_multicast'
   }
-  saturation: { read: number; write: RealArgument }
-  'save-position-on-quit': { read: boolean; write: boolean | 'yes' | 'no' }
-  'save-watch-history': { read: boolean; write: boolean | 'yes' | 'no' }
+  saturation: { read: number; write: number }
+  'save-position-on-quit': { read: boolean; write: boolean }
+  'save-watch-history': { read: boolean; write: boolean }
   scale: {
     read:
       | 'bilinear'
@@ -2061,13 +2061,13 @@ export interface OptionDefinitions {
       | 'blackman'
       | 'sphinx'
   }
-  'scale-antiring': { read: number; write: RealArgument }
-  'scale-blur': { read: number; write: RealArgument }
-  'scale-clamp': { read: number; write: RealArgument }
-  'scale-param1': { read: number; write: RealArgument }
-  'scale-param2': { read: number; write: RealArgument }
-  'scale-radius': { read: number; write: RealArgument }
-  'scale-taper': { read: number; write: RealArgument }
+  'scale-antiring': { read: number; write: number }
+  'scale-blur': { read: number; write: number }
+  'scale-clamp': { read: number; write: number }
+  'scale-param1': { read: number; write: number }
+  'scale-param2': { read: number; write: number }
+  'scale-radius': { read: number; write: number }
+  'scale-taper': { read: number; write: number }
   'scale-window': {
     read:
       | ''
@@ -2096,9 +2096,9 @@ export interface OptionDefinitions {
       | 'sphinx'
       | 'jinc'
   }
-  'scale-wparam': { read: number; write: RealArgument }
-  'scale-wtaper': { read: number; write: RealArgument }
-  'scaler-resizes-only': { read: boolean; write: boolean | 'yes' | 'no' }
+  'scale-wparam': { read: number; write: number }
+  'scale-wtaper': { read: number; write: number }
+  'scaler-resizes-only': { read: boolean; write: boolean }
   screen: { read: 'default' | bigint; write: 'default' | IntegerArgument }
   'screen-name': { read: string; write: string }
   'screenshot-avif-encoder': { read: string; write: string }
@@ -2113,18 +2113,18 @@ export interface OptionDefinitions {
     read: 'jpg' | 'jpeg' | 'png' | 'webp' | 'jxl' | 'avif'
     write: 'jpg' | 'jpeg' | 'png' | 'webp' | 'jxl' | 'avif'
   }
-  'screenshot-high-bit-depth': { read: boolean; write: boolean | 'yes' | 'no' }
+  'screenshot-high-bit-depth': { read: boolean; write: boolean }
   'screenshot-jpeg-quality': { read: bigint; write: IntegerArgument }
-  'screenshot-jpeg-source-chroma': { read: boolean; write: boolean | 'yes' | 'no' }
-  'screenshot-jxl-distance': { read: number; write: RealArgument }
+  'screenshot-jpeg-source-chroma': { read: boolean; write: boolean }
+  'screenshot-jxl-distance': { read: number; write: number }
   'screenshot-jxl-effort': { read: bigint; write: IntegerArgument }
   'screenshot-png-compression': { read: bigint; write: IntegerArgument }
   'screenshot-png-filter': { read: bigint; write: IntegerArgument }
-  'screenshot-sw': { read: boolean; write: boolean | 'yes' | 'no' }
-  'screenshot-tag-colorspace': { read: boolean; write: boolean | 'yes' | 'no' }
+  'screenshot-sw': { read: boolean; write: boolean }
+  'screenshot-tag-colorspace': { read: boolean; write: boolean }
   'screenshot-template': { read: string; write: string }
   'screenshot-webp-compression': { read: bigint; write: IntegerArgument }
-  'screenshot-webp-lossless': { read: boolean; write: boolean | 'yes' | 'no' }
+  'screenshot-webp-lossless': { read: boolean; write: boolean }
   'screenshot-webp-quality': { read: bigint; write: IntegerArgument }
   script: { read: MpvValue; write: MpvValue }
   'script-opt': { read: MpvValue; write: MpvValue }
@@ -2139,28 +2139,28 @@ export interface OptionDefinitions {
     read: 'scale' | 'force' | 'strip' | true | false
     write: 'no' | 'yes' | 'scale' | 'force' | 'strip' | true | false
   }
-  'secondary-sub-delay': { read: number; write: RealArgument }
-  'secondary-sub-pos': { read: number; write: RealArgument }
-  'secondary-sub-scale': { read: number; write: RealArgument }
-  'secondary-sub-visibility': { read: boolean; write: boolean | 'yes' | 'no' }
-  sharpen: { read: number; write: RealArgument }
-  'show-dependent-tracks': { read: boolean; write: boolean | 'yes' | 'no' }
-  'show-in-taskbar': { read: boolean; write: boolean | 'yes' | 'no' }
+  'secondary-sub-delay': { read: number; write: number }
+  'secondary-sub-pos': { read: number; write: number }
+  'secondary-sub-scale': { read: number; write: number }
+  'secondary-sub-visibility': { read: boolean; write: boolean }
+  sharpen: { read: number; write: number }
+  'show-dependent-tracks': { read: boolean; write: boolean }
+  'show-in-taskbar': { read: boolean; write: boolean }
   'show-profile': { read: string; write: string }
-  shuffle: { read: boolean; write: boolean | 'yes' | 'no' }
+  shuffle: { read: boolean; write: boolean }
   sid: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  'sigmoid-center': { read: number; write: RealArgument }
-  'sigmoid-slope': { read: number; write: RealArgument }
-  'sigmoid-upscaling': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sigmoid-center': { read: number; write: number }
+  'sigmoid-slope': { read: number; write: number }
+  'sigmoid-upscaling': { read: boolean; write: boolean }
   slang: { read: readonly string[]; write: string | readonly string[] }
-  'snap-window': { read: boolean; write: boolean | 'yes' | 'no' }
-  speed: { read: number; write: RealArgument }
+  'snap-window': { read: boolean; write: boolean }
+  speed: { read: number; write: number }
   'spirv-compiler':
     | { read: 'auto'; write: 'auto' }
     | { read: 'auto' | 'shaderc'; write: 'auto' | 'shaderc' }
-  sstep: { read: number; write: RealArgument }
+  sstep: { read: number; write: number }
   start: { read: string; write: string }
-  'stop-playback-on-init-failure': { read: boolean; write: boolean | 'yes' | 'no' }
+  'stop-playback-on-init-failure': { read: boolean; write: boolean }
   'stop-screensaver': {
     read: 'always' | true | false
     write: 'no' | 'yes' | 'always' | true | false
@@ -2172,26 +2172,26 @@ export interface OptionDefinitions {
     write: string | Readonly<Record<string, string>>
   }
   'stream-record': { read: string; write: string }
-  'stretch-dvd-subs': { read: boolean; write: boolean | 'yes' | 'no' }
-  'stretch-image-subs-to-screen': { read: boolean; write: boolean | 'yes' | 'no' }
+  'stretch-dvd-subs': { read: boolean; write: boolean }
+  'stretch-image-subs-to-screen': { read: boolean; write: boolean }
   sub: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
   'sub-align-x': { read: 'left' | 'center' | 'right'; write: 'left' | 'center' | 'right' }
   'sub-align-y': { read: 'top' | 'center' | 'bottom'; write: 'top' | 'center' | 'bottom' }
-  'sub-ass': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-ass-force-margins': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-ass': { read: boolean; write: boolean }
+  'sub-ass-force-margins': { read: boolean; write: boolean }
   'sub-ass-force-style': { read: readonly string[]; write: string | readonly string[] }
   'sub-ass-hinting': {
     read: 'none' | 'light' | 'normal' | 'native'
     write: 'none' | 'light' | 'normal' | 'native'
   }
-  'sub-ass-justify': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-ass-line-spacing': { read: number; write: RealArgument }
+  'sub-ass-justify': { read: boolean; write: boolean }
+  'sub-ass-line-spacing': { read: number; write: number }
   'sub-ass-override': {
     read: 'scale' | 'force' | 'strip' | true | false
     write: 'no' | 'yes' | 'scale' | 'force' | 'strip' | true | false
   }
-  'sub-ass-prune-delay': { read: number; write: RealArgument }
-  'sub-ass-scale-with-window': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-ass-prune-delay': { read: number; write: number }
+  'sub-ass-scale-with-window': { read: boolean; write: boolean }
   'sub-ass-shaper': { read: 'simple' | 'complex'; write: 'simple' | 'complex' }
   'sub-ass-style-overrides': { read: readonly string[]; write: string | readonly string[] }
   'sub-ass-styles': { read: string; write: string }
@@ -2213,32 +2213,32 @@ export interface OptionDefinitions {
   'sub-auto-exts': { read: readonly string[]; write: string | readonly string[] }
   'sub-back-color': { read: string; write: string }
   'sub-bitmap-max-size': { read: bigint; write: IntegerArgument }
-  'sub-blur': { read: number; write: RealArgument }
-  'sub-bold': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-blur': { read: number; write: number }
+  'sub-bold': { read: boolean; write: boolean }
   'sub-border-color': { read: string; write: string }
-  'sub-border-size': { read: number; write: RealArgument }
+  'sub-border-size': { read: number; write: number }
   'sub-border-style': {
     read: 'outline-and-shadow' | 'opaque-box' | 'background-box'
     write: 'outline-and-shadow' | 'opaque-box' | 'background-box'
   }
-  'sub-clear-on-seek': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-clear-on-seek': { read: boolean; write: boolean }
   'sub-codepage': { read: string; write: string }
   'sub-color': { read: string; write: string }
-  'sub-create-cc-track': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-delay': { read: number; write: RealArgument }
+  'sub-create-cc-track': { read: boolean; write: boolean }
+  'sub-delay': { read: number; write: number }
   'sub-demuxer': { read: string; write: string }
   'sub-file': { read: MpvValue; write: MpvValue }
   'sub-file-paths': { read: readonly string[]; write: string | readonly string[] }
   'sub-files': { read: readonly string[]; write: string | readonly string[] }
   'sub-filter-jsre': { read: readonly string[]; write: string | readonly string[] }
   'sub-filter-regex': { read: readonly string[]; write: string | readonly string[] }
-  'sub-filter-regex-enable': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-filter-regex-plain': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-filter-regex-warn': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-filter-sdh': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-filter-regex-enable': { read: boolean; write: boolean }
+  'sub-filter-regex-plain': { read: boolean; write: boolean }
+  'sub-filter-regex-warn': { read: boolean; write: boolean }
+  'sub-filter-sdh': { read: boolean; write: boolean }
   'sub-filter-sdh-enclosures': { read: readonly string[]; write: string | readonly string[] }
-  'sub-filter-sdh-harder': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-fix-timing': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-filter-sdh-harder': { read: boolean; write: boolean }
+  'sub-fix-timing': { read: boolean; write: boolean }
   'sub-fix-timing-keep': { read: bigint; write: IntegerArgument }
   'sub-fix-timing-threshold': { read: bigint; write: IntegerArgument }
   'sub-font': { read: string; write: string }
@@ -2246,19 +2246,19 @@ export interface OptionDefinitions {
     read: 'auto' | 'none' | 'fontconfig'
     write: 'auto' | 'none' | 'fontconfig'
   }
-  'sub-font-size': { read: number; write: RealArgument }
+  'sub-font-size': { read: number; write: number }
   'sub-fonts-dir': { read: string; write: string }
-  'sub-forced-events-only': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-fps': { read: number; write: RealArgument }
-  'sub-gauss': { read: number; write: RealArgument }
+  'sub-forced-events-only': { read: boolean; write: boolean }
+  'sub-fps': { read: number; write: number }
+  'sub-gauss': { read: number; write: number }
   'sub-glyph-limit': { read: bigint; write: IntegerArgument }
-  'sub-gray': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-gray': { read: boolean; write: boolean }
   'sub-hdr-peak': { read: 'auto' | 'sdr' | bigint; write: 'auto' | 'sdr' | IntegerArgument }
   'sub-hinting': {
     read: 'none' | 'light' | 'normal' | 'native'
     write: 'none' | 'light' | 'normal' | 'native'
   }
-  'sub-italic': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-italic': { read: boolean; write: boolean }
   'sub-justify': {
     read: 'auto' | 'left' | 'center' | 'right'
     write: 'auto' | 'left' | 'center' | 'right'
@@ -2267,27 +2267,27 @@ export interface OptionDefinitions {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  'sub-line-spacing': { read: number; write: RealArgument }
+  'sub-line-spacing': { read: number; write: number }
   'sub-margin-x': { read: bigint; write: IntegerArgument }
   'sub-margin-y': { read: bigint; write: IntegerArgument }
   'sub-margin-y-offset': { read: bigint; write: IntegerArgument }
   'sub-outline-color': { read: string; write: string }
-  'sub-outline-size': { read: number; write: RealArgument }
-  'sub-past-video-end': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-pos': { read: number; write: RealArgument }
-  'sub-scale': { read: number; write: RealArgument }
-  'sub-scale-by-window': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-scale-signs': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-scale-with-window': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-outline-size': { read: number; write: number }
+  'sub-past-video-end': { read: boolean; write: boolean }
+  'sub-pos': { read: number; write: number }
+  'sub-scale': { read: number; write: number }
+  'sub-scale-by-window': { read: boolean; write: boolean }
+  'sub-scale-signs': { read: boolean; write: boolean }
+  'sub-scale-with-window': { read: boolean; write: boolean }
   'sub-shadow-color': { read: string; write: string }
-  'sub-shadow-offset': { read: number; write: RealArgument }
+  'sub-shadow-offset': { read: number; write: number }
   'sub-shaper': { read: 'simple' | 'complex'; write: 'simple' | 'complex' }
-  'sub-spacing': { read: number; write: RealArgument }
-  'sub-speed': { read: number; write: RealArgument }
-  'sub-stretch-durations': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-use-margins': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-visibility': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sub-vsfilter-bidi-compat': { read: boolean; write: boolean | 'yes' | 'no' }
+  'sub-spacing': { read: number; write: number }
+  'sub-speed': { read: number; write: number }
+  'sub-stretch-durations': { read: boolean; write: boolean }
+  'sub-use-margins': { read: boolean; write: boolean }
+  'sub-visibility': { read: boolean; write: boolean }
+  'sub-vsfilter-bidi-compat': { read: boolean; write: boolean }
   'subs-fallback': {
     read: 'default' | true | false
     write: 'no' | 'default' | 'yes' | true | false
@@ -2296,21 +2296,21 @@ export interface OptionDefinitions {
     read: 'always' | true | false
     write: 'no' | 'yes' | 'always' | true | false
   }
-  'subs-match-os-language': { read: boolean; write: boolean | 'yes' | 'no' }
+  'subs-match-os-language': { read: boolean; write: boolean }
   'subs-with-matching-audio': {
     read: 'forced' | true | false
     write: 'no' | 'forced' | 'yes' | true | false
   }
   'swapchain-depth': { read: bigint; write: IntegerArgument }
-  'sws-allow-zimg': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sws-bitexact': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sws-cgb': { read: number; write: RealArgument }
+  'sws-allow-zimg': { read: boolean; write: boolean }
+  'sws-bitexact': { read: boolean; write: boolean }
+  'sws-cgb': { read: number; write: number }
   'sws-chs': { read: bigint; write: IntegerArgument }
-  'sws-cs': { read: number; write: RealArgument }
+  'sws-cs': { read: number; write: number }
   'sws-cvs': { read: bigint; write: IntegerArgument }
-  'sws-fast': { read: boolean; write: boolean | 'yes' | 'no' }
-  'sws-lgb': { read: number; write: RealArgument }
-  'sws-ls': { read: number; write: RealArgument }
+  'sws-fast': { read: boolean; write: boolean }
+  'sws-lgb': { read: number; write: number }
+  'sws-ls': { read: number; write: number }
   'sws-scaler': {
     read:
       | 'fast-bilinear'
@@ -2345,7 +2345,7 @@ export interface OptionDefinitions {
     read: 'target' | 'source' | 'source-dynamic'
     write: 'target' | 'source' | 'source-dynamic'
   }
-  'target-colorspace-hint-strict': { read: boolean; write: boolean | 'yes' | 'no' }
+  'target-colorspace-hint-strict': { read: boolean; write: boolean }
   'target-contrast': { read: 'auto' | 'inf' | bigint; write: 'auto' | 'inf' | IntegerArgument }
   'target-gamut': { read: string; write: string }
   'target-lut': { read: string; write: string }
@@ -2430,23 +2430,23 @@ export interface OptionDefinitions {
       | 'st428'
       | 'scrgb'
   }
-  'taskbar-progress': { read: boolean; write: boolean | 'yes' | 'no' }
+  'taskbar-progress': { read: boolean; write: boolean }
   'teletext-page': { read: bigint; write: IntegerArgument }
-  'temporal-dither': { read: boolean; write: boolean | 'yes' | 'no' }
+  'temporal-dither': { read: boolean; write: boolean }
   'temporal-dither-period': { read: bigint; write: IntegerArgument }
   'term-osd': { read: 'force' | 'auto' | false; write: 'force' | 'auto' | 'no' | false }
-  'term-osd-bar': { read: boolean; write: boolean | 'yes' | 'no' }
+  'term-osd-bar': { read: boolean; write: boolean }
   'term-osd-bar-chars': { read: string; write: string }
   'term-playing-msg': { read: string; write: string }
   'term-status-msg': { read: string; write: string }
   'term-title': { read: string; write: string }
-  terminal: { read: boolean; write: boolean | 'yes' | 'no' }
+  terminal: { read: boolean; write: boolean }
   title: { read: string; write: string }
-  'title-bar': { read: boolean; write: boolean | 'yes' | 'no' }
+  'title-bar': { read: boolean; write: boolean }
   'tls-ca-file': { read: string; write: string }
   'tls-cert-file': { read: string; write: string }
   'tls-key-file': { read: string; write: string }
-  'tls-verify': { read: boolean; write: boolean | 'yes' | 'no' }
+  'tls-verify': { read: boolean; write: boolean }
   'tone-mapping': {
     read:
       | 'auto'
@@ -2477,21 +2477,21 @@ export interface OptionDefinitions {
   }
   'tone-mapping-desaturate': { read: MpvValue; write: MpvValue }
   'tone-mapping-desaturate-exponent': { read: MpvValue; write: MpvValue }
-  'tone-mapping-exposure': { read: number; write: RealArgument }
-  'tone-mapping-knee-adaptation': { read: number; write: RealArgument }
-  'tone-mapping-knee-default': { read: number; write: RealArgument }
-  'tone-mapping-knee-maximum': { read: number; write: RealArgument }
-  'tone-mapping-knee-minimum': { read: number; write: RealArgument }
-  'tone-mapping-knee-offset': { read: number; write: RealArgument }
-  'tone-mapping-linear-knee': { read: number; write: RealArgument }
-  'tone-mapping-max-boost': { read: number; write: RealArgument }
-  'tone-mapping-param': { read: number; write: RealArgument }
-  'tone-mapping-reinhard-contrast': { read: number; write: RealArgument }
-  'tone-mapping-slope-offset': { read: number; write: RealArgument }
-  'tone-mapping-slope-tuning': { read: number; write: RealArgument }
-  'tone-mapping-spline-contrast': { read: number; write: RealArgument }
-  'tone-mapping-visualize': { read: boolean; write: boolean | 'yes' | 'no' }
-  'track-auto-selection': { read: boolean; write: boolean | 'yes' | 'no' }
+  'tone-mapping-exposure': { read: number; write: number }
+  'tone-mapping-knee-adaptation': { read: number; write: number }
+  'tone-mapping-knee-default': { read: number; write: number }
+  'tone-mapping-knee-maximum': { read: number; write: number }
+  'tone-mapping-knee-minimum': { read: number; write: number }
+  'tone-mapping-knee-offset': { read: number; write: number }
+  'tone-mapping-linear-knee': { read: number; write: number }
+  'tone-mapping-max-boost': { read: number; write: number }
+  'tone-mapping-param': { read: number; write: number }
+  'tone-mapping-reinhard-contrast': { read: number; write: number }
+  'tone-mapping-slope-offset': { read: number; write: number }
+  'tone-mapping-slope-tuning': { read: number; write: number }
+  'tone-mapping-spline-contrast': { read: number; write: number }
+  'tone-mapping-visualize': { read: boolean; write: boolean }
+  'track-auto-selection': { read: boolean; write: boolean }
   'treat-srgb-as-power22': {
     read: 'input' | 'output' | 'both' | 'auto' | false
     write: 'no' | 'input' | 'output' | 'both' | 'auto' | false
@@ -2558,13 +2558,13 @@ export interface OptionDefinitions {
       | 'sphinx'
       | 'jinc'
   }
-  'tscale-antiring': { read: number; write: RealArgument }
-  'tscale-blur': { read: number; write: RealArgument }
-  'tscale-clamp': { read: number; write: RealArgument }
-  'tscale-param1': { read: number; write: RealArgument }
-  'tscale-param2': { read: number; write: RealArgument }
-  'tscale-radius': { read: number; write: RealArgument }
-  'tscale-taper': { read: number; write: RealArgument }
+  'tscale-antiring': { read: number; write: number }
+  'tscale-blur': { read: number; write: number }
+  'tscale-clamp': { read: number; write: number }
+  'tscale-param1': { read: number; write: number }
+  'tscale-param2': { read: number; write: number }
+  'tscale-radius': { read: number; write: number }
+  'tscale-taper': { read: number; write: number }
   'tscale-window': {
     read:
       | ''
@@ -2593,22 +2593,22 @@ export interface OptionDefinitions {
       | 'sphinx'
       | 'jinc'
   }
-  'tscale-wparam': { read: number; write: RealArgument }
-  'tscale-wtaper': { read: number; write: RealArgument }
-  unregister: { read: boolean; write: boolean | 'yes' | 'no' }
-  untimed: { read: boolean; write: boolean | 'yes' | 'no' }
-  'use-embedded-icc-profile': { read: boolean; write: boolean | 'yes' | 'no' }
-  'use-filedir-conf': { read: boolean; write: boolean | 'yes' | 'no' }
+  'tscale-wparam': { read: number; write: number }
+  'tscale-wtaper': { read: number; write: number }
+  unregister: { read: boolean; write: boolean }
+  untimed: { read: boolean; write: boolean }
+  'use-embedded-icc-profile': { read: boolean; write: boolean }
+  'use-filedir-conf': { read: boolean; write: boolean }
   'user-agent': { read: string; write: string }
-  v: { read: boolean; write: boolean | 'yes' | 'no' }
+  v: { read: boolean; write: boolean }
   'vaapi-device': { read: string; write: string }
   vd: { read: string; write: string }
-  'vd-apply-cropping': { read: boolean; write: boolean | 'yes' | 'no' }
-  'vd-lavc-assume-old-x264': { read: boolean; write: boolean | 'yes' | 'no' }
-  'vd-lavc-bitexact': { read: boolean; write: boolean | 'yes' | 'no' }
-  'vd-lavc-check-hw-profile': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vd-apply-cropping': { read: boolean; write: boolean }
+  'vd-lavc-assume-old-x264': { read: boolean; write: boolean }
+  'vd-lavc-bitexact': { read: boolean; write: boolean }
+  'vd-lavc-check-hw-profile': { read: boolean; write: boolean }
   'vd-lavc-dr': { read: 'auto' | true | false; write: 'auto' | 'no' | 'yes' | true | false }
-  'vd-lavc-fast': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vd-lavc-fast': { read: boolean; write: boolean }
   'vd-lavc-film-grain': { read: 'auto' | 'cpu' | 'gpu'; write: 'auto' | 'cpu' | 'gpu' }
   'vd-lavc-framedrop': {
     read: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
@@ -2618,7 +2618,7 @@ export interface OptionDefinitions {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  'vd-lavc-show-all': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vd-lavc-show-all': { read: boolean; write: boolean }
   'vd-lavc-skipframe': {
     read: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
     write: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
@@ -2636,16 +2636,16 @@ export interface OptionDefinitions {
     write: 'no' | 'yes' | true | false | IntegerArgument
   }
   'vd-lavc-threads': { read: bigint; write: IntegerArgument }
-  'vd-queue-enable': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vd-queue-enable': { read: boolean; write: boolean }
   'vd-queue-max-bytes': { read: bigint; write: bigint | string }
   'vd-queue-max-samples': { read: bigint; write: IntegerArgument }
-  'vd-queue-max-secs': { read: number; write: RealArgument }
+  'vd-queue-max-secs': { read: number; write: number }
   version: { read: MpvValue; write: string }
   vf: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
   vid: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
   video: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  'video-align-x': { read: number; write: RealArgument }
-  'video-align-y': { read: number; write: RealArgument }
+  'video-align-x': { read: number; write: number }
+  'video-align-y': { read: number; write: number }
   'video-aspect-method': {
     read: 'bitstream' | 'container' | 'ignore'
     write: 'bitstream' | 'container' | 'ignore'
@@ -2655,20 +2655,20 @@ export interface OptionDefinitions {
   'video-backward-overlap': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
   'video-crop': { read: string; write: string }
   'video-exts': { read: readonly string[]; write: string | readonly string[] }
-  'video-latency-hacks': { read: boolean; write: boolean | 'yes' | 'no' }
-  'video-margin-ratio-bottom': { read: number; write: RealArgument }
-  'video-margin-ratio-left': { read: number; write: RealArgument }
-  'video-margin-ratio-right': { read: number; write: RealArgument }
-  'video-margin-ratio-top': { read: number; write: RealArgument }
-  'video-osd': { read: boolean; write: boolean | 'yes' | 'no' }
+  'video-latency-hacks': { read: boolean; write: boolean }
+  'video-margin-ratio-bottom': { read: number; write: number }
+  'video-margin-ratio-left': { read: number; write: number }
+  'video-margin-ratio-right': { read: number; write: number }
+  'video-margin-ratio-top': { read: number; write: number }
+  'video-osd': { read: boolean; write: boolean }
   'video-output-levels': { read: 'auto' | 'limited' | 'full'; write: 'auto' | 'limited' | 'full' }
-  'video-pan-x': { read: number; write: RealArgument }
-  'video-pan-y': { read: number; write: RealArgument }
-  'video-recenter': { read: boolean; write: boolean | 'yes' | 'no' }
+  'video-pan-x': { read: number; write: number }
+  'video-pan-y': { read: number; write: number }
+  'video-recenter': { read: boolean; write: boolean }
   'video-reversal-buffer': { read: bigint; write: bigint | string }
   'video-rotate': { read: false | bigint; write: 'no' | false | IntegerArgument }
-  'video-scale-x': { read: number; write: RealArgument }
-  'video-scale-y': { read: number; write: RealArgument }
+  'video-scale-x': { read: number; write: number }
+  'video-scale-y': { read: number; write: number }
   'video-sync': {
     read:
       | 'audio'
@@ -2691,15 +2691,15 @@ export interface OptionDefinitions {
       | 'display-desync'
       | 'desync'
   }
-  'video-sync-max-audio-change': { read: number; write: RealArgument }
+  'video-sync-max-audio-change': { read: number; write: number }
   'video-sync-max-factor': { read: bigint; write: IntegerArgument }
-  'video-sync-max-video-change': { read: number; write: RealArgument }
-  'video-timing-offset': { read: number; write: RealArgument }
+  'video-sync-max-video-change': { read: number; write: number }
+  'video-timing-offset': { read: number; write: number }
   'video-unscaled': {
     read: 'downscale-big' | true | false
     write: 'no' | 'yes' | 'downscale-big' | true | false
   }
-  'video-zoom': { read: number; write: RealArgument }
+  'video-zoom': { read: number; write: number }
   vlang: { read: readonly string[]; write: string | readonly string[] }
   vo: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
   'vo-image-avif-encoder': { read: string; write: string }
@@ -2712,42 +2712,42 @@ export interface OptionDefinitions {
     read: 'jpg' | 'jpeg' | 'png' | 'webp' | 'jxl' | 'avif'
     write: 'jpg' | 'jpeg' | 'png' | 'webp' | 'jxl' | 'avif'
   }
-  'vo-image-high-bit-depth': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vo-image-high-bit-depth': { read: boolean; write: boolean }
   'vo-image-jpeg-quality': { read: bigint; write: IntegerArgument }
-  'vo-image-jpeg-source-chroma': { read: boolean; write: boolean | 'yes' | 'no' }
-  'vo-image-jxl-distance': { read: number; write: RealArgument }
+  'vo-image-jpeg-source-chroma': { read: boolean; write: boolean }
+  'vo-image-jxl-distance': { read: number; write: number }
   'vo-image-jxl-effort': { read: bigint; write: IntegerArgument }
   'vo-image-outdir': { read: string; write: string }
   'vo-image-png-compression': { read: bigint; write: IntegerArgument }
   'vo-image-png-filter': { read: bigint; write: IntegerArgument }
-  'vo-image-tag-colorspace': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vo-image-tag-colorspace': { read: boolean; write: boolean }
   'vo-image-webp-compression': { read: bigint; write: IntegerArgument }
-  'vo-image-webp-lossless': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vo-image-webp-lossless': { read: boolean; write: boolean }
   'vo-image-webp-quality': { read: bigint; write: IntegerArgument }
-  'vo-kitty-alt-screen': { read: boolean; write: boolean | 'yes' | 'no' }
-  'vo-kitty-auto-multiplexer-passthrough': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vo-kitty-alt-screen': { read: boolean; write: boolean }
+  'vo-kitty-auto-multiplexer-passthrough': { read: boolean; write: boolean }
   'vo-kitty-cols': { read: bigint; write: IntegerArgument }
-  'vo-kitty-config-clear': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vo-kitty-config-clear': { read: boolean; write: boolean }
   'vo-kitty-height': { read: bigint; write: IntegerArgument }
   'vo-kitty-left': { read: bigint; write: IntegerArgument }
   'vo-kitty-rows': { read: bigint; write: IntegerArgument }
   'vo-kitty-top': { read: bigint; write: IntegerArgument }
-  'vo-kitty-use-shm': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vo-kitty-use-shm': { read: boolean; write: boolean }
   'vo-kitty-width': { read: bigint; write: IntegerArgument }
   'vo-mmcss-profile': { read: string; write: string }
-  'vo-null-fps': { read: number; write: RealArgument }
-  'vo-tct-256': { read: boolean; write: boolean | 'yes' | 'no' }
+  'vo-null-fps': { read: number; write: number }
+  'vo-tct-256': { read: boolean; write: boolean }
   'vo-tct-algo': { read: 'plain' | 'half-blocks'; write: 'plain' | 'half-blocks' }
   'vo-tct-buffering': { read: 'pixel' | 'line' | 'frame'; write: 'pixel' | 'line' | 'frame' }
   'vo-tct-height': { read: bigint; write: IntegerArgument }
   'vo-tct-width': { read: bigint; write: IntegerArgument }
-  volume: { read: number; write: RealArgument }
-  'volume-gain': { read: number; write: RealArgument }
-  'volume-gain-max': { read: number; write: RealArgument }
-  'volume-gain-min': { read: number; write: RealArgument }
-  'volume-max': { read: number; write: RealArgument }
-  'vulkan-async-compute': { read: boolean; write: boolean | 'yes' | 'no' }
-  'vulkan-async-transfer': { read: boolean; write: boolean | 'yes' | 'no' }
+  volume: { read: number; write: number }
+  'volume-gain': { read: number; write: number }
+  'volume-gain-max': { read: number; write: number }
+  'volume-gain-min': { read: number; write: number }
+  'volume-max': { read: number; write: number }
+  'vulkan-async-compute': { read: boolean; write: boolean }
+  'vulkan-async-transfer': { read: boolean; write: boolean }
   'vulkan-device': { read: string; write: string }
   'vulkan-display-display': { read: bigint; write: IntegerArgument }
   'vulkan-display-mode': { read: bigint; write: IntegerArgument }
@@ -2775,20 +2775,20 @@ export interface OptionDefinitions {
     read: 'default' | 'donotround' | 'round' | 'roundsmall'
     write: 'default' | 'donotround' | 'round' | 'roundsmall'
   }
-  'window-dragging': { read: boolean; write: boolean | 'yes' | 'no' }
-  'window-maximized': { read: boolean; write: boolean | 'yes' | 'no' }
-  'window-minimized': { read: boolean; write: boolean | 'yes' | 'no' }
-  'window-scale': { read: number; write: RealArgument }
-  'write-filename-in-watch-later-config': { read: boolean; write: boolean | 'yes' | 'no' }
+  'window-dragging': { read: boolean; write: boolean }
+  'window-maximized': { read: boolean; write: boolean }
+  'window-minimized': { read: boolean; write: boolean }
+  'window-scale': { read: number; write: number }
+  'write-filename-in-watch-later-config': { read: boolean; write: boolean }
   'x11-name': { read: string; write: string }
-  ytdl: { read: boolean; write: boolean | 'yes' | 'no' }
+  ytdl: { read: boolean; write: boolean }
   'ytdl-format': { read: string; write: string }
   'ytdl-raw-options': {
     read: Readonly<Record<string, string>>
     write: string | Readonly<Record<string, string>>
   }
-  '{': { read: boolean; write: boolean | 'yes' | 'no' }
-  '}': { read: boolean; write: boolean | 'yes' | 'no' }
+  '{': { read: boolean; write: boolean }
+  '}': { read: boolean; write: boolean }
 }
 export type PropertyName =
   | 'ab-loop-a'

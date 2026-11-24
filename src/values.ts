@@ -2,6 +2,9 @@ import { types } from 'node:util'
 import { MpvBindingError, MpvConversionError } from './errors.js'
 import type { MpvOperation } from './errors.js'
 
+export interface MpvObject {
+  readonly [key: string]: MpvValue
+}
 export type MpvValue =
   | null
   | boolean
@@ -10,13 +13,14 @@ export type MpvValue =
   | string
   | Uint8Array<ArrayBuffer>
   | readonly MpvValue[]
-  | { readonly [key: string]: MpvValue }
+  | MpvObject
 export type MpvNode =
   | { readonly format: 'none' }
   | { readonly format: 'int64'; readonly value: bigint }
   | { readonly format: 'flag'; readonly value: boolean }
   | { readonly format: 'double'; readonly value: number }
-  | { readonly format: 'string' | 'byteArray'; readonly value: Uint8Array<ArrayBuffer> }
+  | { readonly format: 'string'; readonly value: Uint8Array<ArrayBuffer> }
+  | { readonly format: 'byteArray'; readonly value: Uint8Array<ArrayBuffer> }
   | { readonly format: 'array'; readonly value: readonly MpvNode[] }
   | {
       readonly format: 'map'

@@ -62,3 +62,19 @@ export { NativeFrame, type NativeDmaBufPlane, type NativeFrameSurface } from './
 export type { VideoOutputOptions, VideoOutput } from './client/contracts.js'
 
 export type { KnownCommand, KnownOption, KnownProperty, Screenshot } from './catalog/types.js'
+
+export type { MpvObject } from './values.js'
+export type { Creation as MpvCreationContext, MpvOperation, MpvBindingErrorCode } from './errors.js'
+export type {
+  Mode as ValueRepresentation,
+  Format as MpvPropertyFormat,
+  Options as CallOptions,
+  NativeCommand as MpvCommandNode,
+  Command as MpvCommand,
+  MpvPropertyNode,
+  MpvPropertyValue,
+  ObserveOptions,
+  ObserveEventsOptions,
+  ObserveLogsOptions,
+  PropertyTextOptions,
+} from './client/contracts.js'
