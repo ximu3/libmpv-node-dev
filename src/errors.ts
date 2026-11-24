@@ -7,6 +7,10 @@ export type MpvOperation =
   | 'getVideoDevices'
   | 'createMpv'
   | 'createClient'
+  | 'configureVideoOutput'
+  | 'observeFrames'
+  | 'renderVideoFrame'
+  | 'reportSwap'
   | 'command'
   | 'registerProtocol'
   | 'openStream'
@@ -33,6 +37,8 @@ export type MpvBindingErrorCode =
   | 'incompatibleLibrary'
   | 'invalidArgument'
   | 'closed'
+  | 'renderConflict'
+  | 'renderFailed'
   | 'resourceLimit'
   | 'reentrantStreamCall'
   | 'invalidStreamResult'
@@ -46,7 +52,14 @@ export type MpvBindingErrorCode =
   | 'notificationConversion'
 export type Creation =
   | {
-      readonly stage: 'input' | 'library' | 'core' | 'initializationLogs' | 'initialize' | 'publish'
+      readonly stage:
+        | 'input'
+        | 'library'
+        | 'core'
+        | 'initializationLogs'
+        | 'initialize'
+        | 'video'
+        | 'publish'
     }
   | { readonly stage: 'options'; readonly optionIndex: number }
 const names: Readonly<Record<number, string>> = {

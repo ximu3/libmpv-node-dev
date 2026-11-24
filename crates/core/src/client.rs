@@ -1,3 +1,4 @@
+use crate::video::render::{Configuration, Output, RenderOwner};
 mod hooks;
 pub mod streams;
 pub use hooks::{Hook, HookNotice};
@@ -26,6 +27,7 @@ const MAX_BYTES: usize = 128 * 1024 * 1024;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Failure {
+    RenderConflict,
     Native(i32),
     Limit,
     Closed,
@@ -120,6 +122,7 @@ struct Request {
 }
 
 struct Shared {
+    output: Option<Arc<Output>>,
     state: Mutex<State>,
     api: &'static Api,
 }
@@ -185,6 +188,7 @@ impl Shared {
 }
 
 pub struct Client {
+    pub output: Option<Arc<Output>>,
     shared: Arc<Shared>,
     work: mpsc::Sender<(u32, Operation)>,
     pub id: i64,
@@ -205,14 +209,28 @@ impl Client {
         options: Vec<(CString, Value)>,
         creation: &Creation,
         diagnostics: &mut Diagnostics,
+        video: Option<Configuration>,
         on_close: impl FnOnce() + Send + 'static,
     ) -> Result<Self, CreateError> {
+        if video.is_some()
+            && options
+                .iter()
+                .any(|(name, value)| crate::video::options::conflicting_option(name, value))
+        {
+            return Err(CreateError {
+                reason: Failure::RenderConflict,
+                submitted: false,
+                stage: "input",
+                index: None,
+            });
+        }
         let api = &runtime.api;
         creation.enter("core", None)?;
         // mpv_create returns one owning client reference or null.
         let raw = NonNull::new(unsafe { (api.create)() })
             .ok_or_else(|| creation.stop(Failure::Creation))?;
-        let native = OwnedClient {
+        let mut native = OwnedClient {
+            render: None,
             handle: NativeHandle(raw),
             destroy: api.terminate_destroy,
             api,
@@ -231,6 +249,19 @@ impl Client {
                 return Err(creation.stop(Failure::Native(status)));
             }
         }
+        if let Some(configuration) = video {
+            creation.enter("video", None)?;
+            // libmpv owns the selected VO. The renderer must be ready before an initialization script can load media.
+            let status =
+                unsafe { (api.set_option_string)(handle, c"vo".as_ptr(), c"libmpv".as_ptr()) };
+            if status < 0 {
+                return Err(creation.stop(Failure::Native(status)));
+            }
+            native.render = Some(
+                RenderOwner::create(handle, api, configuration)
+                    .map_err(|failure| creation.stop(failure))?,
+            );
+        }
         creation.enter("initialize", None)?;
         // All options have been applied. OwnedClient handles cleanup even when initialization fails.
         let status = unsafe { (api.initialize)(handle) };
@@ -242,7 +273,14 @@ impl Client {
         if diagnostics.shutdown() {
             return Err(creation.stop(Failure::Closed));
         }
-        Self::start(native, on_close).map_err(|reason| creation.stop(reason))
+        if native.render.is_some() {
+            // The primary event reader monitors configuration and script changes across all control clients.
+            let code = unsafe { (api.observe_property)(handle, 0, c"vo".as_ptr(), 6) };
+            if code < 0 {
+                return Err(creation.stop(Failure::Native(code)));
+            }
+        }
+        Self::start(native, None, on_close).map_err(|reason| creation.stop(reason))
     }
 
     pub fn child(&self, name: Option<&CStr>, creation: &Creation) -> Result<Self, Error> {
@@ -272,14 +310,16 @@ impl Client {
             submitted: true,
         })?;
         let native = OwnedClient {
+            render: None,
             handle: NativeHandle(raw),
             destroy: api.destroy,
             api,
         };
-        let child = Self::start(native, || ()).map_err(|reason| Error {
-            reason,
-            submitted: true,
-        })?;
+        let child =
+            Self::start(native, self.shared.output.clone(), || ()).map_err(|reason| Error {
+                reason,
+                submitted: true,
+            })?;
         state.children.retain(Shutdown::pending);
         state.children.push(child.shutdown());
         Ok(child)
@@ -287,6 +327,7 @@ impl Client {
 
     fn start(
         native: OwnedClient,
+        parent_output: Option<Arc<Output>>,
         on_close: impl FnOnce() + Send + 'static,
     ) -> Result<Self, Failure> {
         let handle = native.handle.0.as_ptr();
@@ -300,7 +341,9 @@ impl Client {
                     .into_owned(),
             )
         };
+        let output = native.render.as_ref().map(|owner| owner.output.clone());
         let shared = Arc::new(Shared {
+            output: output.clone().or(parent_output),
             api,
             state: Mutex::new(State {
                 handle: Some(NativeHandle(native.handle.0)),
@@ -317,6 +360,7 @@ impl Client {
                 finished: Vec::new(),
             }),
         });
+
         let (work, receiver) = mpsc::channel();
         let state = shared.clone();
         thread::Builder::new()
@@ -326,6 +370,7 @@ impl Client {
             })
             .map_err(|_| Failure::Creation)?;
         Ok(Self {
+            output,
             shared,
             work,
             id,
@@ -352,6 +397,9 @@ impl Client {
         let mut state = self.shared.lock();
         if state.closing {
             return Err(Failure::Closed);
+        }
+        if self.shared.output.is_some() && crate::video::options::conflict(&operation) {
+            return Err(Failure::RenderConflict);
         }
         let bytes = operation.size();
         if state.requests.len() + state.deliveries >= MAX_REQUESTS
@@ -408,6 +456,9 @@ impl Client {
     }
 
     pub fn close(&self) -> oneshot::Receiver<()> {
+        if let Some(output) = &self.output {
+            output.stop(None);
+        }
         self.shared.stop()
     }
 }
@@ -419,6 +470,7 @@ impl Drop for Client {
 }
 
 struct OwnedClient {
+    render: Option<RenderOwner>,
     destroy: unsafe extern "C" fn(ffi::Handle),
     handle: NativeHandle,
     api: &'static Api,
@@ -426,6 +478,7 @@ struct OwnedClient {
 
 impl Drop for OwnedClient {
     fn drop(&mut self) {
+        drop(self.render.take());
         // Only this owner destroys the initial handle, after it has stopped accepting concurrent users.
         unsafe { (self.destroy)(self.handle.0.as_ptr()) };
     }

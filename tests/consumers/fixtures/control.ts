@@ -1,3 +1,4 @@
+import { checkSoftwareVideo } from './software.js'
 import { checkStreams } from './streams.js'
 import { Worker } from 'node:worker_threads'
 import { once } from 'node:events'
@@ -281,3 +282,5 @@ await assert.rejects(
   player.getProperty('pause'),
   (error) => error instanceof MpvBindingError && error.code === 'closed' && !error.submitted,
 )
+
+await checkSoftwareVideo()

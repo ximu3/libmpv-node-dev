@@ -43,3 +43,11 @@ export type {
   MpvStreamFailure,
   MpvStreamProvider,
 } from './streams/contracts.js'
+
+export {
+  SoftwareVideoOutput,
+  type SoftwareVideoOptions,
+  type SoftwareVideoConfiguration,
+  type SoftwarePixelFormat,
+  type SoftwareFrame,
+} from './video/software.js'
