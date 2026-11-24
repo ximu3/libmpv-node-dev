@@ -290,18 +290,27 @@ impl Shared {
             return;
         }
         if event.id == 22
-            && event.userdata == 0
+            && let Some(name) = crate::video::options::observer_name(event.userdata)
             && let Some(output) = &self.output
         {
-            // This reserved observation is installed on the primary client for the active managed VO.
+            // Only the primary event reader accesses these reserved property payloads.
             let property = unsafe { &*event.data.cast::<ffi::Property>() };
             let actual = unsafe {
                 super::CopyBudget::new(64 * 1024).property(property.format, property.data)
             };
-            if !actual
-                .as_ref()
-                .is_ok_and(crate::video::options::compatible_vo)
-            {
+            let matches = actual.as_ref().is_ok_and(|value| {
+                if name == c"target-prim"
+                    && let Value::String(primaries) = value
+                {
+                    return output.color_matches(primaries.as_bytes());
+                }
+                crate::video::options::compatible(
+                    name.to_bytes(),
+                    value,
+                    output.configuration().color(),
+                )
+            });
+            if !matches {
                 output.stop(Some(Failure::RenderConflict));
             }
             return;

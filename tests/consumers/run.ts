@@ -87,7 +87,7 @@ execFileSync(
     join(projectRoot, 'vite.config.ts'),
     '--ignore-path',
     join(projectRoot, '.gitignore'),
-    ...globSync('**/*.ts', { cwd: join(projectRoot, 'tests/consumers/fixtures') }),
+    ...globSync('**/*.{ts,cts}', { cwd: join(projectRoot, 'tests/consumers/fixtures') }),
     'example.ts',
   ],
   { cwd: consumer, stdio: 'inherit' },
@@ -118,5 +118,9 @@ if (values.electron) {
       timeout: 60000,
     },
   )
-  console.log(`Electron ${await readFile(receipt, 'utf8')} completed the installed-package checks.`)
+  const version = await readFile(receipt, 'utf8')
+  if (version !== fixture.devDependencies.electron) {
+    throw new Error('Missing receipt from Electron ' + fixture.devDependencies.electron)
+  }
+  console.log(`Electron ${version} completed the installed-package checks.`)
 }

@@ -1,4 +1,4 @@
-use crate::video::render::{Configuration, Output, RenderOwner};
+use crate::video::render::{Options as VideoOptions, Output, RenderOwner};
 mod hooks;
 pub mod streams;
 pub use hooks::{Hook, HookNotice};
@@ -28,6 +28,8 @@ const MAX_BYTES: usize = 128 * 1024 * 1024;
 #[derive(Clone, Copy, Debug)]
 pub enum Failure {
     RenderConflict,
+    UnsupportedCapability,
+    RenderFailed,
     Native(i32),
     Limit,
     Closed,
@@ -209,13 +211,17 @@ impl Client {
         options: Vec<(CString, Value)>,
         creation: &Creation,
         diagnostics: &mut Diagnostics,
-        video: Option<Configuration>,
+        video: Option<VideoOptions>,
         on_close: impl FnOnce() + Send + 'static,
     ) -> Result<Self, CreateError> {
-        if video.is_some()
-            && options
-                .iter()
-                .any(|(name, value)| crate::video::options::conflicting_option(name, value))
+        if let Some(output) = &video
+            && options.iter().any(|(name, value)| {
+                !crate::video::options::compatible(
+                    name.to_bytes(),
+                    value,
+                    output.configuration().color(),
+                )
+            })
         {
             return Err(CreateError {
                 reason: Failure::RenderConflict,
@@ -257,6 +263,20 @@ impl Client {
             if status < 0 {
                 return Err(creation.stop(Failure::Native(status)));
             }
+            if let VideoOptions::Gpu(options) = &configuration {
+                for (key, value) in crate::video::options::GPU_OPTIONS
+                    .iter()
+                    .copied()
+                    .chain([(c"target-prim", options.config.color.primaries())])
+                {
+                    // These options define the color interpretation of the shared render target before libmpv initializes.
+                    let status =
+                        unsafe { (api.set_option_string)(handle, key.as_ptr(), value.as_ptr()) };
+                    if status < 0 {
+                        return Err(creation.stop(Failure::Native(status)));
+                    }
+                }
+            }
             native.render = Some(
                 RenderOwner::create(handle, api, configuration)
                     .map_err(|failure| creation.stop(failure))?,
@@ -273,11 +293,26 @@ impl Client {
         if diagnostics.shutdown() {
             return Err(creation.stop(Failure::Closed));
         }
-        if native.render.is_some() {
-            // The primary event reader monitors configuration and script changes across all control clients.
-            let code = unsafe { (api.observe_property)(handle, 0, c"vo".as_ptr(), 6) };
-            if code < 0 {
-                return Err(creation.stop(Failure::Native(code)));
+        if let Some(render) = &native.render {
+            let names = crate::video::options::OBSERVED;
+            let count = if render.output.configuration().color().is_some() {
+                names.len()
+            } else {
+                1
+            };
+            for (index, name) in names[..count].iter().enumerate() {
+                // Private observations on the primary queue detect changes by scripts, profiles and other clients.
+                let status = unsafe {
+                    (api.observe_property)(
+                        handle,
+                        crate::video::options::observer_id(index),
+                        name.as_ptr(),
+                        6,
+                    )
+                };
+                if status < 0 {
+                    return Err(creation.stop(Failure::Native(status)));
+                }
             }
         }
         Self::start(native, None, on_close).map_err(|reason| creation.stop(reason))
@@ -398,7 +433,9 @@ impl Client {
         if state.closing {
             return Err(Failure::Closed);
         }
-        if self.shared.output.is_some() && crate::video::options::conflict(&operation) {
+        if let Some(output) = &self.shared.output
+            && crate::video::options::conflict(&operation, output.configuration().color())
+        {
             return Err(Failure::RenderConflict);
         }
         let bytes = operation.size();
@@ -642,6 +679,13 @@ impl OwnedClient {
     }
 
     fn deliver(&self, shared: &Arc<Shared>, event: &Event) {
+        if event.id == 4
+            && event.userdata == crate::video::render::COLOR_REPLY
+            && let Some(output) = &shared.output
+        {
+            output.color_reply(event.error);
+            return;
+        }
         if !(3..=5).contains(&event.id) {
             shared.publish(event);
             return;
