@@ -13,7 +13,7 @@ const runners = {
   'macos-arm64': 'macos-15',
 }
 
-export function selectChecks(files: readonly string[] | undefined) {
+function selectChecks(files: readonly string[] | undefined) {
   if (
     !files ||
     files.some(
@@ -44,6 +44,36 @@ export function selectChecks(files: readonly string[] | undefined) {
     return 'code'
   }
   return 'docs'
+}
+
+export function planChecks(files: readonly string[] | undefined, requestedTarget?: string) {
+  const allTargets = !requestedTarget || requestedTarget === 'all'
+  const selected = Object.entries(runners).filter(
+    ([target]) => allTargets || target === requestedTarget,
+  )
+  if (!selected.length) {
+    throw new Error('Unknown verification target')
+  }
+  let scope = selectChecks(files)
+  if (requestedTarget) {
+    scope = allTargets ? 'sources' : 'code'
+  }
+  const matrix = {
+    target: selected.map(([target]) => target),
+    include: selected.map(([target, runner]) => ({
+      target,
+      runner,
+      macosDeploymentTarget: target.startsWith('macos-')
+        ? metadata.config.macosDeploymentTarget
+        : undefined,
+    })),
+  }
+  return {
+    code: scope !== 'docs',
+    sources: scope === 'sources',
+    packages: allTargets && scope !== 'docs',
+    matrix,
+  }
 }
 
 function gh(path: string, filter: string) {
@@ -116,28 +146,11 @@ async function plan() {
       .split('\0')
       .filter(Boolean)
   }
-  const target = process.env.REQUEST_TARGET
-  let scope = selectChecks(files)
-  if (target) {
-    scope = target === 'all' ? 'sources' : 'code'
-  }
-  const selected = Object.entries(runners).filter(
-    ([name]) => !target || target === 'all' || name === target,
-  )
-  if (!selected.length) {
-    throw new Error('Unknown verification target')
-  }
-  outputs.code = String(scope !== 'docs')
-  outputs.sources = String(scope === 'sources')
-  outputs.matrix = JSON.stringify({
-    include: selected.map(([target, runner]) => ({
-      target,
-      runner,
-      macosDeploymentTarget: target.startsWith('macos-')
-        ? metadata.config.macosDeploymentTarget
-        : undefined,
-    })),
-  })
+  const checks = planChecks(files, process.env.REQUEST_TARGET)
+  outputs.code = String(checks.code)
+  outputs.sources = String(checks.sources)
+  outputs.packages = String(checks.packages)
+  outputs.matrix = JSON.stringify(checks.matrix)
   await appendFile(
     process.env.GITHUB_OUTPUT!,
     Object.entries(outputs)

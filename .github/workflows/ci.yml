@@ -1,4 +1,5 @@
 name: CI
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('Verify libmpv-node ({0})', inputs.target || 'all') || '' }}
 
 on:
   pull_request:
@@ -31,6 +32,7 @@ jobs:
       reused: ${{ steps.plan.outputs.reused }}
       code: ${{ steps.plan.outputs.code }}
       sources: ${{ steps.plan.outputs.sources }}
+      packages: ${{ steps.plan.outputs.packages }}
       matrix: ${{ steps.plan.outputs.matrix }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -81,7 +83,7 @@ jobs:
         run: pnpm exec vp run check
 
   build:
-    name: libmpv-node / ${{ matrix.target }} / verify
+    name: Target checks
     needs: plan
     if: needs.plan.outputs.reused != 'true' && needs.plan.outputs.code == 'true'
     strategy:
@@ -152,8 +154,8 @@ jobs:
         with:
           path: ${{ runner.temp }}/libmpv-engine
           key: ${{ steps.media.outputs.cache-primary-key }}
-      - name: Prepare Linux audio devices for the full media check
-        if: runner.os == 'Linux' && github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+      - name: Prepare Linux audio devices
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get install -y pulseaudio pulseaudio-utils
           pulseaudio --start --exit-idle-time=-1
@@ -163,8 +165,8 @@ jobs:
       - name: Verify the installed platform package
         shell: bash
         env:
-          ASSEMBLE: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'all' }}
-          LIBMPV_TEST_HTTPS: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
+          ASSEMBLE: ${{ needs.plan.outputs.packages }}
+          LIBMPV_TEST_HTTPS: '1'
         run: |
           runtime="$RUNNER_TEMP/libmpv-runtime"
           args=()
@@ -176,7 +178,7 @@ jobs:
             pnpm exec vp run verify:media "$runtime" "${args[@]}"
           fi
       - name: Transfer the verified platform archive
-        if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
+        if: needs.plan.outputs.packages == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
         with:
           name: media-${{ matrix.target }}
@@ -203,8 +205,9 @@ jobs:
           retention-days: 1
 
   assemble:
-    if: github.event_name == 'workflow_dispatch' && inputs.target == 'all'
-    needs: build
+    name: Assemble main package
+    if: needs.plan.outputs.reused != 'true' && needs.plan.outputs.packages == 'true'
+    needs: [plan, build]
     runs-on: ubuntu-22.04
     timeout-minutes: 30
     steps:
@@ -234,6 +237,7 @@ jobs:
           retention-days: 1
 
   sources:
+    name: Assemble source kits
     if: needs.plan.outputs.reused != 'true' && needs.plan.outputs.sources == 'true'
     needs: [plan, build]
     runs-on: ubuntu-22.04
@@ -267,6 +271,7 @@ jobs:
           retention-days: 1
 
   consume:
+    name: Final package checks
     needs: [plan, assemble]
     strategy:
       fail-fast: false
@@ -312,7 +317,7 @@ jobs:
           CODE: ${{ needs.plan.outputs.code }}
           WORKSPACE: ${{ needs.workspace.result }}
           BUILD: ${{ needs.build.result }}
-          FULL_CANDIDATE: ${{ github.event_name == 'workflow_dispatch' && inputs.target == 'all' }}
+          CHECK_PACKAGES: ${{ needs.plan.outputs.packages }}
           ASSEMBLY: ${{ needs.assemble.result }}
           SOURCES: ${{ needs.sources.result }}
           CHECK_SOURCES: ${{ needs.plan.outputs.sources }}
@@ -322,8 +327,10 @@ jobs:
           if [[ "$REUSED" != true && "$CHECK_SOURCES" == true ]]; then
             [[ "$SOURCES" == success ]]
           fi
-          if [[ "$FULL_CANDIDATE" == true ]]; then
+          if [[ "$REUSED" != true && "$CHECK_PACKAGES" == true ]]; then
             [[ "$ASSEMBLY" == success && "$CONSUMERS" == success ]]
+          else
+            [[ "$ASSEMBLY" == skipped && "$CONSUMERS" == skipped ]]
           fi
           if [[ "$REUSED" == true ]]; then
             [[ "$WORKSPACE" == skipped && "$BUILD" == skipped ]]
