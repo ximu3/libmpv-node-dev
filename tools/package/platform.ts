@@ -1,6 +1,6 @@
 import { auditPlatform } from './abi.ts'
 import { execFileSync } from 'node:child_process'
-import { cp, copyFile, mkdir, mkdtempDisposable, readFile, rename } from 'node:fs/promises'
+import { cp, copyFile, mkdir, mkdtempDisposable, readFile, rename, stat } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { parseArgs } from 'node:util'
 import metadata from '../../package.json' with { type: 'json' }
@@ -20,7 +20,7 @@ interface Receipt {
   target: string
   mpvCommit: string
   patches: string[]
-  files: Record<string, { sha256: string }>
+  files: Record<string, { size: number; sha256: string; imports: string[] }>
 }
 const engines = { win32: 'libmpv-2.dll', linux: 'libmpv.so.2', darwin: 'libmpv.2.dylib' } as const
 
@@ -50,8 +50,16 @@ export async function packPlatform(destination: string, runtime: string) {
     if (basename(file) !== file || file === '.' || file === '..') {
       throw new Error('Invalid runtime file name')
     }
-    await copyFile(join(runtime, file), join(platform, file))
-    await verifyDigest(join(platform, file), artifact.sha256)
+    const installed = join(platform, file)
+    await copyFile(join(runtime, file), installed)
+    if (
+      (await stat(installed)).size !== artifact.size ||
+      !Array.isArray(artifact.imports) ||
+      !artifact.imports.every((name) => typeof name === 'string')
+    ) {
+      throw new Error('Invalid engine inventory for ' + file)
+    }
+    await verifyDigest(installed, artifact.sha256)
     files[file] = artifact.sha256
   }
   await copyFile(receiptPath, join(platform, 'engine.json'))
