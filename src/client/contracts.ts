@@ -58,7 +58,10 @@ type ValidOptions<P extends OptionEntries> = {
 }
 export type CreateOptions<P extends OptionEntries = OptionEntries> = Options &
   (
-    | { readonly input?: 'javascript'; readonly options?: P & ValidOptions<NoInfer<P>> }
+    | {
+        readonly input?: 'javascript'
+        readonly options?: P & NoInfer<OptionEntries extends P ? unknown : ValidOptions<P>>
+      }
     | { readonly input: 'native'; readonly options?: readonly (readonly [Name, MpvNode])[] }
   )
 
@@ -192,15 +195,15 @@ export interface MpvControl {
   ): Promise<void>
   setProperty(name: Name, value: MpvNode, options: Options & { input: 'native' }): Promise<void>
   command<const A extends Command>(
-    args: A & CheckedCommand<NoInfer<A>>,
+    args: A & NoInfer<CheckedCommand<A>>,
     options?: Options & { input?: 'javascript'; output?: 'javascript' },
   ): Promise<CommandResult<A>>
   command<const A extends Command, M extends ValueRepresentation>(
-    args: A & CheckedCommand<NoInfer<A>>,
+    args: A & NoInfer<CheckedCommand<A>>,
     options: Options & { input?: 'javascript'; output: M },
   ): Promise<Output<CommandResult<A>, M>>
   command<const A extends Command>(
-    args: A & CheckedCommand<NoInfer<A>>,
+    args: A & NoInfer<CheckedCommand<A>>,
     options:
       | (Options & { readonly input?: 'javascript'; readonly output?: ValueRepresentation })
       | undefined,

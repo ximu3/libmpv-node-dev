@@ -1,31 +1,26 @@
+import { optionGroups } from './options.ts'
 import { runPnpm } from '../pnpm.ts'
 import { readFile, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import type { Argument, Catalog, CommandInfo, OptionInfo } from './collect.ts'
-import { projectRoot, requiredPath } from '../files.ts'
+import type { Argument, Catalog, CommandInfo } from './collect.ts'
+import { projectRoot, requiredPath, writeJson } from '../files.ts'
 
 const quote = JSON.stringify
 function union(values: readonly string[]) {
   return [...new Set(values)].map((value) => quote(value)).join(' | ') || 'never'
 }
-function choices(info: Argument | OptionInfo, numeric: boolean) {
+function choices(info: Argument, numeric: boolean) {
   const names = info.choices ?? []
   const bools = [names.includes('yes') ? 'true' : '', names.includes('no') ? 'false' : ''].filter(
     Boolean,
   )
   const integers = names.filter((n) => /^-?\d+$/.test(n)).map((n) => BigInt(n).toString() + 'n')
-  const literals = names.filter((name) => name !== 'yes' && name !== 'no' && !/^-?\d+$/.test(name))
   const input = [
     ...(names.length ? [union(names)] : []),
     ...bools,
     ...(numeric ? ['IntegerArgument'] : integers),
   ].join(' | ')
-  const read = [
-    ...(literals.length ? [union(literals)] : []),
-    ...bools,
-    ...(numeric ? ['bigint'] : integers),
-  ].join(' | ')
-  return { read: read || 'never', write: input || 'never' }
+  return input || 'never'
 }
 function argument(command: string, field: Argument, key: string) {
   switch (field.type) {
@@ -36,7 +31,7 @@ function argument(command: string, field: Argument, key: string) {
         field,
         (command === 'playlist-play-index' || command === 'playlist-remove') &&
           field.name === 'index',
-      ).write
+      )
     case 'Flag':
       return 'boolean | "yes" | "no"'
     case 'Integer':
@@ -59,62 +54,6 @@ function argument(command: string, field: Argument, key: string) {
       return 'string | Readonly<Record<string,string>>'
     default:
       throw Error('Unknown command argument type ' + field.type)
-  }
-}
-function option(info: OptionInfo) {
-  const kind = info.type
-  switch (kind) {
-    case undefined:
-      return { read: 'MpvValue', write: 'MpvValue' }
-    case 'Choice':
-      return choices(info, info.min !== undefined && info.max !== undefined)
-    case 'Flag':
-      return { read: 'boolean', write: 'boolean' }
-    case 'Integer':
-    case 'Integer64':
-      return { read: 'bigint', write: 'IntegerArgument' }
-    case 'ByteSize':
-      return { read: 'bigint', write: 'bigint | string' }
-    case 'Float':
-    case 'Double':
-      return {
-        read: 'number',
-        write:
-          info.max &&
-          typeof info.max === 'object' &&
-          'double' in info.max &&
-          info.max.double === 'Infinity'
-            ? 'number | "inf"'
-            : 'number',
-      }
-    case 'Aspect':
-    case 'Time':
-      return { read: 'number', write: 'number | bigint | string' }
-    case 'Key/value list':
-    case 'Output verbosity levels':
-      return {
-        read: 'Readonly<Record<string,string>>',
-        write: 'string | Readonly<Record<string,string>>',
-      }
-    case 'String list':
-      return { read: 'readonly string[]', write: 'string | readonly string[]' }
-    case 'Object settings list':
-      return { read: 'readonly ObjectSetting[]', write: 'string | readonly ObjectSetting[]' }
-    case 'Audio channels or channel map':
-    case 'Audio format':
-    case 'Color':
-    case 'FourCC':
-    case 'Image format':
-    case 'Relative time or percent position':
-    case 'String':
-    case 'Video rect':
-    case 'Window geometry':
-    case 'Window size':
-      return { read: 'string', write: 'string' }
-    case 'Print':
-      return { read: 'MpvValue', write: 'string' }
-    default:
-      throw Error('Unknown option type ' + kind)
   }
 }
 function definition(cmd: CommandInfo) {
@@ -147,16 +86,10 @@ function definition(cmd: CommandInfo) {
 }
 
 export function declarations(catalogs: readonly Catalog[]) {
-  const optionTypes = new Map<string, Set<string>>()
+  const groups = optionGroups(catalogs)
   const commands = new Map<string, Set<string>>()
   const properties = new Set<string>()
   for (const catalog of catalogs) {
-    for (const info of catalog.options) {
-      const { read, write } = option(info)
-      const types = optionTypes.get(info.name) ?? new Set<string>()
-      types.add('{read:' + read + ';write:' + write + '}')
-      optionTypes.set(info.name, types)
-    }
     for (const cmd of catalog.commands) {
       const forms = commands.get(cmd.name) ?? new Set<string>()
       forms.add(definition(cmd))
@@ -179,20 +112,27 @@ export function declarations(catalogs: readonly Catalog[]) {
     })
   const text = [
     "import type { At, FlagInput, IntegerArgument, RealArgument } from './types.js'",
-    "import type { MpvValue } from '../values.js'",
-    'type ObjectSetting = { readonly name:string; readonly label?:string; readonly enabled?:boolean; readonly params?:Readonly<Record<string,string>> }',
+    "import type { ShapeValue } from './shape.js'",
     'export interface CommandDefinitions<A> {',
     ...definitions,
     '}',
-    'export interface OptionDefinitions {',
-    ...[...optionTypes.keys()]
-      .sort()
-      .map((name) => quote(name) + ':' + [...optionTypes.get(name)!].join(' | ')),
-    '}',
+    'export type OptionDefinitions = ' +
+      groups
+        .map(
+          (group) =>
+            '{[N in ' +
+            union(group.names) +
+            ']: {read:ShapeValue<' +
+            JSON.stringify(group.read) +
+            '>;write:ShapeValue<' +
+            JSON.stringify(group.write) +
+            '>}}',
+        )
+        .join(' & '),
     'export type PropertyName = ' + union([...properties].sort()),
     '',
   ].join('\n')
-  return text
+  return { types: text, rules: { options: groups, commands: [...commands.keys()].sort() } }
 }
 
 if (import.meta.main) {
@@ -200,6 +140,11 @@ if (import.meta.main) {
   for (const path of process.argv.slice(2)) {
     catalogs.push(JSON.parse(await readFile(requiredPath(path, 'catalog'), 'utf8')) as Catalog)
   }
-  await writeFile(join(projectRoot, 'src/catalog/generated.ts'), declarations(catalogs))
-  runPnpm(['exec', 'vp', 'fmt', '--write', 'src/catalog/generated.ts'], projectRoot)
+  const { types, rules } = declarations(catalogs)
+  await writeFile(join(projectRoot, 'src/catalog/generated.ts'), types)
+  await writeJson(join(projectRoot, 'src/catalog/rules.json'), rules)
+  runPnpm(
+    ['exec', 'vp', 'fmt', '--write', 'src/catalog/generated.ts', 'src/catalog/rules.json'],
+    projectRoot,
+  )
 }

@@ -1,3 +1,4 @@
+import { callSignal, checkOptions } from './options.js'
 import { addAbortListener } from 'node:events'
 import { MpvAbortError, MpvBindingError, throwNativeFailure } from '../errors.js'
 import { library } from '../library.js'
@@ -33,6 +34,7 @@ export class Player extends Control {
   ) {
     const op = 'registerProtocol'
     this.streams.check(op)
+    checkOptions(options, op)
     const output = valueMode(options.output, op)
     const bytes = nameBytes(name, op)
     return this.streams.register(
@@ -50,6 +52,7 @@ export class Player extends Control {
   }
 
   async createClient(options: Options & { name?: string } = {}): Promise<MpvClient> {
+    const signal = callSignal(options, 'createClient')
     this.streams.check('createClient')
     if (this.native.closing) {
       throw new MpvBindingError('closed', 'createClient')
@@ -58,7 +61,6 @@ export class Player extends Control {
       throw new MpvBindingError('invalidArgument', 'createClient')
     }
     const name = options.name === undefined ? null : nameBytes(options.name, 'createClient')
-    const signal = options.signal
     const { binding } = await library('createClient')
     if (signal?.aborted) {
       throw new MpvAbortError('createClient', false, signal.reason)

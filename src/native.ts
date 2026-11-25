@@ -53,6 +53,9 @@ export interface NativeClient {
   ): Promise<{ protocol: NativeProtocol } | NativeFailure>
   setReferenced(value: boolean): void
   time(): bigint | null
+  beginInput(id: number): NativeFailure | null
+  chargeInput(id: number, bytes: number): boolean
+  releaseInput(id: number): void
   request(
     id: number,
     kind: string,

@@ -1,8 +1,15 @@
+import { callSignal } from './client/options.js'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { addAbortListener } from 'node:events'
-import { MpvAbortError, MpvBindingError, MpvNativeError, MpvObservationError } from './errors.js'
+import {
+  MpvAbortError,
+  MpvBindingError,
+  MpvNativeError,
+  MpvObservationError,
+  throwNativeFailure,
+} from './errors.js'
 import { library } from './library.js'
-import type { NativeClient, NativeFailure } from './native.js'
+import type { NativeClient } from './native.js'
 import type { MpvSubscription, Subscriptions } from './subscriptions.js'
 
 export interface MpvHookContext {
@@ -33,10 +40,9 @@ export async function addHook(
   name: Uint8Array,
   handler: MpvHookHandler,
   options: MpvHookOptions,
-  fail: (failure: NativeFailure) => never,
 ): Promise<MpvSubscription> {
-  const priority = options.priority ?? 0
-  const signal = options.signal
+  const signal = callSignal(options, 'addHook')
+  const { priority = 0 } = options
   if (
     !Number.isInteger(priority) ||
     priority < -0x80000000 ||
@@ -202,7 +208,7 @@ export async function addHook(
   try {
     const result = await client.addHook(name, priority, drain, gate)
     if ('error' in result) {
-      return fail(result)
+      return throwNativeFailure(result, 'addHook', signal)
     }
     hook = result.hook
     if (signal?.aborted || client.closing) {

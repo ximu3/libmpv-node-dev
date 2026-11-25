@@ -1,3 +1,4 @@
+import maxInputBytes from './client/input-budget.json' with { type: 'json' }
 import { types } from 'node:util'
 import { MpvBindingError, MpvConversionError, type MpvOperation } from './errors.js'
 export type ValueRepresentation = 'native' | 'javascript'
@@ -45,10 +46,23 @@ function invalid(operation: MpvOperation): never {
   throw new MpvBindingError('invalidArgument', operation)
 }
 
-function bytes(value: unknown, operation: MpvOperation) {
+export type ChargeInput = (bytes: number) => void
+
+export function localInputBudget(operation: MpvOperation): ChargeInput {
+  let remaining = maxInputBytes
+  return (bytes) => {
+    if (bytes > remaining) {
+      throw new MpvBindingError('resourceLimit', operation)
+    }
+    remaining -= bytes
+  }
+}
+
+function bytes(value: unknown, operation: MpvOperation, charge: ChargeInput) {
   if (!types.isUint8Array(value) || !types.isArrayBuffer(value.buffer)) {
     invalid(operation)
   }
+  charge(2 * value.byteLength)
   try {
     return new Uint8Array(value)
   } catch {
@@ -56,14 +70,20 @@ function bytes(value: unknown, operation: MpvOperation) {
   }
 }
 
-export function nameBytes(value: unknown, operation: MpvOperation) {
+export function nameBytes(
+  value: unknown,
+  operation: MpvOperation,
+  charge = localInputBudget(operation),
+) {
+  charge(2)
   if (typeof value === 'string') {
     if (!value.isWellFormed() || value.includes('\0')) {
       invalid(operation)
     }
+    charge(2 * Buffer.byteLength(value))
     return encoder.encode(value)
   }
-  const copy = bytes(value, operation)
+  const copy = bytes(value, operation, charge)
   if (copy.includes(0)) {
     invalid(operation)
   }
@@ -74,8 +94,22 @@ export function inputNode(
   value: unknown,
   mode: 'javascript' | 'native',
   operation: MpvOperation,
+  charge: ChargeInput,
 ): MpvNode {
   const active = new Set<object>()
+  // Both staging trees own nodes and map keys on the supported 64-bit targets.
+  const nodeBytes = 2 * 32
+  const mapKeyBytes = 2 * 16
+  charge(nodeBytes)
+  function array(items: readonly unknown[]) {
+    const length = items.length
+    charge(nodeBytes * length)
+    const nodes: MpvNode[] = []
+    for (let i = 0; i < length; i++) {
+      nodes.push(copy(items[i]))
+    }
+    return nodes
+  }
   function copy(input: unknown): MpvNode {
     if (mode === 'javascript') {
       if (input === null) {
@@ -91,10 +125,10 @@ export function inputNode(
         return { format: 'int64', value: input }
       }
       if (typeof input === 'string') {
-        return { format: 'string', value: nameBytes(input, operation) }
+        return { format: 'string', value: nameBytes(input, operation, charge) }
       }
       if (types.isUint8Array(input)) {
-        return { format: 'byteArray', value: bytes(input, operation) }
+        return { format: 'byteArray', value: bytes(input, operation, charge) }
       }
     }
     if (input === null || typeof input !== 'object' || active.has(input)) {
@@ -106,20 +140,25 @@ export function inputNode(
     active.add(input)
     try {
       if (mode === 'javascript' && Array.isArray(input)) {
-        return { format: 'array', value: Array.from(input, copy) }
+        return { format: 'array', value: array(input) }
       }
       const proto: unknown = Object.getPrototypeOf(input)
       if (proto !== Object.prototype && proto !== null) {
         invalid(operation)
       }
       if (mode === 'javascript') {
-        return {
-          format: 'map',
-          value: Object.entries(input).map(([name, value]) => [
-            nameBytes(name, operation),
-            copy(value),
-          ]),
+        const entries: (readonly [Uint8Array<ArrayBuffer>, MpvNode])[] = []
+        for (const key in input) {
+          if (!Object.hasOwn(input, key)) {
+            continue
+          }
+          charge(nodeBytes + mapKeyBytes)
+          entries.push([
+            nameBytes(key, operation, charge),
+            copy((input as Record<string, unknown>)[key]),
+          ])
         }
+        return { format: 'map', value: entries }
       }
       const node = input as Record<string, unknown>
       const value = node.value
@@ -146,27 +185,29 @@ export function inputNode(
           break
         case 'string':
           if (types.isUint8Array(value)) {
-            return { format: 'string', value: nameBytes(value, operation) }
+            return { format: 'string', value: nameBytes(value, operation, charge) }
           }
           break
         case 'byteArray':
-          return { format: 'byteArray', value: bytes(value, operation) }
+          return { format: 'byteArray', value: bytes(value, operation, charge) }
         case 'array':
           if (Array.isArray(value)) {
-            return { format: 'array', value: Array.from(value, copy) }
+            return { format: 'array', value: array(value) }
           }
           break
         case 'map':
           if (Array.isArray(value)) {
-            return {
-              format: 'map',
-              value: Array.from(value, (entry) => {
-                if (!Array.isArray(entry) || entry.length !== 2 || !types.isUint8Array(entry[0])) {
-                  invalid(operation)
-                }
-                return [nameBytes(entry[0], operation), copy(entry[1])]
-              }),
+            const length = value.length
+            charge((nodeBytes + mapKeyBytes) * length)
+            const entries: (readonly [Uint8Array<ArrayBuffer>, MpvNode])[] = []
+            for (let i = 0; i < length; i++) {
+              const entry: unknown = value[i]
+              if (!Array.isArray(entry) || entry.length !== 2 || !types.isUint8Array(entry[0])) {
+                invalid(operation)
+              }
+              entries.push([nameBytes(entry[0], operation, charge), copy(entry[1])])
             }
+            return { format: 'map', value: entries }
           }
       }
       return invalid(operation)

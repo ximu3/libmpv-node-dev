@@ -1,6 +1,20 @@
-import { createMpv, type Mpv, type Screenshot } from '@ximu3/libmpv-node'
+import {
+  createMpv,
+  type CreateMpvOptions,
+  type Mpv,
+  type MpvCommand,
+  type Screenshot,
+} from '@ximu3/libmpv-node'
 
-export async function declarations(player: Mpv, extension: string) {
+export async function declarations(
+  player: Mpv,
+  extension: string,
+  options: CreateMpvOptions,
+  command: MpvCommand,
+) {
+  await using configured = await createMpv(options)
+  await configured.command(command)
+  const filename: string = (await player.command(['screenshot'])).filename
   const image: Screenshot = await player.command(['screenshot-raw'])
   const width: bigint = image.w
   const source: 'vo' | 'software' = image.source
@@ -38,5 +52,5 @@ export async function declarations(player: Mpv, extension: string) {
   await createMpv({ options: [['force-window', 'later']] })
   // @ts-expect-error A property name fixes the type of its new value.
   await player.setProperty('pause', 5)
-  return { width, source, duration, id, codec, sampleRate, pngWidth, level }
+  return { filename, width, source, duration, id, codec, sampleRate, pngWidth, level }
 }
