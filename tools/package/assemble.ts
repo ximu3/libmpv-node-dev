@@ -111,7 +111,9 @@ export async function assemble(destination: string, inputs: string) {
   }
   const main = join(work.path, 'main')
   await stageMain(main, identity)
-  await writeFile(join(main, 'dist/catalog/generated.d.ts'), declarations(catalogs))
+  const { types, rules } = declarations(catalogs)
+  await writeFile(join(main, 'dist/catalog/generated.d.ts'), types)
+  await writeJson(join(main, 'dist/catalog/rules.json'), rules)
   runPnpm(['pack', '--pack-destination', output], main)
   const mainName = metadata.name.slice(1).replace('/', '-') + '-' + metadata.version + '.tgz'
   files[mainName] = await digest(join(output, mainName))

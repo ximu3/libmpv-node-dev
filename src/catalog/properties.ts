@@ -1,391 +1,434 @@
-import type { MpvValue } from '../values.js'
+import { object, list, dictionary, literal, union, type ShapeValue } from './shape.js'
 
-type Dictionary = Readonly<Record<string, MpvValue>>
+export const track = object(
+  {
+    id: 'bigint',
+    image: 'boolean',
+    albumart: 'boolean',
+    default: 'boolean',
+    forced: 'boolean',
+    dependent: 'boolean',
+    'visual-impaired': 'boolean',
+    'hearing-impaired': 'boolean',
+    original: 'boolean',
+    commentary: 'boolean',
+    external: 'boolean',
+    selected: 'boolean',
+  },
+  {
+    type: union(literal('video'), literal('audio'), literal('sub')),
+    'src-id': 'bigint',
+    title: 'string',
+    lang: 'string',
+    'audio-channels': 'bigint',
+    'main-selection': 'bigint',
+    'external-filename': 'string',
+    'ff-index': 'bigint',
+    'hls-bitrate': 'bigint',
+    'program-id': 'bigint',
+    'program-ids': list('bigint'),
+    decoder: 'string',
+    'decoder-desc': 'string',
+    codec: 'string',
+    'codec-desc': 'string',
+    'codec-profile': 'string',
+    'demux-w': 'bigint',
+    'demux-h': 'bigint',
+    'demux-crop-x': 'bigint',
+    'demux-crop-y': 'bigint',
+    'demux-crop-w': 'bigint',
+    'demux-crop-h': 'bigint',
+    'demux-channel-count': 'bigint',
+    'demux-channels': 'string',
+    'demux-samplerate': 'bigint',
+    'demux-fps': 'number',
+    'demux-bitrate': 'bigint',
+    'demux-rotation': 'bigint',
+    'demux-par': 'number',
+    'demux-duration': 'number',
+    'format-name': 'string',
+    'replaygain-track-peak': 'number',
+    'replaygain-track-gain': 'number',
+    'replaygain-album-peak': 'number',
+    'replaygain-album-gain': 'number',
+    'dolby-vision-profile': 'bigint',
+    'dolby-vision-level': 'bigint',
+    metadata: dictionary('string'),
+  },
+)
+export type Track = ShapeValue<typeof track>
 
-export type Track = {
-  readonly id: bigint
-  readonly type?: 'video' | 'audio' | 'sub'
-  readonly 'src-id'?: bigint
-  readonly title?: string
-  readonly lang?: string
-  readonly 'audio-channels'?: bigint
-  readonly image: boolean
-  readonly albumart: boolean
-  readonly default: boolean
-  readonly forced: boolean
-  readonly dependent: boolean
-  readonly 'visual-impaired': boolean
-  readonly 'hearing-impaired': boolean
-  readonly original: boolean
-  readonly commentary: boolean
-  readonly external: boolean
-  readonly selected: boolean
-  readonly 'main-selection'?: bigint
-  readonly 'external-filename'?: string
-  readonly 'ff-index'?: bigint
-  readonly 'hls-bitrate'?: bigint
-  readonly 'program-id'?: bigint
-  readonly 'program-ids'?: readonly bigint[]
-  readonly decoder?: string
-  readonly 'decoder-desc'?: string
-  readonly codec?: string
-  readonly 'codec-desc'?: string
-  readonly 'codec-profile'?: string
-  readonly 'demux-w'?: bigint
-  readonly 'demux-h'?: bigint
-  readonly 'demux-crop-x'?: bigint
-  readonly 'demux-crop-y'?: bigint
-  readonly 'demux-crop-w'?: bigint
-  readonly 'demux-crop-h'?: bigint
-  readonly 'demux-channel-count'?: bigint
-  readonly 'demux-channels'?: string
-  readonly 'demux-samplerate'?: bigint
-  readonly 'demux-fps'?: number
-  readonly 'demux-bitrate'?: bigint
-  readonly 'demux-rotation'?: bigint
-  readonly 'demux-par'?: number
-  readonly 'demux-duration'?: number
-  readonly 'format-name'?: string
-  readonly 'replaygain-track-peak'?: number
-  readonly 'replaygain-track-gain'?: number
-  readonly 'replaygain-album-peak'?: number
-  readonly 'replaygain-album-gain'?: number
-  readonly 'dolby-vision-profile'?: bigint
-  readonly 'dolby-vision-level'?: bigint
-  readonly metadata?: Readonly<Record<string, string>>
-}
+const imageParameters = object(
+  {
+    pixelformat: 'string',
+    w: 'bigint',
+    h: 'bigint',
+    dw: 'bigint',
+    dh: 'bigint',
+    aspect: 'number',
+    par: 'number',
+    sar: 'number',
+    colormatrix: 'string',
+    colorlevels: 'string',
+    primaries: 'string',
+    gamma: 'string',
+    'sig-peak': 'number',
+    light: 'string',
+    'chroma-location': 'string',
+    'stereo-in': 'string',
+    rotate: 'bigint',
+  },
+  {
+    'hw-pixelformat': 'string',
+    'average-bpp': 'bigint',
+    'crop-x': 'bigint',
+    'crop-y': 'bigint',
+    'crop-w': 'bigint',
+    'crop-h': 'bigint',
+    'aspect-name': 'string',
+    'sar-name': 'string',
+    alpha: 'string',
+    'min-luma': 'number',
+    'max-luma': 'number',
+    'max-cll': 'number',
+    'max-fall': 'number',
+    'scene-max-r': 'number',
+    'scene-max-g': 'number',
+    'scene-max-b': 'number',
+    'scene-avg': 'number',
+    'max-pq-y': 'number',
+    'avg-pq-y': 'number',
+    'prim-red-x': 'number',
+    'prim-red-y': 'number',
+    'prim-green-x': 'number',
+    'prim-green-y': 'number',
+    'prim-blue-x': 'number',
+    'prim-blue-y': 'number',
+    'prim-white-x': 'number',
+    'prim-white-y': 'number',
+  },
+)
 
-export type ImageParameters = {
-  readonly pixelformat: string
-  readonly 'hw-pixelformat'?: string
-  readonly 'average-bpp'?: bigint
-  readonly w: bigint
-  readonly h: bigint
-  readonly dw: bigint
-  readonly dh: bigint
-  readonly 'crop-x'?: bigint
-  readonly 'crop-y'?: bigint
-  readonly 'crop-w'?: bigint
-  readonly 'crop-h'?: bigint
-  readonly aspect: number
-  readonly 'aspect-name'?: string
-  readonly par: number
-  readonly sar: number
-  readonly 'sar-name'?: string
-  readonly colormatrix: string
-  readonly colorlevels: string
-  readonly primaries: string
-  readonly gamma: string
-  readonly 'sig-peak': number
-  readonly light: string
-  readonly 'chroma-location': string
-  readonly 'stereo-in': string
-  readonly rotate: bigint
-  readonly alpha?: string
-  readonly 'min-luma'?: number
-  readonly 'max-luma'?: number
-  readonly 'max-cll'?: number
-  readonly 'max-fall'?: number
-  readonly 'scene-max-r'?: number
-  readonly 'scene-max-g'?: number
-  readonly 'scene-max-b'?: number
-  readonly 'scene-avg'?: number
-  readonly 'max-pq-y'?: number
-  readonly 'avg-pq-y'?: number
-  readonly 'prim-red-x'?: number
-  readonly 'prim-red-y'?: number
-  readonly 'prim-green-x'?: number
-  readonly 'prim-green-y'?: number
-  readonly 'prim-blue-x'?: number
-  readonly 'prim-blue-y'?: number
-  readonly 'prim-white-x'?: number
-  readonly 'prim-white-y'?: number
-}
+const audioParameters = object({
+  samplerate: 'bigint',
+  'channel-count': 'bigint',
+  channels: 'string',
+  'hr-channels': 'string',
+  format: 'string',
+})
 
-export type AudioParameters = {
-  readonly samplerate: bigint
-  readonly 'channel-count': bigint
-  readonly channels: string
-  readonly 'hr-channels': string
-  readonly format: string
-}
+const playlistEntry = object(
+  {
+    filename: 'string',
+    id: 'bigint',
+  },
+  {
+    current: 'boolean',
+    playing: 'boolean',
+    title: 'string',
+    'playlist-path': 'string',
+  },
+)
 
-export type PlaylistEntry = {
-  readonly filename: string
-  readonly current?: boolean
-  readonly playing?: boolean
-  readonly title?: string
-  readonly id: bigint
-  readonly 'playlist-path'?: string
-}
+const chapter = object({
+  title: 'string',
+})
 
-export type Chapter = {
-  readonly title: string
-}
+const edition = object(
+  {
+    id: 'bigint',
+    default: 'boolean',
+  },
+  {
+    title: 'string',
+    metadata: dictionary('string'),
+  },
+)
 
-export type Edition = {
-  readonly id: bigint
-  readonly title?: string
-  readonly default: boolean
-  readonly metadata?: Readonly<Record<string, string>>
-}
+const decoder = object({
+  codec: 'string',
+  driver: 'string',
+  description: 'string',
+})
 
-export type Decoder = {
-  readonly codec: string
-  readonly driver: string
-  readonly description: string
-}
+const audioDevice = object({
+  name: 'string',
+  description: 'string',
+})
 
-export type AudioDevice = {
-  readonly name: string
-  readonly description: string
-}
+const osdDimensions = object({
+  w: 'bigint',
+  h: 'bigint',
+  par: 'number',
+  aspect: 'number',
+  mt: 'bigint',
+  mb: 'bigint',
+  ml: 'bigint',
+  mr: 'bigint',
+})
 
-export type OsdDimensions = {
-  readonly w: bigint
-  readonly h: bigint
-  readonly par: number
-  readonly aspect: number
-  readonly mt: bigint
-  readonly mb: bigint
-  readonly ml: bigint
-  readonly mr: bigint
-}
+const frameInfo = object(
+  {
+    interlaced: 'boolean',
+    tff: 'boolean',
+    repeat: 'boolean',
+  },
+  {
+    'picture-type': 'string',
+    'gop-timecode': 'string',
+    'smpte-timecode': 'string',
+    'estimated-smpte-timecode': 'string',
+  },
+)
 
-export type FrameInfo = {
-  readonly 'picture-type'?: string
-  readonly interlaced: boolean
-  readonly tff: boolean
-  readonly repeat: boolean
-  readonly 'gop-timecode'?: string
-  readonly 'smpte-timecode'?: string
-  readonly 'estimated-smpte-timecode'?: string
-}
+const droppedFiles = object({
+  time: 'bigint',
+  action: 'string',
+  files: list('string'),
+})
 
-export type DroppedFiles = {
-  readonly time: bigint
-  readonly action: string
-  readonly files: readonly string[]
-}
+const mousePosition = object({
+  x: 'bigint',
+  y: 'bigint',
+  hover: 'boolean',
+})
 
-export type MousePosition = {
-  readonly x: bigint
-  readonly y: bigint
-  readonly hover: boolean
-}
+const touchPosition = object({
+  x: 'bigint',
+  y: 'bigint',
+  id: 'bigint',
+})
 
-export type TouchPosition = {
-  readonly x: bigint
-  readonly y: bigint
-  readonly id: bigint
-}
+const terminalSize = object({
+  w: 'bigint',
+  h: 'bigint',
+})
 
-export type TerminalSize = {
-  readonly w: bigint
-  readonly h: bigint
-}
+const assEscape = object({
+  '0': 'string',
+  '1': 'string',
+})
 
-export type AssEscape = {
-  readonly '0': string
-  readonly '1': string
-}
+const commandInfo = object({
+  name: 'string',
+  vararg: 'boolean',
+  args: list(
+    object(
+      {
+        name: 'string',
+        type: 'string',
+        optional: 'boolean',
+      },
+      {
+        choices: list('string'),
+        'default-value': 'value',
+      },
+    ),
+  ),
+})
 
-export type CommandInfo = {
-  readonly name: string
-  readonly vararg: boolean
-  readonly args: readonly {
-    readonly name: string
-    readonly type: string
-    readonly optional: boolean
-    readonly choices?: readonly string[]
-    readonly 'default-value'?: MpvValue
-  }[]
-}
-export type OptionInfo = {
-  readonly name: string
-  readonly type: string
-  readonly 'set-from-commandline': boolean
-  readonly 'set-locally': boolean
-  readonly 'expects-file': boolean
-  readonly 'default-value'?: MpvValue
-  readonly choices?: readonly string[]
-  readonly min?: number
-  readonly max?: number
-}
-export type PropertyValues = {
-  readonly 'ambient-light': number
-  readonly 'ao-mute': boolean
-  readonly 'ao-volume': number
-  readonly 'audio-bitrate': bigint
-  readonly 'audio-codec': string
-  readonly 'audio-codec-name': string
-  readonly 'audio-device-list': readonly AudioDevice[]
-  readonly 'audio-out-params': AudioParameters
-  readonly 'audio-params': AudioParameters
-  readonly 'audio-pts': number
-  readonly 'audio-speed-correction': number
-  readonly avsync: number
-  readonly 'cache-buffering-state': bigint
-  readonly 'cache-speed': bigint
-  readonly chapter: bigint
-  readonly 'chapter-list': readonly Chapter[]
-  readonly 'chapter-metadata': Readonly<Record<string, string>>
-  readonly chapters: bigint
-  readonly clipboard: { readonly text?: string; readonly 'text-primary'?: string }
-  readonly clock: string
-  readonly colormatrix: string
-  readonly 'colormatrix-gamma': string
-  readonly 'colormatrix-input-range': string
-  readonly 'colormatrix-primaries': string
-  readonly 'command-list': readonly CommandInfo[]
-  readonly 'container-fps': number
-  readonly 'core-idle': boolean
-  readonly 'current-ao': string
-  readonly 'current-clipboard-backend': string
-  readonly 'current-demuxer': string
-  readonly 'current-edition': bigint
-  readonly 'current-gpu-context': string
-  readonly 'current-vo': string
-  readonly 'current-watch-later-dir': string
-  readonly 'current-window-scale': number
-  readonly 'decoder-frame-drop-count': bigint
-  readonly 'decoder-list': readonly Decoder[]
-  readonly 'default-menu': string
-  readonly 'deinterlace-active': boolean
-  readonly 'demuxer-cache-duration': number
-  readonly 'demuxer-cache-idle': boolean
-  readonly 'demuxer-cache-state': Dictionary
-  readonly 'demuxer-cache-time': number
-  readonly 'demuxer-lavf-list': readonly string[]
-  readonly 'demuxer-start-time': number
-  readonly 'demuxer-via-network': boolean
-  readonly dheight: bigint
-  readonly 'disc-menu-active': boolean
-  readonly 'display-fps': number
-  readonly 'display-height': bigint
-  readonly 'display-hidpi-scale': number
-  readonly 'display-names': readonly string[]
-  readonly 'display-swapchain': bigint
-  readonly 'display-sync-active': boolean
-  readonly 'display-width': bigint
-  readonly 'dropped-files': DroppedFiles
-  readonly duration: number
-  readonly dwidth: bigint
-  readonly 'edition-list': readonly Edition[]
-  readonly editions: bigint
-  readonly 'encoder-list': readonly Decoder[]
-  readonly env: Readonly<Record<string, string>>
-  readonly 'eof-reached': boolean
-  readonly 'estimated-display-fps': number
-  readonly 'estimated-frame-count': bigint
-  readonly 'estimated-frame-number': bigint
-  readonly 'estimated-vf-fps': number
-  readonly 'ffmpeg-version': string
-  readonly 'file-format': string
-  readonly 'file-local-options': readonly string[]
-  readonly 'file-size': bigint
-  readonly filename: string
-  readonly 'filtered-metadata': Readonly<Record<string, string>>
-  readonly focused: boolean
-  readonly 'frame-drop-count': bigint
-  readonly height: bigint
-  readonly 'hwdec-current': string
-  readonly 'hwdec-interop': string
-  readonly 'idle-active': boolean
-  readonly 'input-bindings': readonly Dictionary[]
-  readonly 'input-key-list': readonly string[]
-  readonly 'libass-version': bigint
-  readonly 'libplacebo-version': string
-  readonly 'media-title': string
-  readonly metadata: Readonly<Record<string, string>>
-  readonly 'mistimed-frame-count': bigint
-  readonly 'mixer-active': boolean
-  readonly 'mouse-pos': MousePosition
-  readonly 'mpv-configuration': string
-  readonly 'mpv-version': string
-  readonly options: readonly string[]
-  readonly 'osd-ass-cc': AssEscape
-  readonly 'osd-dimensions': OsdDimensions
-  readonly 'osd-height': bigint
-  readonly 'osd-par': number
-  readonly 'osd-sym-cc': string
-  readonly 'osd-width': bigint
-  readonly 'partially-seekable': boolean
-  readonly path: string
-  readonly 'paused-for-cache': boolean
-  readonly 'percent-pos': number
-  readonly 'perf-info': readonly Dictionary[]
-  readonly pid: bigint
-  readonly platform: string
-  readonly 'playback-abort': boolean
-  readonly 'playback-time': number
-  readonly playlist: readonly PlaylistEntry[]
-  readonly 'playlist-count': bigint
-  readonly 'playlist-current-pos': bigint
-  readonly 'playlist-path': string
-  readonly 'playlist-playing-pos': bigint
-  readonly 'playlist-pos': bigint
-  readonly 'playlist-pos-1': bigint
-  readonly 'playtime-remaining': number
-  readonly 'profile-list': readonly Dictionary[]
-  readonly 'property-list': readonly string[]
-  readonly 'protocol-list': readonly string[]
-  readonly 'remaining-ab-loops': bigint
-  readonly 'remaining-file-loops': bigint
-  readonly 'secondary-sub-end': number
-  readonly 'secondary-sub-lines': readonly {
-    readonly text: string
-    readonly start: number
-    readonly end: number
-  }[]
-  readonly 'secondary-sub-start': number
-  readonly 'secondary-sub-text': string
-  readonly seekable: boolean
-  readonly seeking: boolean
-  readonly 'stream-end': bigint
-  readonly 'stream-open-filename': string
-  readonly 'stream-path': string
-  readonly 'stream-pos': bigint
-  readonly 'sub-ass-extradata': string
-  readonly 'sub-bitrate': bigint
-  readonly 'sub-end': number
-  readonly 'sub-forced-only-cur': boolean
-  readonly 'sub-lines': readonly {
-    readonly text: string
-    readonly start: number
-    readonly end: number
-  }[]
-  readonly 'sub-start': number
-  readonly 'sub-text': string
-  readonly 'sub-text-ass': string
-  readonly 'subrandr-version': string
-  readonly 'tablet-pos': Dictionary
-  readonly 'term-clip-cc': string
-  readonly 'term-size': TerminalSize
-  readonly 'time-pos': number
-  readonly 'time-remaining': number
-  readonly 'total-avsync-change': number
-  readonly 'touch-pos': readonly TouchPosition[]
-  readonly 'track-list': readonly Track[]
-  readonly 'user-data': MpvValue
-  readonly 'video-bitrate': bigint
-  readonly 'video-codec': string
-  readonly 'video-dec-params': ImageParameters
-  readonly 'video-format': string
-  readonly 'video-frame-info': FrameInfo
-  readonly 'video-out-params': ImageParameters
-  readonly 'video-params': ImageParameters
-  readonly 'video-speed-correction': number
-  readonly 'video-target-params': ImageParameters
-  readonly 'vo-configured': boolean
-  readonly 'vo-delayed-frame-count': bigint
-  readonly 'vo-passes': {
-    readonly fresh: readonly Dictionary[]
-    readonly redraw: readonly Dictionary[]
-  }
-  readonly 'vsync-jitter': number
-  readonly 'vsync-ratio': number
-  readonly width: bigint
-  readonly 'window-id': bigint
-  readonly 'working-directory': string
-}
+export const optionInfo = object(
+  {
+    name: 'string',
+    type: 'string',
+    'set-from-commandline': 'boolean',
+    'set-locally': 'boolean',
+    'expects-file': 'boolean',
+  },
+  {
+    'default-value': 'value',
+    choices: list('string'),
+    min: 'number',
+    max: 'number',
+  },
+)
+export type OptionInfo = ShapeValue<typeof optionInfo>
+
+export const properties = object({
+  'ambient-light': 'number',
+  'ao-mute': 'boolean',
+  'ao-volume': 'number',
+  'audio-bitrate': 'bigint',
+  'audio-codec': 'string',
+  'audio-codec-name': 'string',
+  'audio-device-list': list(audioDevice),
+  'audio-out-params': audioParameters,
+  'audio-params': audioParameters,
+  'audio-pts': 'number',
+  'audio-speed-correction': 'number',
+  avsync: 'number',
+  'cache-buffering-state': 'bigint',
+  'cache-speed': 'bigint',
+  chapter: 'bigint',
+  'chapter-list': list(chapter),
+  'chapter-metadata': dictionary('string'),
+  chapters: 'bigint',
+  clipboard: object(
+    {},
+    {
+      text: 'string',
+      'text-primary': 'string',
+    },
+  ),
+  clock: 'string',
+  colormatrix: 'string',
+  'colormatrix-gamma': 'string',
+  'colormatrix-input-range': 'string',
+  'colormatrix-primaries': 'string',
+  'command-list': list(commandInfo),
+  'container-fps': 'number',
+  'core-idle': 'boolean',
+  'current-ao': 'string',
+  'current-clipboard-backend': 'string',
+  'current-demuxer': 'string',
+  'current-edition': 'bigint',
+  'current-gpu-context': 'string',
+  'current-vo': 'string',
+  'current-watch-later-dir': 'string',
+  'current-window-scale': 'number',
+  'decoder-frame-drop-count': 'bigint',
+  'decoder-list': list(decoder),
+  'default-menu': 'string',
+  'deinterlace-active': 'boolean',
+  'demuxer-cache-duration': 'number',
+  'demuxer-cache-idle': 'boolean',
+  'demuxer-cache-state': dictionary('value'),
+  'demuxer-cache-time': 'number',
+  'demuxer-lavf-list': list('string'),
+  'demuxer-start-time': 'number',
+  'demuxer-via-network': 'boolean',
+  dheight: 'bigint',
+  'disc-menu-active': 'boolean',
+  'display-fps': 'number',
+  'display-height': 'bigint',
+  'display-hidpi-scale': 'number',
+  'display-names': list('string'),
+  'display-swapchain': 'bigint',
+  'display-sync-active': 'boolean',
+  'display-width': 'bigint',
+  'dropped-files': droppedFiles,
+  duration: 'number',
+  dwidth: 'bigint',
+  'edition-list': list(edition),
+  editions: 'bigint',
+  'encoder-list': list(decoder),
+  env: dictionary('string'),
+  'eof-reached': 'boolean',
+  'estimated-display-fps': 'number',
+  'estimated-frame-count': 'bigint',
+  'estimated-frame-number': 'bigint',
+  'estimated-vf-fps': 'number',
+  'ffmpeg-version': 'string',
+  'file-format': 'string',
+  'file-local-options': list('string'),
+  'file-size': 'bigint',
+  filename: 'string',
+  'filtered-metadata': dictionary('string'),
+  focused: 'boolean',
+  'frame-drop-count': 'bigint',
+  height: 'bigint',
+  'hwdec-current': 'string',
+  'hwdec-interop': 'string',
+  'idle-active': 'boolean',
+  'input-bindings': list(dictionary('value')),
+  'input-key-list': list('string'),
+  'libass-version': 'bigint',
+  'libplacebo-version': 'string',
+  'media-title': 'string',
+  metadata: dictionary('string'),
+  'mistimed-frame-count': 'bigint',
+  'mixer-active': 'boolean',
+  'mouse-pos': mousePosition,
+  'mpv-configuration': 'string',
+  'mpv-version': 'string',
+  options: list('string'),
+  'osd-ass-cc': assEscape,
+  'osd-dimensions': osdDimensions,
+  'osd-height': 'bigint',
+  'osd-par': 'number',
+  'osd-sym-cc': 'string',
+  'osd-width': 'bigint',
+  'partially-seekable': 'boolean',
+  path: 'string',
+  'paused-for-cache': 'boolean',
+  'percent-pos': 'number',
+  'perf-info': list(dictionary('value')),
+  pid: 'bigint',
+  platform: 'string',
+  'playback-abort': 'boolean',
+  'playback-time': 'number',
+  playlist: list(playlistEntry),
+  'playlist-count': 'bigint',
+  'playlist-current-pos': 'bigint',
+  'playlist-path': 'string',
+  'playlist-playing-pos': 'bigint',
+  'playlist-pos': 'bigint',
+  'playlist-pos-1': 'bigint',
+  'playtime-remaining': 'number',
+  'profile-list': list(dictionary('value')),
+  'property-list': list('string'),
+  'protocol-list': list('string'),
+  'remaining-ab-loops': 'bigint',
+  'remaining-file-loops': 'bigint',
+  'secondary-sub-end': 'number',
+  'secondary-sub-lines': list(
+    object({
+      text: 'string',
+      start: 'number',
+      end: 'number',
+    }),
+  ),
+  'secondary-sub-start': 'number',
+  'secondary-sub-text': 'string',
+  seekable: 'boolean',
+  seeking: 'boolean',
+  'stream-end': 'bigint',
+  'stream-open-filename': 'string',
+  'stream-path': 'string',
+  'stream-pos': 'bigint',
+  'sub-ass-extradata': 'string',
+  'sub-bitrate': 'bigint',
+  'sub-end': 'number',
+  'sub-forced-only-cur': 'boolean',
+  'sub-lines': list(
+    object({
+      text: 'string',
+      start: 'number',
+      end: 'number',
+    }),
+  ),
+  'sub-start': 'number',
+  'sub-text': 'string',
+  'sub-text-ass': 'string',
+  'subrandr-version': 'string',
+  'tablet-pos': dictionary('value'),
+  'term-clip-cc': 'string',
+  'term-size': terminalSize,
+  'time-pos': 'number',
+  'time-remaining': 'number',
+  'total-avsync-change': 'number',
+  'touch-pos': list(touchPosition),
+  'track-list': list(track),
+  'user-data': 'value',
+  'video-bitrate': 'bigint',
+  'video-codec': 'string',
+  'video-dec-params': imageParameters,
+  'video-format': 'string',
+  'video-frame-info': frameInfo,
+  'video-out-params': imageParameters,
+  'video-params': imageParameters,
+  'video-speed-correction': 'number',
+  'video-target-params': imageParameters,
+  'vo-configured': 'boolean',
+  'vo-delayed-frame-count': 'bigint',
+  'vo-passes': object({
+    fresh: list(dictionary('value')),
+    redraw: list(dictionary('value')),
+  }),
+  'vsync-jitter': 'number',
+  'vsync-ratio': 'number',
+  width: 'bigint',
+  'window-id': 'bigint',
+  'working-directory': 'string',
+})
+export type PropertyValues = ShapeValue<typeof properties>

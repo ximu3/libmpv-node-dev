@@ -26,7 +26,8 @@ impl Value {
                 .iter()
                 .fold(0usize, |sum, item| sum.saturating_add(item.size())),
             Self::Map(entries) => entries.iter().fold(0usize, |sum, (key, item)| {
-                sum.saturating_add(key.as_bytes_with_nul().len())
+                sum.saturating_add(size_of::<CString>())
+                    .saturating_add(key.as_bytes_with_nul().len())
                     .saturating_add(item.size())
             }),
             _ => 0,

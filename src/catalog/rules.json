@@ -1,0 +1,2783 @@
+{
+  "options": [
+    {
+      "read": "value",
+      "write": "string",
+      "names": ["V", "input-cmdlist", "input-keylist", "list-protocols", "version"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "number",
+          {
+            "literals": ["no"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": ["number", "bigint", "string"]
+      },
+      "names": ["ab-loop-a", "ab-loop-b"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["inf"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["inf"]
+          }
+        ]
+      },
+      "names": ["ab-loop-count"]
+    },
+    {
+      "read": "boolean",
+      "write": "boolean",
+      "names": [
+        "access-references",
+        "ad-lavc-downmix",
+        "ad-queue-enable",
+        "allow-delayed-peak-detect",
+        "alsa-ignore-chmap",
+        "alsa-non-interleaved",
+        "alsa-resample",
+        "ao-null-broken-delay",
+        "ao-null-broken-eof",
+        "ao-null-untimed",
+        "ao-pcm-append",
+        "ao-pcm-waveheader",
+        "audio-exclusive",
+        "audio-fallback-to-null",
+        "audio-normalize-downmix",
+        "audio-pitch-correction",
+        "audio-resample-linear",
+        "audio-set-media-role",
+        "audio-stream-silence",
+        "auto-window-resize",
+        "autoload-files",
+        "border",
+        "cache-on-disk",
+        "cache-pause",
+        "cache-pause-initial",
+        "clipboard-monitor",
+        "clipboard-xwayland",
+        "cocoa-cb-10bit-context",
+        "config",
+        "cookies",
+        "coreaudio-change-physical-format",
+        "coreaudio-spdif-hack",
+        "correct-downscaling",
+        "correct-pts",
+        "cursor-autohide-fs-only",
+        "d3d11-exclusive-fs",
+        "d3d11-flip",
+        "d3d11va-zero-copy",
+        "deband",
+        "demuxer-cache-wait",
+        "demuxer-donate-buffer",
+        "demuxer-lavf-allow-mimetype",
+        "demuxer-lavf-hacks",
+        "demuxer-lavf-propagate-opts",
+        "demuxer-mkv-crop-compat",
+        "demuxer-mkv-probe-start-time",
+        "demuxer-thread",
+        "disc-menu",
+        "embeddedfonts",
+        "flatten-editions",
+        "force-render",
+        "force-rgba-osd-rendering",
+        "force-seekable",
+        "force-window-position",
+        "fs",
+        "fullscreen",
+        "gamma-auto",
+        "gpu-debug",
+        "gpu-shader-cache",
+        "gpu-sw",
+        "hidpi-window-scale",
+        "hr-seek-framedrop",
+        "icc-cache",
+        "icc-profile-auto",
+        "icc-use-luma",
+        "ignore-path-in-watch-later-config",
+        "image-subs-video-resolution",
+        "initial-audio-sync",
+        "input-builtin-bindings",
+        "input-builtin-drag-and-drop",
+        "input-builtin-dragging",
+        "input-cursor",
+        "input-cursor-passthrough",
+        "input-default-bindings",
+        "input-ime",
+        "input-media-keys",
+        "input-preprocess-wheel",
+        "input-right-alt-gr",
+        "input-tablet-emulate-mouse",
+        "input-terminal",
+        "input-test",
+        "input-touch-emulate-mouse",
+        "input-vo-keyboard",
+        "interpolation",
+        "interpolation-preserve",
+        "inverse-tone-mapping",
+        "js-memory-report",
+        "keep-open-pause",
+        "keepaspect",
+        "keepaspect-window",
+        "linear-downscaling",
+        "linear-upscaling",
+        "list-options",
+        "list-properties",
+        "load-commands",
+        "load-console",
+        "load-context-menu",
+        "load-osd-console",
+        "load-positioning",
+        "load-scripts",
+        "load-select",
+        "load-stats-overlay",
+        "load-unsafe-playlists",
+        "macos-force-dedicated-gpu",
+        "macos-menu-shortcuts",
+        "media-controls",
+        "merge-files",
+        "msg-color",
+        "msg-module",
+        "msg-time",
+        "mute",
+        "native-fs",
+        "native-keyrepeat",
+        "native-touch",
+        "ocopy-metadata",
+        "on-all-workspaces",
+        "ontop",
+        "opengl-glfinish",
+        "opengl-pbo",
+        "opengl-rectangle-textures",
+        "opengl-waitvsync",
+        "orawts",
+        "ordered-chapters",
+        "osc",
+        "osd-bar",
+        "osd-bold",
+        "osd-fractions",
+        "osd-italic",
+        "osd-scale-by-window",
+        "pause",
+        "prefetch-playlist",
+        "pulse-allow-suspended",
+        "pulse-latency-hacks",
+        "quiet",
+        "really-quiet",
+        "rebase-start-time",
+        "register",
+        "replaygain-clip",
+        "resume-playback",
+        "resume-playback-check-mtime",
+        "save-position-on-quit",
+        "save-watch-history",
+        "scaler-resizes-only",
+        "screenshot-high-bit-depth",
+        "screenshot-jpeg-source-chroma",
+        "screenshot-sw",
+        "screenshot-tag-colorspace",
+        "screenshot-webp-lossless",
+        "secondary-sub-visibility",
+        "show-dependent-tracks",
+        "show-in-taskbar",
+        "shuffle",
+        "sigmoid-upscaling",
+        "snap-window",
+        "stop-playback-on-init-failure",
+        "stretch-dvd-subs",
+        "stretch-image-subs-to-screen",
+        "sub-ass",
+        "sub-ass-force-margins",
+        "sub-ass-justify",
+        "sub-ass-scale-with-window",
+        "sub-bold",
+        "sub-clear-on-seek",
+        "sub-create-cc-track",
+        "sub-filter-regex-enable",
+        "sub-filter-regex-plain",
+        "sub-filter-regex-warn",
+        "sub-filter-sdh",
+        "sub-filter-sdh-harder",
+        "sub-fix-timing",
+        "sub-forced-events-only",
+        "sub-gray",
+        "sub-italic",
+        "sub-past-video-end",
+        "sub-scale-by-window",
+        "sub-scale-signs",
+        "sub-scale-with-window",
+        "sub-stretch-durations",
+        "sub-use-margins",
+        "sub-visibility",
+        "sub-vsfilter-bidi-compat",
+        "subs-match-os-language",
+        "sws-allow-zimg",
+        "sws-bitexact",
+        "sws-fast",
+        "target-colorspace-hint-strict",
+        "taskbar-progress",
+        "temporal-dither",
+        "term-osd-bar",
+        "terminal",
+        "title-bar",
+        "tls-verify",
+        "tone-mapping-visualize",
+        "track-auto-selection",
+        "unregister",
+        "untimed",
+        "use-embedded-icc-profile",
+        "use-filedir-conf",
+        "v",
+        "vd-apply-cropping",
+        "vd-lavc-assume-old-x264",
+        "vd-lavc-bitexact",
+        "vd-lavc-check-hw-profile",
+        "vd-lavc-fast",
+        "vd-lavc-show-all",
+        "vd-queue-enable",
+        "video-latency-hacks",
+        "video-osd",
+        "video-recenter",
+        "vo-image-high-bit-depth",
+        "vo-image-jpeg-source-chroma",
+        "vo-image-tag-colorspace",
+        "vo-image-webp-lossless",
+        "vo-kitty-alt-screen",
+        "vo-kitty-auto-multiplexer-passthrough",
+        "vo-kitty-config-clear",
+        "vo-kitty-use-shm",
+        "vo-tct-256",
+        "vulkan-async-compute",
+        "vulkan-async-transfer",
+        "window-dragging",
+        "window-maximized",
+        "window-minimized",
+        "write-filename-in-watch-later-config",
+        "ytdl",
+        "{",
+        "}"
+      ]
+    },
+    {
+      "read": "string",
+      "write": "string",
+      "names": [
+        "ad",
+        "alsa-mixer-device",
+        "alsa-mixer-name",
+        "ao-null-channel-layouts",
+        "ao-null-format",
+        "ao-pcm-file",
+        "audio-channels",
+        "audio-client-name",
+        "audio-demuxer",
+        "audio-device",
+        "audio-format",
+        "audio-spdif",
+        "autofit",
+        "autofit-larger",
+        "autofit-smaller",
+        "background-color",
+        "background-tile-color-0",
+        "background-tile-color-1",
+        "chapters-file",
+        "config-dir",
+        "cookies-file",
+        "d3d11-adapter",
+        "d3d11-composition-size",
+        "demuxer",
+        "demuxer-cache-dir",
+        "demuxer-lavf-format",
+        "demuxer-rawaudio-channels",
+        "demuxer-rawvideo-codec",
+        "demuxer-rawvideo-format",
+        "demuxer-rawvideo-mp-format",
+        "drm-connector",
+        "drm-device",
+        "drm-draw-surface-size",
+        "drm-mode",
+        "dump-stats",
+        "end",
+        "error-diffusion",
+        "fbo-format",
+        "force-media-title",
+        "fs-screen-name",
+        "geometry",
+        "gpu-hwdec-interop",
+        "gpu-shader-cache-dir",
+        "h",
+        "help",
+        "http-proxy",
+        "hwdec-codecs",
+        "hwdec-image-format",
+        "icc-3dlut-size",
+        "icc-cache-dir",
+        "icc-profile",
+        "image-lut",
+        "include",
+        "input-conf",
+        "input-ipc-client",
+        "input-ipc-server",
+        "lavfi-complex",
+        "length",
+        "log-file",
+        "lut",
+        "macos-title-bar-color",
+        "metadata-codepage",
+        "mf-type",
+        "o",
+        "oac",
+        "of",
+        "ordered-chapters-files",
+        "osd-back-color",
+        "osd-border-color",
+        "osd-color",
+        "osd-font",
+        "osd-fonts-dir",
+        "osd-msg1",
+        "osd-msg2",
+        "osd-msg3",
+        "osd-outline-color",
+        "osd-playing-msg",
+        "osd-selected-color",
+        "osd-selected-outline-color",
+        "osd-shadow-color",
+        "osd-status-msg",
+        "ovc",
+        "playlist",
+        "pulse-host",
+        "referrer",
+        "register-rpath",
+        "screen-name",
+        "screenshot-avif-encoder",
+        "screenshot-avif-pixfmt",
+        "screenshot-dir",
+        "screenshot-directory",
+        "screenshot-template",
+        "show-profile",
+        "start",
+        "stream-dump",
+        "stream-record",
+        "sub-ass-styles",
+        "sub-back-color",
+        "sub-border-color",
+        "sub-codepage",
+        "sub-color",
+        "sub-demuxer",
+        "sub-font",
+        "sub-fonts-dir",
+        "sub-outline-color",
+        "sub-shadow-color",
+        "target-gamut",
+        "target-lut",
+        "term-osd-bar-chars",
+        "term-playing-msg",
+        "term-status-msg",
+        "term-title",
+        "title",
+        "tls-ca-file",
+        "tls-cert-file",
+        "tls-key-file",
+        "user-agent",
+        "vaapi-device",
+        "vd",
+        "video-crop",
+        "vo-image-avif-encoder",
+        "vo-image-avif-pixfmt",
+        "vo-image-outdir",
+        "vo-mmcss-profile",
+        "vulkan-device",
+        "watch-history-path",
+        "watch-later-dir",
+        "watch-later-directory",
+        "wayland-app-id",
+        "x11-name",
+        "ytdl-format"
+      ]
+    },
+    {
+      "read": "number",
+      "write": "number",
+      "names": [
+        "ad-lavc-ac3drc",
+        "ad-queue-max-secs",
+        "ao-null-buffer",
+        "ao-null-latency",
+        "ao-null-speed",
+        "audio-buffer",
+        "audio-delay",
+        "audio-resample-cutoff",
+        "audio-resample-max-output-size",
+        "audio-wait-open",
+        "background-blur-radius",
+        "brightness",
+        "cache-pause-wait",
+        "cache-secs",
+        "chapter-seek-threshold",
+        "container-fps-override",
+        "contrast",
+        "corner-rounding",
+        "cscale-antiring",
+        "cscale-blur",
+        "cscale-clamp",
+        "cscale-radius",
+        "cscale-taper",
+        "cscale-wtaper",
+        "deband-grain",
+        "deband-range",
+        "deband-threshold",
+        "demuxer-backward-playback-step",
+        "demuxer-hysteresis-secs",
+        "demuxer-lavf-analyzeduration",
+        "demuxer-mkv-subtitle-preroll-secs",
+        "demuxer-mkv-subtitle-preroll-secs-index",
+        "demuxer-rawvideo-fps",
+        "demuxer-readahead-secs",
+        "demuxer-termination-timeout",
+        "display-fps-override",
+        "dscale-antiring",
+        "dscale-blur",
+        "dscale-clamp",
+        "dscale-radius",
+        "dscale-taper",
+        "dscale-wtaper",
+        "gamma",
+        "gamma-factor",
+        "hdr-contrast-recovery",
+        "hdr-contrast-smoothness",
+        "hdr-film-strength",
+        "hdr-mastering-clip",
+        "hdr-peak-decay-rate",
+        "hdr-peak-percentile",
+        "hdr-scene-threshold-high",
+        "hdr-scene-threshold-low",
+        "hr-seek-demuxer-offset",
+        "hue",
+        "interpolation-threshold",
+        "mc",
+        "mf-fps",
+        "monitoraspect",
+        "monitorpixelaspect",
+        "network-timeout",
+        "osd-bar-align-x",
+        "osd-bar-align-y",
+        "osd-bar-border-size",
+        "osd-bar-h",
+        "osd-bar-marker-min-size",
+        "osd-bar-marker-scale",
+        "osd-bar-outline-size",
+        "osd-bar-w",
+        "osd-blur",
+        "osd-border-size",
+        "osd-font-size",
+        "osd-outline-size",
+        "osd-prune-delay",
+        "osd-scale",
+        "osd-shadow-offset",
+        "osd-spacing",
+        "override-display-fps",
+        "panscan",
+        "pitch",
+        "replaygain-fallback",
+        "replaygain-preamp",
+        "saturation",
+        "scale-antiring",
+        "scale-blur",
+        "scale-clamp",
+        "scale-radius",
+        "scale-taper",
+        "scale-wtaper",
+        "screenshot-jxl-distance",
+        "secondary-sub-delay",
+        "secondary-sub-pos",
+        "secondary-sub-scale",
+        "sharpen",
+        "sigmoid-center",
+        "sigmoid-slope",
+        "speed",
+        "sstep",
+        "sub-ass-line-spacing",
+        "sub-ass-prune-delay",
+        "sub-blur",
+        "sub-border-size",
+        "sub-delay",
+        "sub-font-size",
+        "sub-fps",
+        "sub-gauss",
+        "sub-line-spacing",
+        "sub-outline-size",
+        "sub-pos",
+        "sub-scale",
+        "sub-shadow-offset",
+        "sub-spacing",
+        "sub-speed",
+        "sws-cgb",
+        "sws-cs",
+        "sws-lgb",
+        "sws-ls",
+        "tone-mapping-exposure",
+        "tone-mapping-knee-adaptation",
+        "tone-mapping-knee-default",
+        "tone-mapping-knee-maximum",
+        "tone-mapping-knee-minimum",
+        "tone-mapping-knee-offset",
+        "tone-mapping-linear-knee",
+        "tone-mapping-max-boost",
+        "tone-mapping-reinhard-contrast",
+        "tone-mapping-slope-offset",
+        "tone-mapping-slope-tuning",
+        "tone-mapping-spline-contrast",
+        "tscale-antiring",
+        "tscale-blur",
+        "tscale-clamp",
+        "tscale-radius",
+        "tscale-taper",
+        "tscale-wtaper",
+        "vd-queue-max-secs",
+        "video-align-x",
+        "video-align-y",
+        "video-margin-ratio-bottom",
+        "video-margin-ratio-left",
+        "video-margin-ratio-right",
+        "video-margin-ratio-top",
+        "video-pan-x",
+        "video-pan-y",
+        "video-scale-x",
+        "video-scale-y",
+        "video-sync-max-audio-change",
+        "video-sync-max-video-change",
+        "video-timing-offset",
+        "video-zoom",
+        "vo-image-jxl-distance",
+        "vo-null-fps",
+        "volume",
+        "volume-gain",
+        "volume-gain-max",
+        "volume-gain-min",
+        "volume-max",
+        "window-scale"
+      ]
+    },
+    {
+      "read": {
+        "dictionary": "string"
+      },
+      "write": {
+        "anyOf": [
+          "string",
+          {
+            "dictionary": "string"
+          }
+        ]
+      },
+      "names": [
+        "ad-lavc-o",
+        "audio-swresample-o",
+        "demuxer-lavf-o",
+        "glsl-shader-opts",
+        "libplacebo-opts",
+        "msg-level",
+        "oacopts",
+        "ofopts",
+        "oset-metadata",
+        "ovcopts",
+        "screenshot-avif-opts",
+        "script-opts",
+        "stream-lavf-o",
+        "sub-lavc-o",
+        "vd-lavc-o",
+        "vo-image-avif-opts",
+        "ytdl-raw-options"
+      ]
+    },
+    {
+      "read": "bigint",
+      "write": "integerInput",
+      "names": [
+        "ad-lavc-threads",
+        "ad-queue-max-samples",
+        "alsa-buffer-time",
+        "alsa-mixer-index",
+        "alsa-periods",
+        "ao-null-outburst",
+        "audio-backward-batch",
+        "audio-resample-filter-size",
+        "audio-resample-phase-shift",
+        "audio-samplerate",
+        "background-tile-size",
+        "chapter-merge-threshold",
+        "d3d11-sync-interval",
+        "deband-iterations",
+        "demuxer-lavf-probescore",
+        "demuxer-rawaudio-rate",
+        "demuxer-rawvideo-h",
+        "demuxer-rawvideo-size",
+        "demuxer-rawvideo-w",
+        "dither-size-fruit",
+        "egl-config-id",
+        "gpu-tex-pad-x",
+        "gpu-tex-pad-y",
+        "hwdec-threads",
+        "icc-intent",
+        "input-ar-delay",
+        "input-ar-rate",
+        "input-doubleclick-time",
+        "input-dragging-deadzone",
+        "input-key-fifo-size",
+        "opengl-check-pattern-a",
+        "opengl-check-pattern-b",
+        "opengl-swapinterval",
+        "osd-bitmap-max-size",
+        "osd-duration",
+        "osd-glyph-limit",
+        "osd-margin-x",
+        "osd-margin-y",
+        "osd-margin-y-offset",
+        "osd-playing-msg-duration",
+        "screenshot-jpeg-quality",
+        "screenshot-jxl-effort",
+        "screenshot-png-compression",
+        "screenshot-png-filter",
+        "screenshot-webp-compression",
+        "screenshot-webp-quality",
+        "sub-bitmap-max-size",
+        "sub-fix-timing-keep",
+        "sub-fix-timing-threshold",
+        "sub-glyph-limit",
+        "sub-margin-x",
+        "sub-margin-y",
+        "sub-margin-y-offset",
+        "swapchain-depth",
+        "sws-chs",
+        "sws-cvs",
+        "teletext-page",
+        "temporal-dither-period",
+        "vd-lavc-threads",
+        "vd-queue-max-samples",
+        "video-backward-batch",
+        "video-sync-max-factor",
+        "vo-image-jpeg-quality",
+        "vo-image-jxl-effort",
+        "vo-image-png-compression",
+        "vo-image-png-filter",
+        "vo-image-webp-compression",
+        "vo-image-webp-quality",
+        "vo-kitty-cols",
+        "vo-kitty-height",
+        "vo-kitty-left",
+        "vo-kitty-rows",
+        "vo-kitty-top",
+        "vo-kitty-width",
+        "vo-tct-height",
+        "vo-tct-width",
+        "vulkan-display-display",
+        "vulkan-display-mode",
+        "vulkan-display-plane",
+        "vulkan-queue-count",
+        "wid"
+      ]
+    },
+    {
+      "read": "bigint",
+      "write": {
+        "anyOf": ["bigint", "string"]
+      },
+      "names": [
+        "ad-queue-max-bytes",
+        "audio-reversal-buffer",
+        "demuxer-hysteresis-bytes",
+        "demuxer-lavf-buffersize",
+        "demuxer-lavf-probesize",
+        "demuxer-max-back-bytes",
+        "demuxer-max-bytes",
+        "stream-buffer-size",
+        "vd-queue-max-bytes",
+        "video-reversal-buffer"
+      ]
+    },
+    {
+      "read": {
+        "list": {
+          "fields": {
+            "name": "string"
+          },
+          "optional": {
+            "label": "string",
+            "enabled": "boolean",
+            "params": {
+              "dictionary": "string"
+            }
+          }
+        }
+      },
+      "write": {
+        "anyOf": [
+          "string",
+          {
+            "list": {
+              "fields": {
+                "name": "string"
+              },
+              "optional": {
+                "label": "string",
+                "enabled": "boolean",
+                "params": {
+                  "dictionary": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "names": ["af", "ao", "clipboard-backends", "gpu-api", "gpu-context", "vf", "vo"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": [false, "auto"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["no", false, "auto"]
+          }
+        ]
+      },
+      "names": ["aid", "audio", "dither-depth", "secondary-sid", "sid", "sub", "vid", "video"]
+    },
+    {
+      "read": {
+        "list": "string"
+      },
+      "write": {
+        "anyOf": [
+          "string",
+          {
+            "list": "string"
+          }
+        ]
+      },
+      "names": [
+        "alang",
+        "archive-exts",
+        "audio-exts",
+        "audio-file-auto-exts",
+        "audio-file-paths",
+        "audio-files",
+        "cover-art-auto-exts",
+        "cover-art-files",
+        "cover-art-whitelist",
+        "directory-filter-types",
+        "display-tags",
+        "external-files",
+        "glsl-shaders",
+        "http-header-fields",
+        "hwdec",
+        "image-exts",
+        "input-commands",
+        "macos-bundle-path",
+        "oremove-metadata",
+        "playlist-exts",
+        "profile",
+        "reset-on-next-file",
+        "scripts",
+        "slang",
+        "sub-ass-force-style",
+        "sub-ass-style-overrides",
+        "sub-auto-exts",
+        "sub-file-paths",
+        "sub-files",
+        "sub-filter-jsre",
+        "sub-filter-regex",
+        "sub-filter-sdh-enclosures",
+        "video-exts",
+        "vlang",
+        "watch-later-options"
+      ]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["auto"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["auto"]
+          }
+        ]
+      },
+      "names": [
+        "audio-backward-overlap",
+        "edition",
+        "hdr-reference-white",
+        "hwdec-extra-frames",
+        "target-peak",
+        "video-backward-overlap"
+      ]
+    },
+    {
+      "read": {
+        "literals": [false, "embedded-first", "external-first"]
+      },
+      "write": {
+        "literals": ["no", false, "embedded-first", "external-first"]
+      },
+      "names": ["audio-display"]
+    },
+    {
+      "read": "value",
+      "write": "value",
+      "names": [
+        "audio-file",
+        "cover-art-file",
+        "external-file",
+        "focus-on-open",
+        "gamut-clipping",
+        "gamut-warning",
+        "glsl-shader",
+        "script",
+        "script-opt",
+        "sub-ass-vsfilter-aspect-compat",
+        "sub-ass-vsfilter-blur-compat",
+        "sub-file",
+        "tone-mapping-desaturate",
+        "tone-mapping-desaturate-exponent"
+      ]
+    },
+    {
+      "read": {
+        "literals": [false, "exact", "fuzzy", "all"]
+      },
+      "write": {
+        "literals": ["no", false, "exact", "fuzzy", "all"]
+      },
+      "names": ["audio-file-auto", "cover-art-auto", "sub-auto"]
+    },
+    {
+      "read": {
+        "literals": [false, "filter", "same"]
+      },
+      "write": {
+        "literals": ["no", false, "filter", "same"]
+      },
+      "names": ["autocreate-playlist"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": [false]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["no", false]
+          }
+        ]
+      },
+      "names": ["autosync", "video-rotate"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "none", "mica", "acrylic", "mica-alt"]
+      },
+      "write": {
+        "literals": ["auto", "none", "mica", "acrylic", "mica-alt"]
+      },
+      "names": ["backdrop-type"]
+    },
+    {
+      "read": {
+        "literals": ["none", "color", "tiles"]
+      },
+      "write": {
+        "literals": ["none", "color", "tiles"]
+      },
+      "names": ["background"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "video"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "video"]
+      },
+      "names": ["blend-subtitles"]
+    },
+    {
+      "read": {
+        "literals": ["none", "color", "tiles", "blur"]
+      },
+      "write": {
+        "literals": ["none", "color", "tiles", "blur"]
+      },
+      "names": ["border-background"]
+    },
+    {
+      "read": {
+        "literals": [false, "auto", true]
+      },
+      "write": {
+        "literals": ["no", false, "auto", "yes", true]
+      },
+      "names": ["cache", "demuxer-lavf-linearize-timestamps"]
+    },
+    {
+      "read": {
+        "literals": [
+          "auto",
+          "display-p3",
+          "display-p3-hlg",
+          "display-p3-pq",
+          "display-p3-linear",
+          "dci-p3",
+          "bt.2020",
+          "bt.2020-linear",
+          "bt.2100-hlg",
+          "bt.2100-pq",
+          "bt.709",
+          "srgb",
+          "srgb-linear",
+          "rgb-linear",
+          "adobe"
+        ]
+      },
+      "write": {
+        "literals": [
+          "auto",
+          "display-p3",
+          "display-p3-hlg",
+          "display-p3-pq",
+          "display-p3-linear",
+          "dci-p3",
+          "bt.2020",
+          "bt.2020-linear",
+          "bt.2100-hlg",
+          "bt.2100-pq",
+          "bt.709",
+          "srgb",
+          "srgb-linear",
+          "rgb-linear",
+          "adobe"
+        ]
+      },
+      "names": ["cocoa-cb-output-csp"]
+    },
+    {
+      "read": {
+        "literals": ["auto", false, true]
+      },
+      "write": {
+        "literals": ["auto", "no", false, "yes", true]
+      },
+      "names": [
+        "cocoa-cb-sw-renderer",
+        "d3d11-warp",
+        "demuxer-seekable-cache",
+        "target-colorspace-hint",
+        "vd-lavc-dr"
+      ]
+    },
+    {
+      "read": {
+        "anyOf": [
+          {
+            "integer": "0"
+          },
+          {
+            "literals": [
+              "bilinear",
+              "bicubic_fast",
+              "oversample",
+              "spline16",
+              "spline36",
+              "spline64",
+              "sinc",
+              "lanczos",
+              "ginseng",
+              "bicubic",
+              "hermite",
+              "catmull_rom",
+              "mitchell",
+              "robidoux",
+              "robidouxsharp",
+              "box",
+              "nearest",
+              "triangle",
+              "gaussian",
+              "jinc",
+              "ewa_lanczos",
+              "ewa_hanning",
+              "ewa_ginseng",
+              "ewa_lanczossharp",
+              "ewa_lanczos4sharpest",
+              "ewa_lanczossoft",
+              "haasnsoft",
+              "ewa_robidoux",
+              "ewa_robidouxsharp",
+              "bartlett",
+              "cosine",
+              "hanning",
+              "tukey",
+              "hamming",
+              "quadric",
+              "welch",
+              "kaiser",
+              "blackman",
+              "sphinx"
+            ]
+          }
+        ]
+      },
+      "write": {
+        "literals": [
+          "",
+          "bilinear",
+          "bicubic_fast",
+          "oversample",
+          "spline16",
+          "spline36",
+          "spline64",
+          "sinc",
+          "lanczos",
+          "ginseng",
+          "bicubic",
+          "hermite",
+          "catmull_rom",
+          "mitchell",
+          "robidoux",
+          "robidouxsharp",
+          "box",
+          "nearest",
+          "triangle",
+          "gaussian",
+          "jinc",
+          "ewa_lanczos",
+          "ewa_hanning",
+          "ewa_ginseng",
+          "ewa_lanczossharp",
+          "ewa_lanczos4sharpest",
+          "ewa_lanczossoft",
+          "haasnsoft",
+          "ewa_robidoux",
+          "ewa_robidouxsharp",
+          "bartlett",
+          "cosine",
+          "hanning",
+          "tukey",
+          "hamming",
+          "quadric",
+          "welch",
+          "kaiser",
+          "blackman",
+          "sphinx"
+        ]
+      },
+      "names": ["cscale", "dscale"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "number",
+          {
+            "literals": ["default"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "number",
+          {
+            "literals": ["default"]
+          }
+        ]
+      },
+      "names": [
+        "cscale-param1",
+        "cscale-param2",
+        "cscale-wparam",
+        "dscale-param1",
+        "dscale-param2",
+        "dscale-wparam",
+        "scale-param1",
+        "scale-param2",
+        "scale-wparam",
+        "tone-mapping-param",
+        "tscale-param1",
+        "tscale-param2",
+        "tscale-wparam"
+      ]
+    },
+    {
+      "read": {
+        "anyOf": [
+          {
+            "integer": "0"
+          },
+          {
+            "literals": [
+              "bartlett",
+              "cosine",
+              "hanning",
+              "tukey",
+              "hamming",
+              "quadric",
+              "welch",
+              "kaiser",
+              "blackman",
+              "sphinx",
+              "jinc"
+            ]
+          }
+        ]
+      },
+      "write": {
+        "literals": [
+          "",
+          "bartlett",
+          "cosine",
+          "hanning",
+          "tukey",
+          "hamming",
+          "quadric",
+          "welch",
+          "kaiser",
+          "blackman",
+          "sphinx",
+          "jinc"
+        ]
+      },
+      "names": ["cscale-window", "dscale-window", "scale-window", "tscale-window"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": [false, "always"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["no", false, "always"]
+          }
+        ]
+      },
+      "names": ["cursor-autohide"]
+    },
+    {
+      "read": {
+        "literals": ["12_1", "12_0", "11_1", "11_0", "10_1", "10_0", "9_3", "9_2", "9_1"]
+      },
+      "write": {
+        "literals": ["12_1", "12_0", "11_1", "11_0", "10_1", "10_0", "9_3", "9_2", "9_1"]
+      },
+      "names": ["d3d11-feature-level"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "srgb", "linear", "pq", "bt.2020"]
+      },
+      "write": {
+        "literals": ["auto", "srgb", "linear", "pq", "bt.2020"]
+      },
+      "names": ["d3d11-output-csp"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "rgba8", "bgra8", "rgb10_a2", "rgba16f"]
+      },
+      "write": {
+        "literals": ["auto", "rgba8", "bgra8", "rgb10_a2", "rgba16f"]
+      },
+      "names": ["d3d11-output-format"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "window", "composition"]
+      },
+      "write": {
+        "literals": ["auto", "window", "composition"]
+      },
+      "names": ["d3d11-output-mode"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "auto"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "auto"]
+      },
+      "names": ["deinterlace", "drm-vrr-enabled", "load-auto-profiles", "opengl-early-flush"]
+    },
+    {
+      "read": {
+        "literals": ["tff", "bff", "auto"]
+      },
+      "write": {
+        "literals": ["tff", "bff", "auto"]
+      },
+      "names": ["deinterlace-field-parity"]
+    },
+    {
+      "read": {
+        "literals": ["immediate", "whendone", false]
+      },
+      "write": {
+        "literals": ["immediate", "whendone", "no", false]
+      },
+      "names": ["demuxer-cache-unlink-files"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "auto", "nostreams"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "auto", "nostreams"]
+      },
+      "names": ["demuxer-lavf-probe-info"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "full"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "full"]
+      },
+      "names": ["demuxer-mkv-probe-video-duration"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "index"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "index"]
+      },
+      "names": ["demuxer-mkv-subtitle-preroll"]
+    },
+    {
+      "read": {
+        "literals": [
+          "u8",
+          "s8",
+          "u16le",
+          "u16be",
+          "s16le",
+          "s16be",
+          "u24le",
+          "u24be",
+          "s24le",
+          "s24be",
+          "u32le",
+          "u32be",
+          "s32le",
+          "s32be",
+          "floatle",
+          "floatbe",
+          "doublele",
+          "doublebe",
+          "u16",
+          "s16",
+          "u24",
+          "s24",
+          "u32",
+          "s32",
+          "float",
+          "double"
+        ]
+      },
+      "write": {
+        "literals": [
+          "u8",
+          "s8",
+          "u16le",
+          "u16be",
+          "s16le",
+          "s16be",
+          "u24le",
+          "u24be",
+          "s24le",
+          "s24be",
+          "u32le",
+          "u32be",
+          "s32le",
+          "s32be",
+          "floatle",
+          "floatbe",
+          "doublele",
+          "doublebe",
+          "u16",
+          "s16",
+          "u24",
+          "s24",
+          "u32",
+          "s32",
+          "float",
+          "double"
+        ]
+      },
+      "names": ["demuxer-rawaudio-format"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "lazy", "recursive", "ignore"]
+      },
+      "write": {
+        "literals": ["auto", "lazy", "recursive", "ignore"]
+      },
+      "names": ["directory-mode"]
+    },
+    {
+      "read": {
+        "literals": ["fruit", "ordered", "error-diffusion", false]
+      },
+      "write": {
+        "literals": ["fruit", "ordered", "error-diffusion", "no", false]
+      },
+      "names": ["dither"]
+    },
+    {
+      "read": {
+        "literals": [false, "auto", "replace", "append", "insert-next"]
+      },
+      "write": {
+        "literals": ["no", false, "auto", "replace", "append", "insert-next"]
+      },
+      "names": ["drag-and-drop"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["primary", "overlay"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["primary", "overlay"]
+          }
+        ]
+      },
+      "names": ["drm-draw-plane", "drm-drmprime-video-plane"]
+    },
+    {
+      "read": {
+        "literals": ["xrgb8888", "xrgb2101010", "xbgr8888", "xbgr2101010", "rgb565", "yuyv"]
+      },
+      "write": {
+        "literals": ["xrgb8888", "xrgb2101010", "xbgr8888", "xbgr2101010", "rgb565", "yuyv"]
+      },
+      "names": ["drm-format"]
+    },
+    {
+      "read": {
+        "literals": [
+          "auto",
+          "rgb8",
+          "rgba8",
+          "rgb10",
+          "rgb10_a2",
+          "rgb16",
+          "rgba16",
+          "rgb16f",
+          "rgba16f",
+          "rgb32f",
+          "rgba32f"
+        ]
+      },
+      "write": {
+        "literals": [
+          "auto",
+          "rgb8",
+          "rgba8",
+          "rgb10",
+          "rgb10_a2",
+          "rgb16",
+          "rgba16",
+          "rgb16f",
+          "rgba16f",
+          "rgb32f",
+          "rgba32f"
+        ]
+      },
+      "names": ["egl-output-format"]
+    },
+    {
+      "read": {
+        "literals": ["never", "open", "all"]
+      },
+      "write": {
+        "literals": ["never", "open", "all"]
+      },
+      "names": ["focus-on"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "immediate"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "immediate"]
+      },
+      "names": ["force-window"]
+    },
+    {
+      "read": {
+        "literals": [false, "vo", "decoder", "decoder+vo"]
+      },
+      "write": {
+        "literals": ["no", false, "vo", "decoder", "decoder+vo"]
+      },
+      "names": ["framedrop"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["all"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["all"]
+          }
+        ]
+      },
+      "names": ["frames"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["all", "current"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["all", "current"]
+          }
+        ]
+      },
+      "names": ["fs-screen"]
+    },
+    {
+      "read": {
+        "literals": [
+          "auto",
+          "clip",
+          "perceptual",
+          "relative",
+          "saturation",
+          "absolute",
+          "desaturate",
+          "darken",
+          "warn",
+          "linear"
+        ]
+      },
+      "write": {
+        "literals": [
+          "auto",
+          "clip",
+          "perceptual",
+          "relative",
+          "saturation",
+          "absolute",
+          "desaturate",
+          "darken",
+          "warn",
+          "linear"
+        ]
+      },
+      "names": ["gamut-mapping-mode"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "weak"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "weak"]
+      },
+      "names": ["gapless-audio"]
+    },
+    {
+      "read": {
+        "literals": ["auto", true, false]
+      },
+      "write": {
+        "literals": ["auto", "yes", true, "no", false]
+      },
+      "names": ["gpu-dumb-mode", "hdr-compute-peak", "opengl-es", "sdr-adjust-gamma"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": [false, "min", "max"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["no", false, "min", "max"]
+          }
+        ]
+      },
+      "names": ["hls-bitrate"]
+    },
+    {
+      "read": {
+        "literals": [false, "absolute", true, "always", "default"]
+      },
+      "write": {
+        "literals": ["no", false, "absolute", "yes", true, "always", "default"]
+      },
+      "names": ["hr-seek"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": [false, true]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["no", false, "yes", true]
+          }
+        ]
+      },
+      "names": ["hwdec-software-fallback", "vd-lavc-software-fallback"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": [false, "inf"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["no", false, "inf"]
+          }
+        ]
+      },
+      "names": ["icc-force-contrast"]
+    },
+    {
+      "read": {
+        "literals": [false, "once", true]
+      },
+      "write": {
+        "literals": ["no", false, "once", "yes", true]
+      },
+      "names": ["idle"]
+    },
+    {
+      "read": "number",
+      "write": {
+        "anyOf": [
+          "number",
+          {
+            "literals": ["inf"]
+          }
+        ]
+      },
+      "names": ["image-display-duration"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "native", "normalized", "conversion"]
+      },
+      "write": {
+        "literals": ["auto", "native", "normalized", "conversion"]
+      },
+      "names": ["image-lut-type", "lut-type"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["sdr", "video", "video-static", "video-dynamic"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["sdr", "video", "video-static", "video-dynamic"]
+          }
+        ]
+      },
+      "names": ["image-subs-hdr-peak"]
+    },
+    {
+      "read": {
+        "literals": ["default", "recreate"]
+      },
+      "write": {
+        "literals": ["default", "recreate"]
+      },
+      "names": ["index"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "always"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "always"]
+      },
+      "names": ["keep-open", "stop-screensaver", "subs-fallback-forced"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": [false, "inf", true]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["no", false, "inf", "yes", true]
+          }
+        ]
+      },
+      "names": ["loop", "loop-file"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": [false, "inf", true, "force"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["no", false, "inf", "yes", true, "force"]
+          }
+        ]
+      },
+      "names": ["loop-playlist"]
+    },
+    {
+      "read": {
+        "literals": ["regular", "accessory", "prohibited"]
+      },
+      "write": {
+        "literals": ["regular", "accessory", "prohibited"]
+      },
+      "names": ["macos-app-activation-policy"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["default"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["default"]
+          }
+        ]
+      },
+      "names": ["macos-fs-animation-duration", "screen"]
+    },
+    {
+      "read": {
+        "literals": ["visible", "whole"]
+      },
+      "write": {
+        "literals": ["visible", "whole"]
+      },
+      "names": ["macos-geometry-calculation"]
+    },
+    {
+      "read": {
+        "literals": ["callback", "precise", "system", "feedback"]
+      },
+      "write": {
+        "literals": ["callback", "precise", "system", "feedback"]
+      },
+      "names": ["macos-render-timer"]
+    },
+    {
+      "read": {
+        "literals": [
+          "auto",
+          "aqua",
+          "darkAqua",
+          "vibrantLight",
+          "vibrantDark",
+          "aquaHighContrast",
+          "darkAquaHighContrast",
+          "vibrantLightHighContrast",
+          "vibrantDarkHighContrast"
+        ]
+      },
+      "write": {
+        "literals": [
+          "auto",
+          "aqua",
+          "darkAqua",
+          "vibrantLight",
+          "vibrantDark",
+          "aquaHighContrast",
+          "darkAquaHighContrast",
+          "vibrantLightHighContrast",
+          "vibrantDarkHighContrast"
+        ]
+      },
+      "names": ["macos-title-bar-appearance"]
+    },
+    {
+      "read": {
+        "literals": [
+          "titlebar",
+          "selection",
+          "menu",
+          "popover",
+          "sidebar",
+          "headerView",
+          "sheet",
+          "windowBackground",
+          "hudWindow",
+          "fullScreen",
+          "toolTip",
+          "contentBackground",
+          "underWindowBackground",
+          "underPageBackground",
+          "dark",
+          "light",
+          "mediumLight",
+          "ultraDark"
+        ]
+      },
+      "write": {
+        "literals": [
+          "titlebar",
+          "selection",
+          "menu",
+          "popover",
+          "sidebar",
+          "headerView",
+          "sheet",
+          "windowBackground",
+          "hudWindow",
+          "fullScreen",
+          "toolTip",
+          "contentBackground",
+          "underWindowBackground",
+          "underPageBackground",
+          "dark",
+          "light",
+          "mediumLight",
+          "ultraDark"
+        ]
+      },
+      "names": ["macos-title-bar-material"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["window", "system", "desktop"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["window", "system", "desktop"]
+          }
+        ]
+      },
+      "names": ["ontop-level"]
+    },
+    {
+      "read": {
+        "literals": ["left", "center", "right"]
+      },
+      "write": {
+        "literals": ["left", "center", "right"]
+      },
+      "names": ["osd-align-x", "sub-align-x"]
+    },
+    {
+      "read": {
+        "literals": ["top", "center", "bottom"]
+      },
+      "write": {
+        "literals": ["top", "center", "bottom"]
+      },
+      "names": ["osd-align-y", "sub-align-y"]
+    },
+    {
+      "read": {
+        "literals": ["none", "triangle", "line"]
+      },
+      "write": {
+        "literals": ["none", "triangle", "line"]
+      },
+      "names": ["osd-bar-marker-style"]
+    },
+    {
+      "read": {
+        "literals": ["outline-and-shadow", "opaque-box", "background-box"]
+      },
+      "write": {
+        "literals": ["outline-and-shadow", "opaque-box", "background-box"]
+      },
+      "names": ["osd-border-style", "sub-border-style"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "none", "fontconfig"]
+      },
+      "write": {
+        "literals": ["auto", "none", "fontconfig"]
+      },
+      "names": ["osd-font-provider", "sub-font-provider"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "left", "center", "right"]
+      },
+      "write": {
+        "literals": ["auto", "left", "center", "right"]
+      },
+      "names": ["osd-justify", "sub-justify"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          {
+            "integer": "0"
+          },
+          {
+            "integer": "1"
+          },
+          {
+            "integer": "2"
+          },
+          {
+            "integer": "3"
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          {
+            "integer": "0"
+          },
+          {
+            "integer": "1"
+          },
+          {
+            "integer": "2"
+          },
+          {
+            "integer": "3"
+          },
+          {
+            "literals": ["0", "1", "2", "3"]
+          }
+        ]
+      },
+      "names": ["osd-level"]
+    },
+    {
+      "read": {
+        "literals": [false, "bar", "msg", "msg-bar"]
+      },
+      "write": {
+        "literals": ["no", false, "bar", "msg", "msg-bar"]
+      },
+      "names": ["osd-on-seek"]
+    },
+    {
+      "read": {
+        "literals": ["title", "filename", "both"]
+      },
+      "write": {
+        "literals": ["title", "filename", "both"]
+      },
+      "names": ["osd-playlist-entry"]
+    },
+    {
+      "read": {
+        "literals": ["simple", "complex"]
+      },
+      "write": {
+        "literals": ["simple", "complex"]
+      },
+      "names": ["osd-shaper", "sub-ass-shaper", "sub-shaper"]
+    },
+    {
+      "read": {
+        "literals": ["forward", "+", "backward", "-"]
+      },
+      "write": {
+        "literals": ["forward", "+", "backward", "-"]
+      },
+      "names": ["play-dir", "play-direction"]
+    },
+    {
+      "read": {
+        "literals": ["cplayer", "pseudo-gui"]
+      },
+      "write": {
+        "literals": ["cplayer", "pseudo-gui"]
+      },
+      "names": ["player-operation-mode"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "current"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "current"]
+      },
+      "names": ["playlist-inherit-options"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["auto", false]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["auto", "no", false]
+          }
+        ]
+      },
+      "names": ["playlist-start"]
+    },
+    {
+      "read": {
+        "literals": [false, "realtime", "high", "abovenormal", "normal", "belownormal", "idle"]
+      },
+      "write": {
+        "literals": [
+          "no",
+          false,
+          "realtime",
+          "high",
+          "abovenormal",
+          "normal",
+          "belownormal",
+          "idle"
+        ]
+      },
+      "names": ["priority"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["native"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["native"]
+          }
+        ]
+      },
+      "names": ["pulse-buffer"]
+    },
+    {
+      "read": {
+        "literals": [false, "track", "album"]
+      },
+      "write": {
+        "literals": ["no", false, "track", "album"]
+      },
+      "names": ["replaygain"]
+    },
+    {
+      "read": {
+        "literals": ["lavf", "udp", "tcp", "http", "udp_multicast"]
+      },
+      "write": {
+        "literals": ["lavf", "udp", "tcp", "http", "udp_multicast"]
+      },
+      "names": ["rtsp-transport"]
+    },
+    {
+      "read": {
+        "literals": [
+          "bilinear",
+          "bicubic_fast",
+          "oversample",
+          "spline16",
+          "spline36",
+          "spline64",
+          "sinc",
+          "lanczos",
+          "ginseng",
+          "bicubic",
+          "hermite",
+          "catmull_rom",
+          "mitchell",
+          "robidoux",
+          "robidouxsharp",
+          "box",
+          "nearest",
+          "triangle",
+          "gaussian",
+          "jinc",
+          "ewa_lanczos",
+          "ewa_hanning",
+          "ewa_ginseng",
+          "ewa_lanczossharp",
+          "ewa_lanczos4sharpest",
+          "ewa_lanczossoft",
+          "haasnsoft",
+          "ewa_robidoux",
+          "ewa_robidouxsharp",
+          "bartlett",
+          "cosine",
+          "hanning",
+          "tukey",
+          "hamming",
+          "quadric",
+          "welch",
+          "kaiser",
+          "blackman",
+          "sphinx"
+        ]
+      },
+      "write": {
+        "literals": [
+          "bilinear",
+          "bicubic_fast",
+          "oversample",
+          "spline16",
+          "spline36",
+          "spline64",
+          "sinc",
+          "lanczos",
+          "ginseng",
+          "bicubic",
+          "hermite",
+          "catmull_rom",
+          "mitchell",
+          "robidoux",
+          "robidouxsharp",
+          "box",
+          "nearest",
+          "triangle",
+          "gaussian",
+          "jinc",
+          "ewa_lanczos",
+          "ewa_hanning",
+          "ewa_ginseng",
+          "ewa_lanczossharp",
+          "ewa_lanczos4sharpest",
+          "ewa_lanczossoft",
+          "haasnsoft",
+          "ewa_robidoux",
+          "ewa_robidouxsharp",
+          "bartlett",
+          "cosine",
+          "hanning",
+          "tukey",
+          "hamming",
+          "quadric",
+          "welch",
+          "kaiser",
+          "blackman",
+          "sphinx"
+        ]
+      },
+      "names": ["scale"]
+    },
+    {
+      "read": {
+        "literals": ["jpg", "jpeg", "png", "webp", "jxl", "avif"]
+      },
+      "write": {
+        "literals": ["jpg", "jpeg", "png", "webp", "jxl", "avif"]
+      },
+      "names": ["screenshot-format", "vo-image-format"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "scale", "force", "strip"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "scale", "force", "strip"]
+      },
+      "names": ["secondary-sub-ass-override", "sub-ass-override"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "shaderc"]
+      },
+      "write": {
+        "literals": ["auto", "shaderc"]
+      },
+      "names": ["spirv-compiler"]
+    },
+    {
+      "read": {
+        "literals": ["none", "light", "normal", "native"]
+      },
+      "write": {
+        "literals": ["none", "light", "normal", "native"]
+      },
+      "names": ["sub-ass-hinting", "sub-hinting"]
+    },
+    {
+      "read": {
+        "literals": ["none", "aspect-ratio", "all"]
+      },
+      "write": {
+        "literals": ["none", "aspect-ratio", "all"]
+      },
+      "names": ["sub-ass-use-video-data"]
+    },
+    {
+      "read": "number",
+      "write": {
+        "anyOf": ["number", "bigint", "string"]
+      },
+      "names": ["sub-ass-video-aspect-override", "video-aspect-override"]
+    },
+    {
+      "read": {
+        "literals": [false, "basic", "full", "force-601"]
+      },
+      "write": {
+        "literals": ["no", false, "basic", "full", "force-601"]
+      },
+      "names": ["sub-ass-vsfilter-color-compat"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["auto", "sdr"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["auto", "sdr"]
+          }
+        ]
+      },
+      "names": ["sub-hdr-peak"]
+    },
+    {
+      "read": {
+        "literals": [false, "default", true]
+      },
+      "write": {
+        "literals": ["no", false, "default", "yes", true]
+      },
+      "names": ["subs-fallback"]
+    },
+    {
+      "read": {
+        "literals": [false, "forced", true]
+      },
+      "write": {
+        "literals": ["no", false, "forced", "yes", true]
+      },
+      "names": ["subs-with-matching-audio"]
+    },
+    {
+      "read": {
+        "literals": [
+          "fast-bilinear",
+          "bilinear",
+          "bicubic",
+          "x",
+          "point",
+          "area",
+          "bicublin",
+          "gauss",
+          "sinc",
+          "lanczos",
+          "spline"
+        ]
+      },
+      "write": {
+        "literals": [
+          "fast-bilinear",
+          "bilinear",
+          "bicubic",
+          "x",
+          "point",
+          "area",
+          "bicublin",
+          "gauss",
+          "sinc",
+          "lanczos",
+          "spline"
+        ]
+      },
+      "names": ["sws-scaler"]
+    },
+    {
+      "read": {
+        "literals": ["target", "source", "source-dynamic"]
+      },
+      "write": {
+        "literals": ["target", "source", "source-dynamic"]
+      },
+      "names": ["target-colorspace-hint-mode"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["auto", "inf"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["auto", "inf"]
+          }
+        ]
+      },
+      "names": ["target-contrast"]
+    },
+    {
+      "read": {
+        "literals": [
+          "auto",
+          "bt.601-525",
+          "bt.601-625",
+          "bt.709",
+          "bt.2020",
+          "bt.470m",
+          "apple",
+          "adobe",
+          "prophoto",
+          "cie1931",
+          "dci-p3",
+          "display-p3",
+          "v-gamut",
+          "s-gamut",
+          "ebu3213",
+          "film-c",
+          "aces-ap0",
+          "aces-ap1"
+        ]
+      },
+      "write": {
+        "literals": [
+          "auto",
+          "bt.601-525",
+          "bt.601-625",
+          "bt.709",
+          "bt.2020",
+          "bt.470m",
+          "apple",
+          "adobe",
+          "prophoto",
+          "cie1931",
+          "dci-p3",
+          "display-p3",
+          "v-gamut",
+          "s-gamut",
+          "ebu3213",
+          "film-c",
+          "aces-ap0",
+          "aces-ap1"
+        ]
+      },
+      "names": ["target-prim"]
+    },
+    {
+      "read": {
+        "literals": [
+          "auto",
+          "bt.1886",
+          "srgb",
+          "linear",
+          "gamma1.8",
+          "gamma2.0",
+          "gamma2.2",
+          "gamma2.4",
+          "gamma2.6",
+          "gamma2.8",
+          "prophoto",
+          "pq",
+          "hlg",
+          "v-log",
+          "s-log1",
+          "s-log2",
+          "st428",
+          "scrgb"
+        ]
+      },
+      "write": {
+        "literals": [
+          "auto",
+          "bt.1886",
+          "srgb",
+          "linear",
+          "gamma1.8",
+          "gamma2.0",
+          "gamma2.2",
+          "gamma2.4",
+          "gamma2.6",
+          "gamma2.8",
+          "prophoto",
+          "pq",
+          "hlg",
+          "v-log",
+          "s-log1",
+          "s-log2",
+          "st428",
+          "scrgb"
+        ]
+      },
+      "names": ["target-trc"]
+    },
+    {
+      "read": {
+        "literals": ["force", "auto", false]
+      },
+      "write": {
+        "literals": ["force", "auto", "no", false]
+      },
+      "names": ["term-osd"]
+    },
+    {
+      "read": {
+        "literals": [
+          "auto",
+          "clip",
+          "mobius",
+          "reinhard",
+          "hable",
+          "gamma",
+          "linear",
+          "spline",
+          "bt.2390",
+          "bt.2446a",
+          "st2094-40",
+          "st2094-10"
+        ]
+      },
+      "write": {
+        "literals": [
+          "auto",
+          "clip",
+          "mobius",
+          "reinhard",
+          "hable",
+          "gamma",
+          "linear",
+          "spline",
+          "bt.2390",
+          "bt.2446a",
+          "st2094-40",
+          "st2094-10"
+        ]
+      },
+      "names": ["tone-mapping"]
+    },
+    {
+      "read": {
+        "literals": [false, "input", "output", "both", "auto"]
+      },
+      "write": {
+        "literals": ["no", false, "input", "output", "both", "auto"]
+      },
+      "names": ["treat-srgb-as-power22"]
+    },
+    {
+      "read": {
+        "literals": [
+          "oversample",
+          "linear",
+          "spline16",
+          "spline36",
+          "spline64",
+          "sinc",
+          "lanczos",
+          "ginseng",
+          "bicubic",
+          "hermite",
+          "catmull_rom",
+          "mitchell",
+          "robidoux",
+          "robidouxsharp",
+          "box",
+          "nearest",
+          "triangle",
+          "gaussian",
+          "bartlett",
+          "cosine",
+          "hanning",
+          "tukey",
+          "hamming",
+          "quadric",
+          "welch",
+          "kaiser",
+          "blackman",
+          "sphinx",
+          "jinc"
+        ]
+      },
+      "write": {
+        "literals": [
+          "oversample",
+          "linear",
+          "spline16",
+          "spline36",
+          "spline64",
+          "sinc",
+          "lanczos",
+          "ginseng",
+          "bicubic",
+          "hermite",
+          "catmull_rom",
+          "mitchell",
+          "robidoux",
+          "robidouxsharp",
+          "box",
+          "nearest",
+          "triangle",
+          "gaussian",
+          "bartlett",
+          "cosine",
+          "hanning",
+          "tukey",
+          "hamming",
+          "quadric",
+          "welch",
+          "kaiser",
+          "blackman",
+          "sphinx",
+          "jinc"
+        ]
+      },
+      "names": ["tscale"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "cpu", "gpu"]
+      },
+      "write": {
+        "literals": ["auto", "cpu", "gpu"]
+      },
+      "names": ["vd-lavc-film-grain"]
+    },
+    {
+      "read": {
+        "literals": ["none", "default", "nonref", "bidir", "nonkey", "all"]
+      },
+      "write": {
+        "literals": ["none", "default", "nonref", "bidir", "nonkey", "all"]
+      },
+      "names": [
+        "vd-lavc-framedrop",
+        "vd-lavc-skipframe",
+        "vd-lavc-skipidct",
+        "vd-lavc-skiploopfilter"
+      ]
+    },
+    {
+      "read": {
+        "literals": ["bitstream", "container", "ignore"]
+      },
+      "write": {
+        "literals": ["bitstream", "container", "ignore"]
+      },
+      "names": ["video-aspect-method"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "limited", "full"]
+      },
+      "write": {
+        "literals": ["auto", "limited", "full"]
+      },
+      "names": ["video-output-levels"]
+    },
+    {
+      "read": {
+        "literals": [
+          "audio",
+          "display-resample",
+          "display-resample-vdrop",
+          "display-resample-desync",
+          "display-tempo",
+          "display-adrop",
+          "display-vdrop",
+          "display-desync",
+          "desync"
+        ]
+      },
+      "write": {
+        "literals": [
+          "audio",
+          "display-resample",
+          "display-resample-vdrop",
+          "display-resample-desync",
+          "display-tempo",
+          "display-adrop",
+          "display-vdrop",
+          "display-desync",
+          "desync"
+        ]
+      },
+      "names": ["video-sync"]
+    },
+    {
+      "read": {
+        "literals": [false, true, "downscale-big"]
+      },
+      "write": {
+        "literals": ["no", false, "yes", true, "downscale-big"]
+      },
+      "names": ["video-unscaled"]
+    },
+    {
+      "read": {
+        "literals": ["plain", "half-blocks"]
+      },
+      "write": {
+        "literals": ["plain", "half-blocks"]
+      },
+      "names": ["vo-tct-algo"]
+    },
+    {
+      "read": {
+        "literals": ["pixel", "line", "frame"]
+      },
+      "write": {
+        "literals": ["pixel", "line", "frame"]
+      },
+      "names": ["vo-tct-buffering"]
+    },
+    {
+      "read": {
+        "literals": ["auto", "fifo", "fifo-relaxed", "mailbox", "immediate"]
+      },
+      "write": {
+        "literals": ["auto", "fifo", "fifo-relaxed", "mailbox", "immediate"]
+      },
+      "names": ["vulkan-swap-mode"]
+    },
+    {
+      "read": {
+        "anyOf": [
+          "bigint",
+          {
+            "literals": ["default", "min"]
+          }
+        ]
+      },
+      "write": {
+        "anyOf": [
+          "integerInput",
+          {
+            "literals": ["default", "min"]
+          }
+        ]
+      },
+      "names": ["wasapi-exclusive-buffer"]
+    },
+    {
+      "read": {
+        "literals": ["default", "excludefromcapture", "monitor"]
+      },
+      "write": {
+        "literals": ["default", "excludefromcapture", "monitor"]
+      },
+      "names": ["window-affinity"]
+    },
+    {
+      "read": {
+        "literals": ["default", "donotround", "round", "roundsmall"]
+      },
+      "write": {
+        "literals": ["default", "donotround", "round", "roundsmall"]
+      },
+      "names": ["window-corners"]
+    }
+  ],
+  "commands": [
+    "ab-loop",
+    "ab-loop-align-cache",
+    "ab-loop-dump-cache",
+    "add",
+    "af",
+    "af-command",
+    "ao-reload",
+    "apply-profile",
+    "audio-add",
+    "audio-reload",
+    "audio-remove",
+    "begin-vo-dragging",
+    "change-list",
+    "context-menu",
+    "cycle",
+    "cycle-values",
+    "define-section",
+    "del",
+    "delete-watch-later-config",
+    "disable-section",
+    "discnav",
+    "drop-buffers",
+    "dump-cache",
+    "enable-section",
+    "escape-ass",
+    "expand-path",
+    "expand-text",
+    "flush-status-line",
+    "frame-back-step",
+    "frame-step",
+    "ignore",
+    "keybind",
+    "keydown",
+    "keypress",
+    "keyup",
+    "load-config-file",
+    "load-input-conf",
+    "load-script",
+    "loadfile",
+    "loadlist",
+    "mouse",
+    "multiply",
+    "normalize-path",
+    "notify-property",
+    "osd-overlay",
+    "overlay-add",
+    "overlay-remove",
+    "playlist-clear",
+    "playlist-move",
+    "playlist-next",
+    "playlist-next-playlist",
+    "playlist-play-index",
+    "playlist-prev",
+    "playlist-prev-playlist",
+    "playlist-remove",
+    "playlist-shuffle",
+    "playlist-unshuffle",
+    "print-text",
+    "quit",
+    "quit-watch-later",
+    "rescan-external-files",
+    "revert-seek",
+    "run",
+    "screenshot",
+    "screenshot-raw",
+    "screenshot-to-file",
+    "script-binding",
+    "script-message",
+    "script-message-to",
+    "seek",
+    "set",
+    "show-progress",
+    "show-text",
+    "stop",
+    "sub-add",
+    "sub-reload",
+    "sub-remove",
+    "sub-seek",
+    "sub-step",
+    "subprocess",
+    "update-clipboard",
+    "vf",
+    "vf-command",
+    "video-add",
+    "video-reload",
+    "video-remove",
+    "write-watch-later-config"
+  ]
+}

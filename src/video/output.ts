@@ -1,3 +1,4 @@
+import { callSignal } from '../client/options.js'
 import { addAbortListener } from 'node:events'
 import { library } from '../library.js'
 import { MpvAbortError, MpvBindingError, MpvNativeError } from '../errors.js'
@@ -85,7 +86,7 @@ export abstract class ManagedOutput<C, R, F> {
       throw new MpvBindingError('closed', op)
     }
     const change = this.encode(config, op)
-    const signal = options.signal
+    const signal = callSignal(options, op)
     if (signal?.aborted) {
       throw new MpvAbortError(op, false, signal.reason)
     }
@@ -114,6 +115,7 @@ export abstract class ManagedOutput<C, R, F> {
     observer: MpvObserver<F>,
     options: { readonly signal?: AbortSignal } = {},
   ): Promise<MpvSubscription> {
+    const signal = callSignal(options, 'observeFrames')
     if (this.closed) {
       throw new MpvBindingError('closed', 'observeFrames')
     }
@@ -122,14 +124,10 @@ export abstract class ManagedOutput<C, R, F> {
       'observeFrames',
       (wake, gate) => this.native.observe(wake, gate),
       observer,
-      options.signal,
+      signal,
       (raw) => this.frame(raw!),
       (failure, phase) =>
-        failed(
-          failure,
-          phase === 'registration' ? 'observeFrames' : 'renderVideoFrame',
-          options.signal,
-        ),
+        failed(failure, phase === 'registration' ? 'observeFrames' : 'renderVideoFrame', signal),
     )
   }
 

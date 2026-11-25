@@ -1,20 +1,24 @@
+import type { commandResults, screenshotFile } from './results.js'
+import type { ShapeValue } from './shape.js'
 import type { PropertyValues, OptionInfo, Track } from './properties.js'
 import type { MpvValue } from '../values.js'
 import type { CommandDefinitions, OptionDefinitions, PropertyName } from './generated.js'
 
-export type CommandFlag =
-  | 'no-osd'
-  | 'osd-auto'
-  | 'osd-bar'
-  | 'osd-msg'
-  | 'osd-msg-bar'
-  | 'raw'
-  | 'expand-properties'
-  | 'repeatable'
-  | 'nonrepeatable'
-  | 'nonscalable'
-  | 'async'
-  | 'sync'
+export const commandFlags = [
+  'no-osd',
+  'osd-auto',
+  'osd-bar',
+  'osd-msg',
+  'osd-msg-bar',
+  'raw',
+  'expand-properties',
+  'repeatable',
+  'nonrepeatable',
+  'nonscalable',
+  'async',
+  'sync',
+] as const
+export type CommandFlag = (typeof commandFlags)[number]
 export type At<A, K> = K extends keyof A ? A[K] : never
 type ValidFlags<S extends string, C extends string> = string extends S
   ? S
@@ -57,47 +61,38 @@ export type CheckedCommand<A> = A extends readonly [infer H, ...infer R]
     : H extends keyof CommandDefinitions<A>
       ? readonly [H, ...CommandDefinitions<A>[H]['args']]
       : A
-  : CommandName<A> extends infer N extends keyof CommandDefinitions<A>
-    ? Exact<A, CommandDefinitions<A>[N]['named'] & { readonly _flags?: readonly CommandFlag[] }>
-    : A
+  : string extends CommandName<A>
+    ? A
+    : CommandName<A> extends infer N extends keyof CommandDefinitions<A>
+      ? Exact<A, CommandDefinitions<A>[N]['named'] & { readonly _flags?: readonly CommandFlag[] }>
+      : A
 
-export type Screenshot = {
-  readonly w: bigint
-  readonly h: bigint
-  readonly stride: bigint
-  readonly format: 'bgr0' | 'bgra' | 'rgba' | 'rgba64'
-  readonly source: 'vo' | 'software'
-  readonly data: Uint8Array<ArrayBuffer>
-}
-type CommandResults = {
-  'screenshot-raw': Screenshot
-  loadfile: { readonly playlist_entry_id: bigint }
-  loadlist: { readonly playlist_entry_id?: bigint; readonly num_entries?: bigint }
-  'load-script': { readonly client_id: bigint }
-  'osd-overlay': {
-    readonly x0?: number
-    readonly y0?: number
-    readonly x1?: number
-    readonly y1?: number
-  }
-  subprocess: {
-    readonly status: bigint
-    readonly killed_by_us: boolean
-    readonly error_string: string
-    readonly stdout?: Uint8Array<ArrayBuffer>
-    readonly stderr?: Uint8Array<ArrayBuffer>
-  }
-  'expand-text': string
-  'expand-path': string
-  'normalize-path': string
-  'escape-ass': string
-}
-type Result<N> = N extends keyof CommandResults
-  ? CommandResults[N]
+export type { Screenshot } from './results.js'
+
+type Result<N> = N extends keyof typeof commandResults
+  ? ShapeValue<(typeof commandResults)[N]>
   : N extends keyof CommandDefinitions<never>
     ? null
     : MpvValue
-export type CommandResult<A> = Result<CommandName<A>>
+type MayToggle<F> = F extends readonly (infer I)[]
+  ? MayToggle<I>
+  : F extends string
+    ? string extends F
+      ? true
+      : F extends `${string}each-frame${string}`
+        ? true
+        : false
+    : false
+type ShotFlags<A> = A extends readonly unknown[]
+  ? At<A, 1> | At<A, 2>
+  : At<A, 'flags'> | At<A, 'legacy'>
+export type CommandResult<A> = A extends readonly [CommandFlag, ...infer R]
+  ? CommandResult<R>
+  : CommandName<A> extends 'screenshot'
+    ? true extends MayToggle<ShotFlags<A>>
+      ? Result<'screenshot'>
+      : ShapeValue<typeof screenshotFile>
+    : Result<CommandName<A>>
 
 type Subproperty<T, K extends string> = T extends readonly (infer V)[]
   ? K extends 'count'

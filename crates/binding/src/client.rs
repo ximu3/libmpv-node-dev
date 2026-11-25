@@ -220,6 +220,28 @@ impl NativeClient {
     }
 
     #[napi]
+    pub fn begin_input<'a>(&self, env: &'a Env, id: u32) -> Result<Option<Object<'a>>> {
+        match self.client.begin_input(id) {
+            Ok(()) => Ok(None),
+            Err(reason) => error(
+                env,
+                CallError {
+                    reason,
+                    submitted: false,
+                },
+            )
+            .map(Some),
+        }
+    }
+    #[napi]
+    pub fn charge_input(&self, id: u32, bytes: i64) -> bool {
+        usize::try_from(bytes).is_ok_and(|bytes| self.client.charge_input(id, bytes))
+    }
+    #[napi]
+    pub fn release_input(&self, id: u32) {
+        self.client.release_input(id)
+    }
+    #[napi]
     pub fn request<'a>(
         &self,
         env: &'a Env,

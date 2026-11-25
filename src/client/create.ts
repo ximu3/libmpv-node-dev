@@ -1,7 +1,9 @@
+import { callSignal } from './options.js'
+import { validateWrite } from '../catalog/validation.js'
 import { addAbortListener } from 'node:events'
 import { MpvAbortError, MpvBindingError, throwNativeFailure } from '../errors.js'
 import { library } from '../library.js'
-import { inputNode, nameBytes, valueMode, type MpvNode } from '../values.js'
+import { inputNode, nameBytes, localInputBudget, valueMode, type MpvNode } from '../values.js'
 import {
   gpuConfiguration,
   type GpuVideoOptions,
@@ -26,6 +28,7 @@ import {
   type JavaScriptLogs,
   type NativeLogs,
   type DynamicLogs,
+  type InitializationLogs,
 } from './initialization.js'
 import { Player } from './player.js'
 
@@ -73,17 +76,29 @@ export function createMpv<
   configuration: CreateOptions<P> &
     OutputSelection<V> & { readonly initializationLogs: DynamicLogs },
 ): Promise<CreatedMpv<V>>
+export function createMpv<
+  const V extends VideoOutputOptions | undefined = undefined,
+  const P extends OptionEntries = OptionEntries,
+>(
+  configuration: CreateOptions<P> &
+    OutputSelection<V> & { readonly initializationLogs?: InitializationLogs },
+): Promise<CreatedMpv<V>>
+export function createMpv<
+  const V extends VideoOutputOptions | undefined = undefined,
+  const P extends OptionEntries = OptionEntries,
+>(
+  configuration:
+    | (CreateOptions<P> & OutputSelection<V> & { readonly initializationLogs?: InitializationLogs })
+    | undefined,
+): Promise<CreatedMpv<V | undefined>>
 export async function createMpv(configuration: CreateMpvOptions = {}): Promise<Mpv> {
   const op = 'createMpv'
-  if (!configuration || typeof configuration !== 'object' || Array.isArray(configuration)) {
-    throw new MpvBindingError('invalidArgument', op, false, { stage: 'input' })
-  }
+  const signal = callSignal(configuration, op)
   for (const key of Object.keys(configuration)) {
     if (!['input', 'options', 'signal', 'initializationLogs', 'videoOutput'].includes(key)) {
       throw new MpvBindingError('invalidArgument', op, false, { stage: 'input' })
     }
   }
-  const signal = configuration.signal
   function checkAbort(stage: 'input' | 'library') {
     if (signal?.aborted) {
       throw new MpvAbortError(op, false, signal.reason, { stage })
@@ -106,12 +121,23 @@ export async function createMpv(configuration: CreateMpvOptions = {}): Promise<M
     if (!Array.isArray(entries)) {
       throw new MpvBindingError('invalidArgument', op)
     }
-    options = Array.from(entries, (pair) => {
+    const charge = localInputBudget(op)
+    const count = entries.length
+    charge(32 * count)
+    options = []
+    for (let i = 0; i < count; i++) {
+      const pair: unknown = entries[i]
       if (!Array.isArray(pair) || pair.length !== 2) {
         throw new MpvBindingError('invalidArgument', op)
       }
-      return [nameBytes(pair[0], op), inputNode(pair[1], input, op)] as const
-    })
+      const name: unknown = pair[0]
+      const key = nameBytes(name, op, charge)
+      const node = inputNode(pair[1], input, op, charge)
+      if (input === 'javascript') {
+        validateWrite(typeof name === 'string' ? name : key, node, op)
+      }
+      options.push([key, node])
+    }
   } catch (error) {
     throw new MpvBindingError(
       error instanceof MpvBindingError ? error.code : 'invalidArgument',

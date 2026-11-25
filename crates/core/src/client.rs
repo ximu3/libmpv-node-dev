@@ -13,7 +13,7 @@ mod values;
 pub use values::Value;
 
 use crate::Runtime;
-use crate::ffi::{self, Api, Event};
+use crate::ffi::{self, Api};
 use futures_channel::oneshot;
 use std::collections::HashMap;
 use std::ffi::{CStr, CString, c_void};
@@ -22,8 +22,8 @@ use std::sync::{Arc, Mutex, MutexGuard, mpsc};
 use std::thread;
 use values::{CopyBudget, NodeInput};
 
-const MAX_REQUESTS: usize = 128;
-const MAX_BYTES: usize = 128 * 1024 * 1024;
+mod requests;
+pub use requests::{Delivery, Operation, Response};
 
 #[derive(Clone, Copy, Debug)]
 pub enum Failure {
@@ -44,28 +44,6 @@ pub struct Error {
     pub submitted: bool,
 }
 
-pub type Response = Result<Delivery, Error>;
-
-pub struct Delivery {
-    value: Option<Value>,
-    shared: Arc<Shared>,
-    bytes: usize,
-}
-
-impl Delivery {
-    pub fn into_js<T>(mut self, convert: impl FnOnce(Value) -> T) -> T {
-        convert(self.value.take().unwrap())
-    }
-}
-
-impl Drop for Delivery {
-    fn drop(&mut self) {
-        let mut state = self.shared.lock();
-        state.bytes -= self.bytes;
-        state.deliveries -= 1;
-    }
-}
-
 pub struct Shutdown(std::sync::Weak<Shared>);
 
 impl Shutdown {
@@ -79,23 +57,6 @@ impl Shutdown {
     }
 }
 
-pub enum Operation {
-    Get(CString, i32),
-    Set(CString, Value),
-    Command(Value),
-    Config(CString),
-}
-
-impl Operation {
-    fn size(&self) -> usize {
-        match self {
-            Self::Get(name, _) | Self::Config(name) => name.as_bytes_with_nul().len(),
-            Self::Set(name, value) => name.as_bytes_with_nul().len().saturating_add(value.size()),
-            Self::Command(value) => value.size(),
-        }
-    }
-}
-
 struct NativeHandle(NonNull<c_void>);
 // mpv permits concurrent clock and wakeup calls. State removes the handle before the owner destroys it.
 unsafe impl Send for NativeHandle {}
@@ -104,23 +65,13 @@ struct State {
     handle: Option<NativeHandle>,
     closing: bool,
     destroyed: bool,
-    deliveries: usize,
     children: Vec<Shutdown>,
     protocols: Vec<Arc<streams::Protocol>>,
     watches: HashMap<u64, Arc<events::Queue>>,
     next_watch: u64,
     hook: Option<Arc<hooks::HookQueue>>,
-    requests: HashMap<u32, Request>,
-    bytes: usize,
+    requests: requests::Requests,
     finished: Vec<oneshot::Sender<()>>,
-}
-
-struct Request {
-    submitted: bool,
-    cancel: bool,
-    command: bool,
-    bytes: usize,
-    sender: Option<oneshot::Sender<Response>>,
 }
 
 struct Shared {
@@ -132,37 +83,6 @@ struct Shared {
 impl Shared {
     fn lock(&self) -> MutexGuard<'_, State> {
         self.state.lock().unwrap_or_else(|error| error.into_inner())
-    }
-
-    fn finish(self: &Arc<Self>, id: u32, outcome: Result<Value, Failure>) {
-        let mut state = self.lock();
-        let Some(request) = state.requests.remove(&id) else {
-            return;
-        };
-        state.bytes -= request.bytes;
-        let Some(sender) = request.sender else {
-            return;
-        };
-        let reply = outcome
-            .and_then(|value| {
-                let bytes = value.size();
-                if bytes > MAX_BYTES - state.bytes {
-                    return Err(Failure::Limit);
-                }
-                state.bytes += bytes;
-                state.deliveries += 1;
-                Ok(Delivery {
-                    value: Some(value),
-                    bytes,
-                    shared: self.clone(),
-                })
-            })
-            .map_err(|reason| Error {
-                reason,
-                submitted: request.submitted,
-            });
-        drop(state);
-        let _ = sender.send(reply);
     }
 
     fn wake(&self, state: &State) {
@@ -393,14 +313,12 @@ impl Client {
                 handle: Some(NativeHandle(native.handle.0)),
                 closing: false,
                 destroyed: false,
-                deliveries: 0,
                 children: Vec::new(),
                 protocols: Vec::new(),
                 watches: HashMap::new(),
                 next_watch: 1,
                 hook: None,
-                requests: HashMap::new(),
-                bytes: 0,
+                requests: requests::Requests::default(),
                 finished: Vec::new(),
             }),
         });
@@ -431,66 +349,6 @@ impl Client {
             .ok_or(Failure::Closed)?;
         // The state lock keeps the handle live; client.h permits this clock read from any thread.
         Ok(unsafe { (self.shared.api.get_time_ns)(handle.0.as_ptr()) })
-    }
-
-    pub fn request(
-        &self,
-        id: u32,
-        operation: Operation,
-    ) -> Result<oneshot::Receiver<Response>, Failure> {
-        let mut state = self.shared.lock();
-        if state.closing {
-            return Err(Failure::Closed);
-        }
-        if let Some(output) = &self.shared.output
-            && crate::video::options::conflict(&operation, output.configuration().color())
-        {
-            return Err(Failure::RenderConflict);
-        }
-        let bytes = operation.size();
-        if state.requests.len() + state.deliveries >= MAX_REQUESTS
-            || state.requests.contains_key(&id)
-            || state.bytes.saturating_add(bytes) > MAX_BYTES
-        {
-            return Err(Failure::Limit);
-        }
-        let (sender, receiver) = oneshot::channel();
-        state.requests.insert(
-            id,
-            Request {
-                submitted: false,
-                cancel: false,
-                command: matches!(operation, Operation::Command(_)),
-                bytes,
-                sender: Some(sender),
-            },
-        );
-        state.bytes += bytes;
-        self.work
-            .send((id, operation))
-            .expect("live event thread owns the receiver");
-        self.shared.wake(&state);
-        Ok(receiver)
-    }
-
-    pub fn abort(&self, id: u32) {
-        let mut state = self.shared.lock();
-        if let Some(request) = state.requests.get_mut(&id) {
-            request.cancel = true;
-            if let Some(sender) = request.sender.take() {
-                let _ = sender.send(Err(Error {
-                    reason: Failure::Aborted,
-                    submitted: request.submitted,
-                }));
-            }
-            if request.submitted
-                && request.command
-                && let Some(handle) = &state.handle
-            {
-                // The id is still reserved for this command and the state lock keeps the handle alive.
-                unsafe { (self.shared.api.abort_async_command)(handle.0.as_ptr(), u64::from(id)) };
-            }
-        }
     }
 
     pub fn shutdown(&self) -> Shutdown {
@@ -531,41 +389,6 @@ impl Drop for OwnedClient {
 }
 
 impl OwnedClient {
-    fn submit(&self, id: u32, operation: Operation) -> (i32, bool) {
-        let handle = self.handle.0.as_ptr();
-        let id = u64::from(id);
-        // libmpv copies names and node inputs before these asynchronous submission functions return.
-        unsafe {
-            match operation {
-                Operation::Get(name, format) => (
-                    (self.api.get_property_async)(handle, id, name.as_ptr(), format),
-                    true,
-                ),
-                Operation::Set(name, value) => (
-                    NodeInput::with(&value, |node| {
-                        (self.api.set_property_async)(
-                            handle,
-                            id,
-                            name.as_ptr(),
-                            6,
-                            std::ptr::from_mut(node).cast(),
-                        )
-                    }),
-                    true,
-                ),
-                Operation::Command(value) => (
-                    NodeInput::with(&value, |node| {
-                        (self.api.command_node_async)(handle, id, node)
-                    }),
-                    true,
-                ),
-                Operation::Config(path) => {
-                    ((self.api.load_config_file)(handle, path.as_ptr()), false)
-                }
-            }
-        }
-    }
-
     fn run(
         self,
         shared: Arc<Shared>,
@@ -582,26 +405,18 @@ impl OwnedClient {
                     if state.closing {
                         break;
                     }
-                    let Some(request) = state.requests.get_mut(&id) else {
+                    let Some(submitted) = state.requests.mark_submitted(id) else {
                         continue;
                     };
-                    if request.cancel {
+                    if !submitted {
                         drop(state);
                         shared.finish(id, Err(Failure::Aborted));
                         continue;
                     }
-                    request.submitted = true;
                 }
                 let command = matches!(operation, Operation::Command(_));
                 let (status, asynchronous) = self.submit(id, operation);
-                if status >= 0
-                    && command
-                    && shared
-                        .lock()
-                        .requests
-                        .get(&id)
-                        .is_some_and(|request| request.cancel)
-                {
+                if status >= 0 && command && shared.lock().requests.cancelled(id) {
                     // A cancellation racing entry into libmpv may have preceded the creation of its native request.
                     unsafe {
                         (self.api.abort_async_command)(self.handle.0.as_ptr(), u64::from(id))
@@ -618,7 +433,7 @@ impl OwnedClient {
                 if state.closing {
                     break;
                 }
-                if state.requests.values().any(|request| !request.submitted) {
+                if state.requests.needs_submission() {
                     0.0
                 } else {
                     -1.0
@@ -639,14 +454,7 @@ impl OwnedClient {
                 protocol.stop();
             }
             state.handle = None;
-            for (_, request) in state.requests.drain() {
-                if let Some(sender) = request.sender {
-                    let _ = sender.send(Err(Error {
-                        reason: Failure::Closed,
-                        submitted: request.submitted,
-                    }));
-                }
-            }
+            state.requests.close();
             (
                 std::mem::take(&mut state.children),
                 state.hook.take(),
@@ -674,49 +482,5 @@ impl OwnedClient {
         for sender in state.finished.drain(..) {
             let _ = sender.send(());
         }
-    }
-
-    fn deliver(&self, shared: &Arc<Shared>, event: &Event) {
-        if event.id == 4
-            && event.userdata == crate::video::render::COLOR_REPLY
-            && let Some(output) = &shared.output
-        {
-            output.color_reply(event.error);
-            return;
-        }
-        if !(3..=5).contains(&event.id) {
-            shared.publish(event);
-            return;
-        }
-        let id = event.userdata as u32;
-        let budget = {
-            let state = shared.lock();
-            let Some(request) = state.requests.get(&id) else {
-                return;
-            };
-            if request.sender.is_none() {
-                drop(state);
-                shared.finish(id, Err(Failure::Aborted));
-                return;
-            }
-            MAX_BYTES - state.bytes + request.bytes
-        };
-        let outcome = if event.error < 0 {
-            Err(Failure::Native(event.error))
-        } else {
-            let mut budget = CopyBudget::new(budget);
-            // The event id selects its payload; a successful set reply has no payload.
-            unsafe {
-                match event.id {
-                    3 => {
-                        let property = &*event.data.cast::<ffi::Property>();
-                        budget.property(property.format, property.data)
-                    }
-                    5 => budget.node(&*event.data.cast::<ffi::Node>(), 0),
-                    _ => Ok(Value::None),
-                }
-            }
-        };
-        shared.finish(id, outcome);
     }
 }

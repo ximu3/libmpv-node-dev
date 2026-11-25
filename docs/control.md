@@ -18,11 +18,13 @@ await using player = await createMpv({
 await player.command(['loadfile', '/media/example.mkv', 'replace'])
 ```
 
-A command completes when libmpv replies to that command. The reply to `loadfile` can arrive before the file has loaded. The client identity and monotonic nanosecond clock are available through `clientId`, `clientName`, and `getTimeNs()`.
+A command completes when libmpv replies to that command. The reply to `loadfile` can arrive before the file has loaded. A single `screenshot` returns the saved filename in `result.filename`. Turning off per-frame screenshots returns `null`. The client identity and monotonic nanosecond clock are available through `clientId`, `clientName`, and `getTimeNs()`.
 
 Use `getProperty` and `setProperty` for structured values. A native integer maps to `bigint`. A native double maps to `number`. A value in a returned byte array remains usable after close. `getPropertyText` selects mpv's plain or OSD text format. `loadConfigFile` takes an absolute path. A configuration error can occur after earlier settings have taken effect.
 
 `input: 'native'` accepts a discriminated `MpvNode`. `output: 'native'` preserves string bytes and ordered map entries. A conversion error exposes a fresh copy of its original result through `getNativeValue()`. An unavailable property retains libmpv's error code.
+
+Ordinary initialization options and property writes use the declared value shapes. For example, `mute` accepts a boolean and `scale-param1` accepts a number or `'default'`. Unset A–B loop endpoints read back as `'no'`.
 
 Calls accept an optional `AbortSignal`. A submitted command may have taken effect when its wait ends in cancellation. Errors expose `operation`, `submitted`, and a native or binding error code. Repeated calls to `close()` await the same shutdown. `unref()` lets an idle Node environment exit while the player is open.
 

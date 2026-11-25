@@ -1,3 +1,4 @@
+import { callSignal } from '../client/options.js'
 import { addAbortListener } from 'node:events'
 import { library } from '../library.js'
 import { MpvAbortError, MpvBindingError } from '../errors.js'
@@ -16,7 +17,7 @@ export async function getVideoDevices(
   options: { readonly signal?: AbortSignal } = {},
 ): Promise<readonly VideoDeviceInfo[]> {
   const operation = 'getVideoDevices'
-  const signal = options.signal
+  const signal = callSignal(options, operation)
   if (signal?.aborted) {
     throw new MpvAbortError(operation, false, signal.reason)
   }

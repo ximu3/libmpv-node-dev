@@ -1,11 +1,5 @@
 import type { At, FlagInput, IntegerArgument, RealArgument } from './types.js'
-import type { MpvValue } from '../values.js'
-type ObjectSetting = {
-  readonly name: string
-  readonly label?: string
-  readonly enabled?: boolean
-  readonly params?: Readonly<Record<string, string>>
-}
+import type { ShapeValue } from './shape.js'
 export interface CommandDefinitions<A> {
   'ab-loop': {
     args: readonly []
@@ -867,1928 +861,2018 @@ export interface CommandDefinitions<A> {
       | { readonly _name: 'write-watch-later-config' }
   }
 }
-export interface OptionDefinitions {
-  V: { read: MpvValue; write: string }
-  'ab-loop-a': { read: number; write: number | bigint | string }
-  'ab-loop-b': { read: number; write: number | bigint | string }
-  'ab-loop-count': { read: 'inf' | bigint; write: 'inf' | IntegerArgument }
-  'access-references': { read: boolean; write: boolean }
-  ad: { read: string; write: string }
-  'ad-lavc-ac3drc': { read: number; write: number }
-  'ad-lavc-downmix': { read: boolean; write: boolean }
-  'ad-lavc-o': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'ad-lavc-threads': { read: bigint; write: IntegerArgument }
-  'ad-queue-enable': { read: boolean; write: boolean }
-  'ad-queue-max-bytes': { read: bigint; write: bigint | string }
-  'ad-queue-max-samples': { read: bigint; write: IntegerArgument }
-  'ad-queue-max-secs': { read: number; write: number }
-  af: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  aid: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  alang: { read: readonly string[]; write: string | readonly string[] }
-  'allow-delayed-peak-detect': { read: boolean; write: boolean }
-  'alsa-buffer-time': { read: bigint; write: IntegerArgument }
-  'alsa-ignore-chmap': { read: boolean; write: boolean }
-  'alsa-mixer-device': { read: string; write: string }
-  'alsa-mixer-index': { read: bigint; write: IntegerArgument }
-  'alsa-mixer-name': { read: string; write: string }
-  'alsa-non-interleaved': { read: boolean; write: boolean }
-  'alsa-periods': { read: bigint; write: IntegerArgument }
-  'alsa-resample': { read: boolean; write: boolean }
-  ao: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  'ao-null-broken-delay': { read: boolean; write: boolean }
-  'ao-null-broken-eof': { read: boolean; write: boolean }
-  'ao-null-buffer': { read: number; write: number }
-  'ao-null-channel-layouts': { read: string; write: string }
-  'ao-null-format': { read: string; write: string }
-  'ao-null-latency': { read: number; write: number }
-  'ao-null-outburst': { read: bigint; write: IntegerArgument }
-  'ao-null-speed': { read: number; write: number }
-  'ao-null-untimed': { read: boolean; write: boolean }
-  'ao-pcm-append': { read: boolean; write: boolean }
-  'ao-pcm-file': { read: string; write: string }
-  'ao-pcm-waveheader': { read: boolean; write: boolean }
-  'archive-exts': { read: readonly string[]; write: string | readonly string[] }
-  audio: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  'audio-backward-batch': { read: bigint; write: IntegerArgument }
-  'audio-backward-overlap': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
-  'audio-buffer': { read: number; write: number }
-  'audio-channels': { read: string; write: string }
-  'audio-client-name': { read: string; write: string }
-  'audio-delay': { read: number; write: number }
-  'audio-demuxer': { read: string; write: string }
-  'audio-device': { read: string; write: string }
-  'audio-display': {
-    read: 'embedded-first' | 'external-first' | false
-    write: 'no' | 'embedded-first' | 'external-first' | false
-  }
-  'audio-exclusive': { read: boolean; write: boolean }
-  'audio-exts': { read: readonly string[]; write: string | readonly string[] }
-  'audio-fallback-to-null': { read: boolean; write: boolean }
-  'audio-file': { read: MpvValue; write: MpvValue }
-  'audio-file-auto': {
-    read: 'exact' | 'fuzzy' | 'all' | false
-    write: 'no' | 'exact' | 'fuzzy' | 'all' | false
-  }
-  'audio-file-auto-exts': { read: readonly string[]; write: string | readonly string[] }
-  'audio-file-paths': { read: readonly string[]; write: string | readonly string[] }
-  'audio-files': { read: readonly string[]; write: string | readonly string[] }
-  'audio-format': { read: string; write: string }
-  'audio-normalize-downmix': { read: boolean; write: boolean }
-  'audio-pitch-correction': { read: boolean; write: boolean }
-  'audio-resample-cutoff': { read: number; write: number }
-  'audio-resample-filter-size': { read: bigint; write: IntegerArgument }
-  'audio-resample-linear': { read: boolean; write: boolean }
-  'audio-resample-max-output-size': { read: number; write: number }
-  'audio-resample-phase-shift': { read: bigint; write: IntegerArgument }
-  'audio-reversal-buffer': { read: bigint; write: bigint | string }
-  'audio-samplerate': { read: bigint; write: IntegerArgument }
-  'audio-set-media-role': { read: boolean; write: boolean }
-  'audio-spdif': { read: string; write: string }
-  'audio-stream-silence': { read: boolean; write: boolean }
-  'audio-swresample-o': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'audio-wait-open': { read: number; write: number }
-  'auto-window-resize': { read: boolean; write: boolean }
-  'autocreate-playlist': {
-    read: 'filter' | 'same' | false
-    write: 'no' | 'filter' | 'same' | false
-  }
-  autofit: { read: string; write: string }
-  'autofit-larger': { read: string; write: string }
-  'autofit-smaller': { read: string; write: string }
-  'autoload-files': { read: boolean; write: boolean }
-  autosync: { read: false | bigint; write: 'no' | false | IntegerArgument }
-  'backdrop-type': {
-    read: 'auto' | 'none' | 'mica' | 'acrylic' | 'mica-alt'
-    write: 'auto' | 'none' | 'mica' | 'acrylic' | 'mica-alt'
-  }
-  background: { read: 'none' | 'color' | 'tiles'; write: 'none' | 'color' | 'tiles' }
-  'background-blur-radius': { read: number; write: number }
-  'background-color': { read: string; write: string }
-  'background-tile-color-0': { read: string; write: string }
-  'background-tile-color-1': { read: string; write: string }
-  'background-tile-size': { read: bigint; write: IntegerArgument }
-  'blend-subtitles': { read: 'video' | true | false; write: 'no' | 'yes' | 'video' | true | false }
-  border: { read: boolean; write: boolean }
-  'border-background': {
-    read: 'none' | 'color' | 'tiles' | 'blur'
-    write: 'none' | 'color' | 'tiles' | 'blur'
-  }
-  brightness: { read: number; write: number }
-  cache: { read: 'auto' | true | false; write: 'no' | 'auto' | 'yes' | true | false }
-  'cache-on-disk': { read: boolean; write: boolean }
-  'cache-pause': { read: boolean; write: boolean }
-  'cache-pause-initial': { read: boolean; write: boolean }
-  'cache-pause-wait': { read: number; write: number }
-  'cache-secs': { read: number; write: number }
-  'chapter-merge-threshold': { read: bigint; write: IntegerArgument }
-  'chapter-seek-threshold': { read: number; write: number }
-  'chapters-file': { read: string; write: string }
-  'clipboard-backends': { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  'clipboard-monitor': { read: boolean; write: boolean }
-  'clipboard-xwayland': { read: boolean; write: boolean }
-  'cocoa-cb-10bit-context': { read: boolean; write: boolean }
-  'cocoa-cb-output-csp': {
-    read:
-      | 'auto'
-      | 'display-p3'
-      | 'display-p3-hlg'
-      | 'display-p3-pq'
-      | 'display-p3-linear'
-      | 'dci-p3'
-      | 'bt.2020'
-      | 'bt.2020-linear'
-      | 'bt.2100-hlg'
-      | 'bt.2100-pq'
-      | 'bt.709'
-      | 'srgb'
-      | 'srgb-linear'
-      | 'rgb-linear'
-      | 'adobe'
-    write:
-      | 'auto'
-      | 'display-p3'
-      | 'display-p3-hlg'
-      | 'display-p3-pq'
-      | 'display-p3-linear'
-      | 'dci-p3'
-      | 'bt.2020'
-      | 'bt.2020-linear'
-      | 'bt.2100-hlg'
-      | 'bt.2100-pq'
-      | 'bt.709'
-      | 'srgb'
-      | 'srgb-linear'
-      | 'rgb-linear'
-      | 'adobe'
-  }
-  'cocoa-cb-sw-renderer': {
-    read: 'auto' | true | false
-    write: 'auto' | 'no' | 'yes' | true | false
-  }
-  config: { read: boolean; write: boolean }
-  'config-dir': { read: string; write: string }
-  'container-fps-override': { read: number; write: number }
-  contrast: { read: number; write: number }
-  cookies: { read: boolean; write: boolean }
-  'cookies-file': { read: string; write: string }
-  'coreaudio-change-physical-format': { read: boolean; write: boolean }
-  'coreaudio-spdif-hack': { read: boolean; write: boolean }
-  'corner-rounding': { read: number; write: number }
-  'correct-downscaling': { read: boolean; write: boolean }
-  'correct-pts': { read: boolean; write: boolean }
-  'cover-art-auto': {
-    read: 'exact' | 'fuzzy' | 'all' | false
-    write: 'no' | 'exact' | 'fuzzy' | 'all' | false
-  }
-  'cover-art-auto-exts': { read: readonly string[]; write: string | readonly string[] }
-  'cover-art-file': { read: MpvValue; write: MpvValue }
-  'cover-art-files': { read: readonly string[]; write: string | readonly string[] }
-  'cover-art-whitelist': { read: readonly string[]; write: string | readonly string[] }
-  cscale: {
-    read:
-      | ''
-      | 'bilinear'
-      | 'bicubic_fast'
-      | 'oversample'
-      | 'spline16'
-      | 'spline36'
-      | 'spline64'
-      | 'sinc'
-      | 'lanczos'
-      | 'ginseng'
-      | 'bicubic'
-      | 'hermite'
-      | 'catmull_rom'
-      | 'mitchell'
-      | 'robidoux'
-      | 'robidouxsharp'
-      | 'box'
-      | 'nearest'
-      | 'triangle'
-      | 'gaussian'
-      | 'jinc'
-      | 'ewa_lanczos'
-      | 'ewa_hanning'
-      | 'ewa_ginseng'
-      | 'ewa_lanczossharp'
-      | 'ewa_lanczos4sharpest'
-      | 'ewa_lanczossoft'
-      | 'haasnsoft'
-      | 'ewa_robidoux'
-      | 'ewa_robidouxsharp'
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-    write:
-      | ''
-      | 'bilinear'
-      | 'bicubic_fast'
-      | 'oversample'
-      | 'spline16'
-      | 'spline36'
-      | 'spline64'
-      | 'sinc'
-      | 'lanczos'
-      | 'ginseng'
-      | 'bicubic'
-      | 'hermite'
-      | 'catmull_rom'
-      | 'mitchell'
-      | 'robidoux'
-      | 'robidouxsharp'
-      | 'box'
-      | 'nearest'
-      | 'triangle'
-      | 'gaussian'
-      | 'jinc'
-      | 'ewa_lanczos'
-      | 'ewa_hanning'
-      | 'ewa_ginseng'
-      | 'ewa_lanczossharp'
-      | 'ewa_lanczos4sharpest'
-      | 'ewa_lanczossoft'
-      | 'haasnsoft'
-      | 'ewa_robidoux'
-      | 'ewa_robidouxsharp'
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-  }
-  'cscale-antiring': { read: number; write: number }
-  'cscale-blur': { read: number; write: number }
-  'cscale-clamp': { read: number; write: number }
-  'cscale-param1': { read: number; write: number }
-  'cscale-param2': { read: number; write: number }
-  'cscale-radius': { read: number; write: number }
-  'cscale-taper': { read: number; write: number }
-  'cscale-window': {
-    read:
-      | ''
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
-    write:
-      | ''
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
-  }
-  'cscale-wparam': { read: number; write: number }
-  'cscale-wtaper': { read: number; write: number }
-  'cursor-autohide': {
-    read: 'always' | false | bigint
-    write: 'no' | 'always' | false | IntegerArgument
-  }
-  'cursor-autohide-fs-only': { read: boolean; write: boolean }
-  'd3d11-adapter': { read: string; write: string }
-  'd3d11-composition-size': { read: string; write: string }
-  'd3d11-exclusive-fs': { read: boolean; write: boolean }
-  'd3d11-feature-level': {
-    read: '12_1' | '12_0' | '11_1' | '11_0' | '10_1' | '10_0' | '9_3' | '9_2' | '9_1'
-    write: '12_1' | '12_0' | '11_1' | '11_0' | '10_1' | '10_0' | '9_3' | '9_2' | '9_1'
-  }
-  'd3d11-flip': { read: boolean; write: boolean }
-  'd3d11-output-csp': {
-    read: 'auto' | 'srgb' | 'linear' | 'pq' | 'bt.2020'
-    write: 'auto' | 'srgb' | 'linear' | 'pq' | 'bt.2020'
-  }
-  'd3d11-output-format': {
-    read: 'auto' | 'rgba8' | 'bgra8' | 'rgb10_a2' | 'rgba16f'
-    write: 'auto' | 'rgba8' | 'bgra8' | 'rgb10_a2' | 'rgba16f'
-  }
-  'd3d11-output-mode': {
-    read: 'auto' | 'window' | 'composition'
-    write: 'auto' | 'window' | 'composition'
-  }
-  'd3d11-sync-interval': { read: bigint; write: IntegerArgument }
-  'd3d11-warp': { read: 'auto' | true | false; write: 'auto' | 'no' | 'yes' | true | false }
-  'd3d11va-zero-copy': { read: boolean; write: boolean }
-  deband: { read: boolean; write: boolean }
-  'deband-grain': { read: number; write: number }
-  'deband-iterations': { read: bigint; write: IntegerArgument }
-  'deband-range': { read: number; write: number }
-  'deband-threshold': { read: number; write: number }
-  deinterlace: { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
-  'deinterlace-field-parity': { read: 'tff' | 'bff' | 'auto'; write: 'tff' | 'bff' | 'auto' }
-  demuxer: { read: string; write: string }
-  'demuxer-backward-playback-step': { read: number; write: number }
-  'demuxer-cache-dir': { read: string; write: string }
-  'demuxer-cache-unlink-files': {
-    read: 'immediate' | 'whendone' | false
-    write: 'immediate' | 'whendone' | 'no' | false
-  }
-  'demuxer-cache-wait': { read: boolean; write: boolean }
-  'demuxer-donate-buffer': { read: boolean; write: boolean }
-  'demuxer-hysteresis-bytes': { read: bigint; write: bigint | string }
-  'demuxer-hysteresis-secs': { read: number; write: number }
-  'demuxer-lavf-allow-mimetype': { read: boolean; write: boolean }
-  'demuxer-lavf-analyzeduration': { read: number; write: number }
-  'demuxer-lavf-buffersize': { read: bigint; write: bigint | string }
-  'demuxer-lavf-format': { read: string; write: string }
-  'demuxer-lavf-hacks': { read: boolean; write: boolean }
-  'demuxer-lavf-linearize-timestamps': {
-    read: 'auto' | true | false
-    write: 'no' | 'auto' | 'yes' | true | false
-  }
-  'demuxer-lavf-o': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'demuxer-lavf-probe-info': {
-    read: 'auto' | 'nostreams' | true | false
-    write: 'no' | 'yes' | 'auto' | 'nostreams' | true | false
-  }
-  'demuxer-lavf-probescore': { read: bigint; write: IntegerArgument }
-  'demuxer-lavf-probesize': { read: bigint; write: bigint | string }
-  'demuxer-lavf-propagate-opts': { read: boolean; write: boolean }
-  'demuxer-max-back-bytes': { read: bigint; write: bigint | string }
-  'demuxer-max-bytes': { read: bigint; write: bigint | string }
-  'demuxer-mkv-crop-compat': { read: boolean; write: boolean }
-  'demuxer-mkv-probe-start-time': { read: boolean; write: boolean }
-  'demuxer-mkv-probe-video-duration': {
-    read: 'full' | true | false
-    write: 'no' | 'yes' | 'full' | true | false
-  }
-  'demuxer-mkv-subtitle-preroll': {
-    read: 'index' | true | false
-    write: 'no' | 'yes' | 'index' | true | false
-  }
-  'demuxer-mkv-subtitle-preroll-secs': { read: number; write: number }
-  'demuxer-mkv-subtitle-preroll-secs-index': { read: number; write: number }
-  'demuxer-rawaudio-channels': { read: string; write: string }
-  'demuxer-rawaudio-format': {
-    read:
-      | 'u8'
-      | 's8'
-      | 'u16le'
-      | 'u16be'
-      | 's16le'
-      | 's16be'
-      | 'u24le'
-      | 'u24be'
-      | 's24le'
-      | 's24be'
-      | 'u32le'
-      | 'u32be'
-      | 's32le'
-      | 's32be'
-      | 'floatle'
-      | 'floatbe'
-      | 'doublele'
-      | 'doublebe'
-      | 'u16'
-      | 's16'
-      | 'u24'
-      | 's24'
-      | 'u32'
-      | 's32'
-      | 'float'
-      | 'double'
-    write:
-      | 'u8'
-      | 's8'
-      | 'u16le'
-      | 'u16be'
-      | 's16le'
-      | 's16be'
-      | 'u24le'
-      | 'u24be'
-      | 's24le'
-      | 's24be'
-      | 'u32le'
-      | 'u32be'
-      | 's32le'
-      | 's32be'
-      | 'floatle'
-      | 'floatbe'
-      | 'doublele'
-      | 'doublebe'
-      | 'u16'
-      | 's16'
-      | 'u24'
-      | 's24'
-      | 'u32'
-      | 's32'
-      | 'float'
-      | 'double'
-  }
-  'demuxer-rawaudio-rate': { read: bigint; write: IntegerArgument }
-  'demuxer-rawvideo-codec': { read: string; write: string }
-  'demuxer-rawvideo-format': { read: string; write: string }
-  'demuxer-rawvideo-fps': { read: number; write: number }
-  'demuxer-rawvideo-h': { read: bigint; write: IntegerArgument }
-  'demuxer-rawvideo-mp-format': { read: string; write: string }
-  'demuxer-rawvideo-size': { read: bigint; write: IntegerArgument }
-  'demuxer-rawvideo-w': { read: bigint; write: IntegerArgument }
-  'demuxer-readahead-secs': { read: number; write: number }
-  'demuxer-seekable-cache': {
-    read: 'auto' | true | false
-    write: 'auto' | 'no' | 'yes' | true | false
-  }
-  'demuxer-termination-timeout': { read: number; write: number }
-  'demuxer-thread': { read: boolean; write: boolean }
-  'directory-filter-types': { read: readonly string[]; write: string | readonly string[] }
-  'directory-mode': {
-    read: 'auto' | 'lazy' | 'recursive' | 'ignore'
-    write: 'auto' | 'lazy' | 'recursive' | 'ignore'
-  }
-  'disc-menu': { read: boolean; write: boolean }
-  'display-fps-override': { read: number; write: number }
-  'display-tags': { read: readonly string[]; write: string | readonly string[] }
-  dither: {
-    read: 'fruit' | 'ordered' | 'error-diffusion' | false
-    write: 'fruit' | 'ordered' | 'error-diffusion' | 'no' | false
-  }
-  'dither-depth': { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  'dither-size-fruit': { read: bigint; write: IntegerArgument }
-  'drag-and-drop': {
-    read: 'auto' | 'replace' | 'append' | 'insert-next' | false
-    write: 'no' | 'auto' | 'replace' | 'append' | 'insert-next' | false
-  }
-  'drm-connector': { read: string; write: string }
-  'drm-device': { read: string; write: string }
-  'drm-draw-plane': {
-    read: 'primary' | 'overlay' | bigint
-    write: 'primary' | 'overlay' | IntegerArgument
-  }
-  'drm-draw-surface-size': { read: string; write: string }
-  'drm-drmprime-video-plane': {
-    read: 'primary' | 'overlay' | bigint
-    write: 'primary' | 'overlay' | IntegerArgument
-  }
-  'drm-format': {
-    read: 'xrgb8888' | 'xrgb2101010' | 'xbgr8888' | 'xbgr2101010' | 'rgb565' | 'yuyv'
-    write: 'xrgb8888' | 'xrgb2101010' | 'xbgr8888' | 'xbgr2101010' | 'rgb565' | 'yuyv'
-  }
-  'drm-mode': { read: string; write: string }
-  'drm-vrr-enabled': { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
-  dscale: {
-    read:
-      | ''
-      | 'bilinear'
-      | 'bicubic_fast'
-      | 'oversample'
-      | 'spline16'
-      | 'spline36'
-      | 'spline64'
-      | 'sinc'
-      | 'lanczos'
-      | 'ginseng'
-      | 'bicubic'
-      | 'hermite'
-      | 'catmull_rom'
-      | 'mitchell'
-      | 'robidoux'
-      | 'robidouxsharp'
-      | 'box'
-      | 'nearest'
-      | 'triangle'
-      | 'gaussian'
-      | 'jinc'
-      | 'ewa_lanczos'
-      | 'ewa_hanning'
-      | 'ewa_ginseng'
-      | 'ewa_lanczossharp'
-      | 'ewa_lanczos4sharpest'
-      | 'ewa_lanczossoft'
-      | 'haasnsoft'
-      | 'ewa_robidoux'
-      | 'ewa_robidouxsharp'
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-    write:
-      | ''
-      | 'bilinear'
-      | 'bicubic_fast'
-      | 'oversample'
-      | 'spline16'
-      | 'spline36'
-      | 'spline64'
-      | 'sinc'
-      | 'lanczos'
-      | 'ginseng'
-      | 'bicubic'
-      | 'hermite'
-      | 'catmull_rom'
-      | 'mitchell'
-      | 'robidoux'
-      | 'robidouxsharp'
-      | 'box'
-      | 'nearest'
-      | 'triangle'
-      | 'gaussian'
-      | 'jinc'
-      | 'ewa_lanczos'
-      | 'ewa_hanning'
-      | 'ewa_ginseng'
-      | 'ewa_lanczossharp'
-      | 'ewa_lanczos4sharpest'
-      | 'ewa_lanczossoft'
-      | 'haasnsoft'
-      | 'ewa_robidoux'
-      | 'ewa_robidouxsharp'
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-  }
-  'dscale-antiring': { read: number; write: number }
-  'dscale-blur': { read: number; write: number }
-  'dscale-clamp': { read: number; write: number }
-  'dscale-param1': { read: number; write: number }
-  'dscale-param2': { read: number; write: number }
-  'dscale-radius': { read: number; write: number }
-  'dscale-taper': { read: number; write: number }
-  'dscale-window': {
-    read:
-      | ''
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
-    write:
-      | ''
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
-  }
-  'dscale-wparam': { read: number; write: number }
-  'dscale-wtaper': { read: number; write: number }
-  'dump-stats': { read: string; write: string }
-  edition: { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
-  'egl-config-id': { read: bigint; write: IntegerArgument }
-  'egl-output-format': {
-    read:
-      | 'auto'
-      | 'rgb8'
-      | 'rgba8'
-      | 'rgb10'
-      | 'rgb10_a2'
-      | 'rgb16'
-      | 'rgba16'
-      | 'rgb16f'
-      | 'rgba16f'
-      | 'rgb32f'
-      | 'rgba32f'
-    write:
-      | 'auto'
-      | 'rgb8'
-      | 'rgba8'
-      | 'rgb10'
-      | 'rgb10_a2'
-      | 'rgb16'
-      | 'rgba16'
-      | 'rgb16f'
-      | 'rgba16f'
-      | 'rgb32f'
-      | 'rgba32f'
-  }
-  embeddedfonts: { read: boolean; write: boolean }
-  end: { read: string; write: string }
-  'error-diffusion': { read: string; write: string }
-  'external-file': { read: MpvValue; write: MpvValue }
-  'external-files': { read: readonly string[]; write: string | readonly string[] }
-  'fbo-format': { read: string; write: string }
-  'flatten-editions': { read: boolean; write: boolean }
-  'focus-on': { read: 'never' | 'open' | 'all'; write: 'never' | 'open' | 'all' }
-  'focus-on-open': { read: MpvValue; write: MpvValue }
-  'force-media-title': { read: string; write: string }
-  'force-render': { read: boolean; write: boolean }
-  'force-rgba-osd-rendering': { read: boolean; write: boolean }
-  'force-seekable': { read: boolean; write: boolean }
-  'force-window': {
-    read: 'immediate' | true | false
-    write: 'no' | 'yes' | 'immediate' | true | false
-  }
-  'force-window-position': { read: boolean; write: boolean }
-  framedrop: {
-    read: 'vo' | 'decoder' | 'decoder+vo' | false
-    write: 'no' | 'vo' | 'decoder' | 'decoder+vo' | false
-  }
-  frames: { read: 'all' | bigint; write: 'all' | IntegerArgument }
-  fs: { read: boolean; write: boolean }
-  'fs-screen': { read: 'all' | 'current' | bigint; write: 'all' | 'current' | IntegerArgument }
-  'fs-screen-name': { read: string; write: string }
-  fullscreen: { read: boolean; write: boolean }
-  gamma: { read: number; write: number }
-  'gamma-auto': { read: boolean; write: boolean }
-  'gamma-factor': { read: number; write: number }
-  'gamut-clipping': { read: MpvValue; write: MpvValue }
-  'gamut-mapping-mode': {
-    read:
-      | 'auto'
-      | 'clip'
-      | 'perceptual'
-      | 'relative'
-      | 'saturation'
-      | 'absolute'
-      | 'desaturate'
-      | 'darken'
-      | 'warn'
-      | 'linear'
-    write:
-      | 'auto'
-      | 'clip'
-      | 'perceptual'
-      | 'relative'
-      | 'saturation'
-      | 'absolute'
-      | 'desaturate'
-      | 'darken'
-      | 'warn'
-      | 'linear'
-  }
-  'gamut-warning': { read: MpvValue; write: MpvValue }
-  'gapless-audio': { read: 'weak' | true | false; write: 'no' | 'yes' | 'weak' | true | false }
-  geometry: { read: string; write: string }
-  'glsl-shader': { read: MpvValue; write: MpvValue }
-  'glsl-shader-opts': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'glsl-shaders': { read: readonly string[]; write: string | readonly string[] }
-  'gpu-api': { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  'gpu-context': { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  'gpu-debug': { read: boolean; write: boolean }
-  'gpu-dumb-mode': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
-  'gpu-hwdec-interop': { read: string; write: string }
-  'gpu-shader-cache': { read: boolean; write: boolean }
-  'gpu-shader-cache-dir': { read: string; write: string }
-  'gpu-sw': { read: boolean; write: boolean }
-  'gpu-tex-pad-x': { read: bigint; write: IntegerArgument }
-  'gpu-tex-pad-y': { read: bigint; write: IntegerArgument }
-  h: { read: string; write: string }
-  'hdr-compute-peak': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
-  'hdr-contrast-recovery': { read: number; write: number }
-  'hdr-contrast-smoothness': { read: number; write: number }
-  'hdr-film-strength': { read: number; write: number }
-  'hdr-mastering-clip': { read: number; write: number }
-  'hdr-peak-decay-rate': { read: number; write: number }
-  'hdr-peak-percentile': { read: number; write: number }
-  'hdr-reference-white': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
-  'hdr-scene-threshold-high': { read: number; write: number }
-  'hdr-scene-threshold-low': { read: number; write: number }
-  help: { read: string; write: string }
-  'hidpi-window-scale': { read: boolean; write: boolean }
-  'hls-bitrate': {
-    read: 'min' | 'max' | false | bigint
-    write: 'no' | 'min' | 'max' | false | IntegerArgument
-  }
-  'hr-seek': {
-    read: 'absolute' | 'always' | 'default' | true | false
-    write: 'no' | 'absolute' | 'yes' | 'always' | 'default' | true | false
-  }
-  'hr-seek-demuxer-offset': { read: number; write: number }
-  'hr-seek-framedrop': { read: boolean; write: boolean }
-  'http-header-fields': { read: readonly string[]; write: string | readonly string[] }
-  'http-proxy': { read: string; write: string }
-  hue: { read: number; write: number }
-  hwdec: { read: readonly string[]; write: string | readonly string[] }
-  'hwdec-codecs': { read: string; write: string }
-  'hwdec-extra-frames': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
-  'hwdec-image-format': { read: string; write: string }
-  'hwdec-software-fallback': {
-    read: true | false | bigint
-    write: 'no' | 'yes' | true | false | IntegerArgument
-  }
-  'hwdec-threads': { read: bigint; write: IntegerArgument }
-  'icc-3dlut-size': { read: string; write: string }
-  'icc-cache': { read: boolean; write: boolean }
-  'icc-cache-dir': { read: string; write: string }
-  'icc-force-contrast': {
-    read: 'inf' | false | bigint
-    write: 'no' | 'inf' | false | IntegerArgument
-  }
-  'icc-intent': { read: bigint; write: IntegerArgument }
-  'icc-profile': { read: string; write: string }
-  'icc-profile-auto': { read: boolean; write: boolean }
-  'icc-use-luma': { read: boolean; write: boolean }
-  idle: { read: 'once' | true | false; write: 'no' | 'once' | 'yes' | true | false }
-  'ignore-path-in-watch-later-config': { read: boolean; write: boolean }
-  'image-display-duration': { read: number; write: number | 'inf' }
-  'image-exts': { read: readonly string[]; write: string | readonly string[] }
-  'image-lut': { read: string; write: string }
-  'image-lut-type': {
-    read: 'auto' | 'native' | 'normalized' | 'conversion'
-    write: 'auto' | 'native' | 'normalized' | 'conversion'
-  }
-  'image-subs-hdr-peak': {
-    read: 'sdr' | 'video' | 'video-static' | 'video-dynamic' | bigint
-    write: 'sdr' | 'video' | 'video-static' | 'video-dynamic' | IntegerArgument
-  }
-  'image-subs-video-resolution': { read: boolean; write: boolean }
-  include: { read: string; write: string }
-  index: { read: 'default' | 'recreate'; write: 'default' | 'recreate' }
-  'initial-audio-sync': { read: boolean; write: boolean }
-  'input-ar-delay': { read: bigint; write: IntegerArgument }
-  'input-ar-rate': { read: bigint; write: IntegerArgument }
-  'input-builtin-bindings': { read: boolean; write: boolean }
-  'input-builtin-drag-and-drop': { read: boolean; write: boolean }
-  'input-builtin-dragging': { read: boolean; write: boolean }
-  'input-cmdlist': { read: MpvValue; write: string }
-  'input-commands': { read: readonly string[]; write: string | readonly string[] }
-  'input-conf': { read: string; write: string }
-  'input-cursor': { read: boolean; write: boolean }
-  'input-cursor-passthrough': { read: boolean; write: boolean }
-  'input-default-bindings': { read: boolean; write: boolean }
-  'input-doubleclick-time': { read: bigint; write: IntegerArgument }
-  'input-dragging-deadzone': { read: bigint; write: IntegerArgument }
-  'input-ime': { read: boolean; write: boolean }
-  'input-ipc-client': { read: string; write: string }
-  'input-ipc-server': { read: string; write: string }
-  'input-key-fifo-size': { read: bigint; write: IntegerArgument }
-  'input-keylist': { read: MpvValue; write: string }
-  'input-media-keys': { read: boolean; write: boolean }
-  'input-preprocess-wheel': { read: boolean; write: boolean }
-  'input-right-alt-gr': { read: boolean; write: boolean }
-  'input-tablet-emulate-mouse': { read: boolean; write: boolean }
-  'input-terminal': { read: boolean; write: boolean }
-  'input-test': { read: boolean; write: boolean }
-  'input-touch-emulate-mouse': { read: boolean; write: boolean }
-  'input-vo-keyboard': { read: boolean; write: boolean }
-  interpolation: { read: boolean; write: boolean }
-  'interpolation-preserve': { read: boolean; write: boolean }
-  'interpolation-threshold': { read: number; write: number }
-  'inverse-tone-mapping': { read: boolean; write: boolean }
-  'js-memory-report': { read: boolean; write: boolean }
-  'keep-open': { read: 'always' | true | false; write: 'no' | 'yes' | 'always' | true | false }
-  'keep-open-pause': { read: boolean; write: boolean }
-  keepaspect: { read: boolean; write: boolean }
-  'keepaspect-window': { read: boolean; write: boolean }
-  'lavfi-complex': { read: string; write: string }
-  length: { read: string; write: string }
-  'libplacebo-opts': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'linear-downscaling': { read: boolean; write: boolean }
-  'linear-upscaling': { read: boolean; write: boolean }
-  'list-options': { read: boolean; write: boolean }
-  'list-properties': { read: boolean; write: boolean }
-  'list-protocols': { read: MpvValue; write: string }
-  'load-auto-profiles': { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
-  'load-commands': { read: boolean; write: boolean }
-  'load-console': { read: boolean; write: boolean }
-  'load-context-menu': { read: boolean; write: boolean }
-  'load-osd-console': { read: boolean; write: boolean }
-  'load-positioning': { read: boolean; write: boolean }
-  'load-scripts': { read: boolean; write: boolean }
-  'load-select': { read: boolean; write: boolean }
-  'load-stats-overlay': { read: boolean; write: boolean }
-  'load-unsafe-playlists': { read: boolean; write: boolean }
-  'log-file': { read: string; write: string }
-  loop: {
-    read: 'inf' | true | false | bigint
-    write: 'no' | 'inf' | 'yes' | true | false | IntegerArgument
-  }
-  'loop-file': {
-    read: 'inf' | true | false | bigint
-    write: 'no' | 'inf' | 'yes' | true | false | IntegerArgument
-  }
-  'loop-playlist': {
-    read: 'inf' | 'force' | true | false | bigint
-    write: 'no' | 'inf' | 'yes' | 'force' | true | false | IntegerArgument
-  }
-  lut: { read: string; write: string }
-  'lut-type': {
-    read: 'auto' | 'native' | 'normalized' | 'conversion'
-    write: 'auto' | 'native' | 'normalized' | 'conversion'
-  }
-  'macos-app-activation-policy': {
-    read: 'regular' | 'accessory' | 'prohibited'
-    write: 'regular' | 'accessory' | 'prohibited'
-  }
-  'macos-bundle-path': { read: readonly string[]; write: string | readonly string[] }
-  'macos-force-dedicated-gpu': { read: boolean; write: boolean }
-  'macos-fs-animation-duration': { read: 'default' | bigint; write: 'default' | IntegerArgument }
-  'macos-geometry-calculation': { read: 'visible' | 'whole'; write: 'visible' | 'whole' }
-  'macos-menu-shortcuts': { read: boolean; write: boolean }
-  'macos-render-timer': {
-    read: 'callback' | 'precise' | 'system' | 'feedback'
-    write: 'callback' | 'precise' | 'system' | 'feedback'
-  }
-  'macos-title-bar-appearance': {
-    read:
-      | 'auto'
-      | 'aqua'
-      | 'darkAqua'
-      | 'vibrantLight'
-      | 'vibrantDark'
-      | 'aquaHighContrast'
-      | 'darkAquaHighContrast'
-      | 'vibrantLightHighContrast'
-      | 'vibrantDarkHighContrast'
-    write:
-      | 'auto'
-      | 'aqua'
-      | 'darkAqua'
-      | 'vibrantLight'
-      | 'vibrantDark'
-      | 'aquaHighContrast'
-      | 'darkAquaHighContrast'
-      | 'vibrantLightHighContrast'
-      | 'vibrantDarkHighContrast'
-  }
-  'macos-title-bar-color': { read: string; write: string }
-  'macos-title-bar-material': {
-    read:
-      | 'titlebar'
-      | 'selection'
-      | 'menu'
-      | 'popover'
-      | 'sidebar'
-      | 'headerView'
-      | 'sheet'
-      | 'windowBackground'
-      | 'hudWindow'
-      | 'fullScreen'
-      | 'toolTip'
-      | 'contentBackground'
-      | 'underWindowBackground'
-      | 'underPageBackground'
-      | 'dark'
-      | 'light'
-      | 'mediumLight'
-      | 'ultraDark'
-    write:
-      | 'titlebar'
-      | 'selection'
-      | 'menu'
-      | 'popover'
-      | 'sidebar'
-      | 'headerView'
-      | 'sheet'
-      | 'windowBackground'
-      | 'hudWindow'
-      | 'fullScreen'
-      | 'toolTip'
-      | 'contentBackground'
-      | 'underWindowBackground'
-      | 'underPageBackground'
-      | 'dark'
-      | 'light'
-      | 'mediumLight'
-      | 'ultraDark'
-  }
-  mc: { read: number; write: number }
-  'media-controls': { read: boolean; write: boolean }
-  'merge-files': { read: boolean; write: boolean }
-  'metadata-codepage': { read: string; write: string }
-  'mf-fps': { read: number; write: number }
-  'mf-type': { read: string; write: string }
-  monitoraspect: { read: number; write: number }
-  monitorpixelaspect: { read: number; write: number }
-  'msg-color': { read: boolean; write: boolean }
-  'msg-level': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'msg-module': { read: boolean; write: boolean }
-  'msg-time': { read: boolean; write: boolean }
-  mute: { read: boolean; write: boolean }
-  'native-fs': { read: boolean; write: boolean }
-  'native-keyrepeat': { read: boolean; write: boolean }
-  'native-touch': { read: boolean; write: boolean }
-  'network-timeout': { read: number; write: number }
-  o: { read: string; write: string }
-  oac: { read: string; write: string }
-  oacopts: {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'ocopy-metadata': { read: boolean; write: boolean }
-  of: { read: string; write: string }
-  ofopts: {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'on-all-workspaces': { read: boolean; write: boolean }
-  ontop: { read: boolean; write: boolean }
-  'ontop-level': {
-    read: 'window' | 'system' | 'desktop' | bigint
-    write: 'window' | 'system' | 'desktop' | IntegerArgument
-  }
-  'opengl-check-pattern-a': { read: bigint; write: IntegerArgument }
-  'opengl-check-pattern-b': { read: bigint; write: IntegerArgument }
-  'opengl-early-flush': { read: 'auto' | true | false; write: 'no' | 'yes' | 'auto' | true | false }
-  'opengl-es': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
-  'opengl-glfinish': { read: boolean; write: boolean }
-  'opengl-pbo': { read: boolean; write: boolean }
-  'opengl-rectangle-textures': { read: boolean; write: boolean }
-  'opengl-swapinterval': { read: bigint; write: IntegerArgument }
-  'opengl-waitvsync': { read: boolean; write: boolean }
-  orawts: { read: boolean; write: boolean }
-  'ordered-chapters': { read: boolean; write: boolean }
-  'ordered-chapters-files': { read: string; write: string }
-  'oremove-metadata': { read: readonly string[]; write: string | readonly string[] }
-  osc: { read: boolean; write: boolean }
-  'osd-align-x': { read: 'left' | 'center' | 'right'; write: 'left' | 'center' | 'right' }
-  'osd-align-y': { read: 'top' | 'center' | 'bottom'; write: 'top' | 'center' | 'bottom' }
-  'osd-back-color': { read: string; write: string }
-  'osd-bar': { read: boolean; write: boolean }
-  'osd-bar-align-x': { read: number; write: number }
-  'osd-bar-align-y': { read: number; write: number }
-  'osd-bar-border-size': { read: number; write: number }
-  'osd-bar-h': { read: number; write: number }
-  'osd-bar-marker-min-size': { read: number; write: number }
-  'osd-bar-marker-scale': { read: number; write: number }
-  'osd-bar-marker-style': {
-    read: 'none' | 'triangle' | 'line'
-    write: 'none' | 'triangle' | 'line'
-  }
-  'osd-bar-outline-size': { read: number; write: number }
-  'osd-bar-w': { read: number; write: number }
-  'osd-bitmap-max-size': { read: bigint; write: IntegerArgument }
-  'osd-blur': { read: number; write: number }
-  'osd-bold': { read: boolean; write: boolean }
-  'osd-border-color': { read: string; write: string }
-  'osd-border-size': { read: number; write: number }
-  'osd-border-style': {
-    read: 'outline-and-shadow' | 'opaque-box' | 'background-box'
-    write: 'outline-and-shadow' | 'opaque-box' | 'background-box'
-  }
-  'osd-color': { read: string; write: string }
-  'osd-duration': { read: bigint; write: IntegerArgument }
-  'osd-font': { read: string; write: string }
-  'osd-font-provider': {
-    read: 'auto' | 'none' | 'fontconfig'
-    write: 'auto' | 'none' | 'fontconfig'
-  }
-  'osd-font-size': { read: number; write: number }
-  'osd-fonts-dir': { read: string; write: string }
-  'osd-fractions': { read: boolean; write: boolean }
-  'osd-glyph-limit': { read: bigint; write: IntegerArgument }
-  'osd-italic': { read: boolean; write: boolean }
-  'osd-justify': {
-    read: 'auto' | 'left' | 'center' | 'right'
-    write: 'auto' | 'left' | 'center' | 'right'
-  }
-  'osd-level': { read: 0n | 1n | 2n | 3n; write: '0' | '1' | '2' | '3' | 0n | 1n | 2n | 3n }
-  'osd-margin-x': { read: bigint; write: IntegerArgument }
-  'osd-margin-y': { read: bigint; write: IntegerArgument }
-  'osd-margin-y-offset': { read: bigint; write: IntegerArgument }
-  'osd-msg1': { read: string; write: string }
-  'osd-msg2': { read: string; write: string }
-  'osd-msg3': { read: string; write: string }
-  'osd-on-seek': {
-    read: 'bar' | 'msg' | 'msg-bar' | false
-    write: 'no' | 'bar' | 'msg' | 'msg-bar' | false
-  }
-  'osd-outline-color': { read: string; write: string }
-  'osd-outline-size': { read: number; write: number }
-  'osd-playing-msg': { read: string; write: string }
-  'osd-playing-msg-duration': { read: bigint; write: IntegerArgument }
-  'osd-playlist-entry': {
-    read: 'title' | 'filename' | 'both'
-    write: 'title' | 'filename' | 'both'
-  }
-  'osd-prune-delay': { read: number; write: number }
-  'osd-scale': { read: number; write: number }
-  'osd-scale-by-window': { read: boolean; write: boolean }
-  'osd-selected-color': { read: string; write: string }
-  'osd-selected-outline-color': { read: string; write: string }
-  'osd-shadow-color': { read: string; write: string }
-  'osd-shadow-offset': { read: number; write: number }
-  'osd-shaper': { read: 'simple' | 'complex'; write: 'simple' | 'complex' }
-  'osd-spacing': { read: number; write: number }
-  'osd-status-msg': { read: string; write: string }
-  'oset-metadata': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  ovc: { read: string; write: string }
-  ovcopts: {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'override-display-fps': { read: number; write: number }
-  panscan: { read: number; write: number }
-  pause: { read: boolean; write: boolean }
-  pitch: { read: number; write: number }
-  'play-dir': {
-    read: 'forward' | '+' | 'backward' | '-'
-    write: 'forward' | '+' | 'backward' | '-'
-  }
-  'play-direction': {
-    read: 'forward' | '+' | 'backward' | '-'
-    write: 'forward' | '+' | 'backward' | '-'
-  }
-  'player-operation-mode': { read: 'cplayer' | 'pseudo-gui'; write: 'cplayer' | 'pseudo-gui' }
-  playlist: { read: string; write: string }
-  'playlist-exts': { read: readonly string[]; write: string | readonly string[] }
-  'playlist-inherit-options': {
-    read: 'current' | true | false
-    write: 'no' | 'yes' | 'current' | true | false
-  }
-  'playlist-start': {
-    read: 'auto' | false | bigint
-    write: 'auto' | 'no' | false | IntegerArgument
-  }
-  'prefetch-playlist': { read: boolean; write: boolean }
-  priority: {
-    read: 'realtime' | 'high' | 'abovenormal' | 'normal' | 'belownormal' | 'idle' | false
-    write: 'no' | 'realtime' | 'high' | 'abovenormal' | 'normal' | 'belownormal' | 'idle' | false
-  }
-  profile: { read: readonly string[]; write: string | readonly string[] }
-  'pulse-allow-suspended': { read: boolean; write: boolean }
-  'pulse-buffer': { read: 'native' | bigint; write: 'native' | IntegerArgument }
-  'pulse-host': { read: string; write: string }
-  'pulse-latency-hacks': { read: boolean; write: boolean }
-  quiet: { read: boolean; write: boolean }
-  'really-quiet': { read: boolean; write: boolean }
-  'rebase-start-time': { read: boolean; write: boolean }
-  referrer: { read: string; write: string }
-  register: { read: boolean; write: boolean }
-  'register-rpath': { read: string; write: string }
-  replaygain: { read: 'track' | 'album' | false; write: 'no' | 'track' | 'album' | false }
-  'replaygain-clip': { read: boolean; write: boolean }
-  'replaygain-fallback': { read: number; write: number }
-  'replaygain-preamp': { read: number; write: number }
-  'reset-on-next-file': { read: readonly string[]; write: string | readonly string[] }
-  'resume-playback': { read: boolean; write: boolean }
-  'resume-playback-check-mtime': { read: boolean; write: boolean }
-  'rtsp-transport': {
-    read: 'lavf' | 'udp' | 'tcp' | 'http' | 'udp_multicast'
-    write: 'lavf' | 'udp' | 'tcp' | 'http' | 'udp_multicast'
-  }
-  saturation: { read: number; write: number }
-  'save-position-on-quit': { read: boolean; write: boolean }
-  'save-watch-history': { read: boolean; write: boolean }
-  scale: {
-    read:
-      | 'bilinear'
-      | 'bicubic_fast'
-      | 'oversample'
-      | 'spline16'
-      | 'spline36'
-      | 'spline64'
-      | 'sinc'
-      | 'lanczos'
-      | 'ginseng'
-      | 'bicubic'
-      | 'hermite'
-      | 'catmull_rom'
-      | 'mitchell'
-      | 'robidoux'
-      | 'robidouxsharp'
-      | 'box'
-      | 'nearest'
-      | 'triangle'
-      | 'gaussian'
-      | 'jinc'
-      | 'ewa_lanczos'
-      | 'ewa_hanning'
-      | 'ewa_ginseng'
-      | 'ewa_lanczossharp'
-      | 'ewa_lanczos4sharpest'
-      | 'ewa_lanczossoft'
-      | 'haasnsoft'
-      | 'ewa_robidoux'
-      | 'ewa_robidouxsharp'
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-    write:
-      | 'bilinear'
-      | 'bicubic_fast'
-      | 'oversample'
-      | 'spline16'
-      | 'spline36'
-      | 'spline64'
-      | 'sinc'
-      | 'lanczos'
-      | 'ginseng'
-      | 'bicubic'
-      | 'hermite'
-      | 'catmull_rom'
-      | 'mitchell'
-      | 'robidoux'
-      | 'robidouxsharp'
-      | 'box'
-      | 'nearest'
-      | 'triangle'
-      | 'gaussian'
-      | 'jinc'
-      | 'ewa_lanczos'
-      | 'ewa_hanning'
-      | 'ewa_ginseng'
-      | 'ewa_lanczossharp'
-      | 'ewa_lanczos4sharpest'
-      | 'ewa_lanczossoft'
-      | 'haasnsoft'
-      | 'ewa_robidoux'
-      | 'ewa_robidouxsharp'
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-  }
-  'scale-antiring': { read: number; write: number }
-  'scale-blur': { read: number; write: number }
-  'scale-clamp': { read: number; write: number }
-  'scale-param1': { read: number; write: number }
-  'scale-param2': { read: number; write: number }
-  'scale-radius': { read: number; write: number }
-  'scale-taper': { read: number; write: number }
-  'scale-window': {
-    read:
-      | ''
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
-    write:
-      | ''
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
-  }
-  'scale-wparam': { read: number; write: number }
-  'scale-wtaper': { read: number; write: number }
-  'scaler-resizes-only': { read: boolean; write: boolean }
-  screen: { read: 'default' | bigint; write: 'default' | IntegerArgument }
-  'screen-name': { read: string; write: string }
-  'screenshot-avif-encoder': { read: string; write: string }
-  'screenshot-avif-opts': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'screenshot-avif-pixfmt': { read: string; write: string }
-  'screenshot-dir': { read: string; write: string }
-  'screenshot-directory': { read: string; write: string }
-  'screenshot-format': {
-    read: 'jpg' | 'jpeg' | 'png' | 'webp' | 'jxl' | 'avif'
-    write: 'jpg' | 'jpeg' | 'png' | 'webp' | 'jxl' | 'avif'
-  }
-  'screenshot-high-bit-depth': { read: boolean; write: boolean }
-  'screenshot-jpeg-quality': { read: bigint; write: IntegerArgument }
-  'screenshot-jpeg-source-chroma': { read: boolean; write: boolean }
-  'screenshot-jxl-distance': { read: number; write: number }
-  'screenshot-jxl-effort': { read: bigint; write: IntegerArgument }
-  'screenshot-png-compression': { read: bigint; write: IntegerArgument }
-  'screenshot-png-filter': { read: bigint; write: IntegerArgument }
-  'screenshot-sw': { read: boolean; write: boolean }
-  'screenshot-tag-colorspace': { read: boolean; write: boolean }
-  'screenshot-template': { read: string; write: string }
-  'screenshot-webp-compression': { read: bigint; write: IntegerArgument }
-  'screenshot-webp-lossless': { read: boolean; write: boolean }
-  'screenshot-webp-quality': { read: bigint; write: IntegerArgument }
-  script: { read: MpvValue; write: MpvValue }
-  'script-opt': { read: MpvValue; write: MpvValue }
-  'script-opts': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  scripts: { read: readonly string[]; write: string | readonly string[] }
-  'sdr-adjust-gamma': { read: 'auto' | true | false; write: 'auto' | 'yes' | 'no' | true | false }
-  'secondary-sid': { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  'secondary-sub-ass-override': {
-    read: 'scale' | 'force' | 'strip' | true | false
-    write: 'no' | 'yes' | 'scale' | 'force' | 'strip' | true | false
-  }
-  'secondary-sub-delay': { read: number; write: number }
-  'secondary-sub-pos': { read: number; write: number }
-  'secondary-sub-scale': { read: number; write: number }
-  'secondary-sub-visibility': { read: boolean; write: boolean }
-  sharpen: { read: number; write: number }
-  'show-dependent-tracks': { read: boolean; write: boolean }
-  'show-in-taskbar': { read: boolean; write: boolean }
-  'show-profile': { read: string; write: string }
-  shuffle: { read: boolean; write: boolean }
-  sid: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  'sigmoid-center': { read: number; write: number }
-  'sigmoid-slope': { read: number; write: number }
-  'sigmoid-upscaling': { read: boolean; write: boolean }
-  slang: { read: readonly string[]; write: string | readonly string[] }
-  'snap-window': { read: boolean; write: boolean }
-  speed: { read: number; write: number }
-  'spirv-compiler':
-    | { read: 'auto'; write: 'auto' }
-    | { read: 'auto' | 'shaderc'; write: 'auto' | 'shaderc' }
-  sstep: { read: number; write: number }
-  start: { read: string; write: string }
-  'stop-playback-on-init-failure': { read: boolean; write: boolean }
-  'stop-screensaver': {
-    read: 'always' | true | false
-    write: 'no' | 'yes' | 'always' | true | false
-  }
-  'stream-buffer-size': { read: bigint; write: bigint | string }
-  'stream-dump': { read: string; write: string }
-  'stream-lavf-o': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'stream-record': { read: string; write: string }
-  'stretch-dvd-subs': { read: boolean; write: boolean }
-  'stretch-image-subs-to-screen': { read: boolean; write: boolean }
-  sub: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  'sub-align-x': { read: 'left' | 'center' | 'right'; write: 'left' | 'center' | 'right' }
-  'sub-align-y': { read: 'top' | 'center' | 'bottom'; write: 'top' | 'center' | 'bottom' }
-  'sub-ass': { read: boolean; write: boolean }
-  'sub-ass-force-margins': { read: boolean; write: boolean }
-  'sub-ass-force-style': { read: readonly string[]; write: string | readonly string[] }
-  'sub-ass-hinting': {
-    read: 'none' | 'light' | 'normal' | 'native'
-    write: 'none' | 'light' | 'normal' | 'native'
-  }
-  'sub-ass-justify': { read: boolean; write: boolean }
-  'sub-ass-line-spacing': { read: number; write: number }
-  'sub-ass-override': {
-    read: 'scale' | 'force' | 'strip' | true | false
-    write: 'no' | 'yes' | 'scale' | 'force' | 'strip' | true | false
-  }
-  'sub-ass-prune-delay': { read: number; write: number }
-  'sub-ass-scale-with-window': { read: boolean; write: boolean }
-  'sub-ass-shaper': { read: 'simple' | 'complex'; write: 'simple' | 'complex' }
-  'sub-ass-style-overrides': { read: readonly string[]; write: string | readonly string[] }
-  'sub-ass-styles': { read: string; write: string }
-  'sub-ass-use-video-data': {
-    read: 'none' | 'aspect-ratio' | 'all'
-    write: 'none' | 'aspect-ratio' | 'all'
-  }
-  'sub-ass-video-aspect-override': { read: number; write: number | bigint | string }
-  'sub-ass-vsfilter-aspect-compat': { read: MpvValue; write: MpvValue }
-  'sub-ass-vsfilter-blur-compat': { read: MpvValue; write: MpvValue }
-  'sub-ass-vsfilter-color-compat': {
-    read: 'basic' | 'full' | 'force-601' | false
-    write: 'no' | 'basic' | 'full' | 'force-601' | false
-  }
-  'sub-auto': {
-    read: 'exact' | 'fuzzy' | 'all' | false
-    write: 'no' | 'exact' | 'fuzzy' | 'all' | false
-  }
-  'sub-auto-exts': { read: readonly string[]; write: string | readonly string[] }
-  'sub-back-color': { read: string; write: string }
-  'sub-bitmap-max-size': { read: bigint; write: IntegerArgument }
-  'sub-blur': { read: number; write: number }
-  'sub-bold': { read: boolean; write: boolean }
-  'sub-border-color': { read: string; write: string }
-  'sub-border-size': { read: number; write: number }
-  'sub-border-style': {
-    read: 'outline-and-shadow' | 'opaque-box' | 'background-box'
-    write: 'outline-and-shadow' | 'opaque-box' | 'background-box'
-  }
-  'sub-clear-on-seek': { read: boolean; write: boolean }
-  'sub-codepage': { read: string; write: string }
-  'sub-color': { read: string; write: string }
-  'sub-create-cc-track': { read: boolean; write: boolean }
-  'sub-delay': { read: number; write: number }
-  'sub-demuxer': { read: string; write: string }
-  'sub-file': { read: MpvValue; write: MpvValue }
-  'sub-file-paths': { read: readonly string[]; write: string | readonly string[] }
-  'sub-files': { read: readonly string[]; write: string | readonly string[] }
-  'sub-filter-jsre': { read: readonly string[]; write: string | readonly string[] }
-  'sub-filter-regex': { read: readonly string[]; write: string | readonly string[] }
-  'sub-filter-regex-enable': { read: boolean; write: boolean }
-  'sub-filter-regex-plain': { read: boolean; write: boolean }
-  'sub-filter-regex-warn': { read: boolean; write: boolean }
-  'sub-filter-sdh': { read: boolean; write: boolean }
-  'sub-filter-sdh-enclosures': { read: readonly string[]; write: string | readonly string[] }
-  'sub-filter-sdh-harder': { read: boolean; write: boolean }
-  'sub-fix-timing': { read: boolean; write: boolean }
-  'sub-fix-timing-keep': { read: bigint; write: IntegerArgument }
-  'sub-fix-timing-threshold': { read: bigint; write: IntegerArgument }
-  'sub-font': { read: string; write: string }
-  'sub-font-provider': {
-    read: 'auto' | 'none' | 'fontconfig'
-    write: 'auto' | 'none' | 'fontconfig'
-  }
-  'sub-font-size': { read: number; write: number }
-  'sub-fonts-dir': { read: string; write: string }
-  'sub-forced-events-only': { read: boolean; write: boolean }
-  'sub-fps': { read: number; write: number }
-  'sub-gauss': { read: number; write: number }
-  'sub-glyph-limit': { read: bigint; write: IntegerArgument }
-  'sub-gray': { read: boolean; write: boolean }
-  'sub-hdr-peak': { read: 'auto' | 'sdr' | bigint; write: 'auto' | 'sdr' | IntegerArgument }
-  'sub-hinting': {
-    read: 'none' | 'light' | 'normal' | 'native'
-    write: 'none' | 'light' | 'normal' | 'native'
-  }
-  'sub-italic': { read: boolean; write: boolean }
-  'sub-justify': {
-    read: 'auto' | 'left' | 'center' | 'right'
-    write: 'auto' | 'left' | 'center' | 'right'
-  }
-  'sub-lavc-o': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
-  }
-  'sub-line-spacing': { read: number; write: number }
-  'sub-margin-x': { read: bigint; write: IntegerArgument }
-  'sub-margin-y': { read: bigint; write: IntegerArgument }
-  'sub-margin-y-offset': { read: bigint; write: IntegerArgument }
-  'sub-outline-color': { read: string; write: string }
-  'sub-outline-size': { read: number; write: number }
-  'sub-past-video-end': { read: boolean; write: boolean }
-  'sub-pos': { read: number; write: number }
-  'sub-scale': { read: number; write: number }
-  'sub-scale-by-window': { read: boolean; write: boolean }
-  'sub-scale-signs': { read: boolean; write: boolean }
-  'sub-scale-with-window': { read: boolean; write: boolean }
-  'sub-shadow-color': { read: string; write: string }
-  'sub-shadow-offset': { read: number; write: number }
-  'sub-shaper': { read: 'simple' | 'complex'; write: 'simple' | 'complex' }
-  'sub-spacing': { read: number; write: number }
-  'sub-speed': { read: number; write: number }
-  'sub-stretch-durations': { read: boolean; write: boolean }
-  'sub-use-margins': { read: boolean; write: boolean }
-  'sub-visibility': { read: boolean; write: boolean }
-  'sub-vsfilter-bidi-compat': { read: boolean; write: boolean }
-  'subs-fallback': {
-    read: 'default' | true | false
-    write: 'no' | 'default' | 'yes' | true | false
-  }
-  'subs-fallback-forced': {
-    read: 'always' | true | false
-    write: 'no' | 'yes' | 'always' | true | false
-  }
-  'subs-match-os-language': { read: boolean; write: boolean }
-  'subs-with-matching-audio': {
-    read: 'forced' | true | false
-    write: 'no' | 'forced' | 'yes' | true | false
-  }
-  'swapchain-depth': { read: bigint; write: IntegerArgument }
-  'sws-allow-zimg': { read: boolean; write: boolean }
-  'sws-bitexact': { read: boolean; write: boolean }
-  'sws-cgb': { read: number; write: number }
-  'sws-chs': { read: bigint; write: IntegerArgument }
-  'sws-cs': { read: number; write: number }
-  'sws-cvs': { read: bigint; write: IntegerArgument }
-  'sws-fast': { read: boolean; write: boolean }
-  'sws-lgb': { read: number; write: number }
-  'sws-ls': { read: number; write: number }
-  'sws-scaler': {
-    read:
-      | 'fast-bilinear'
-      | 'bilinear'
-      | 'bicubic'
-      | 'x'
-      | 'point'
-      | 'area'
-      | 'bicublin'
-      | 'gauss'
-      | 'sinc'
-      | 'lanczos'
-      | 'spline'
-    write:
-      | 'fast-bilinear'
-      | 'bilinear'
-      | 'bicubic'
-      | 'x'
-      | 'point'
-      | 'area'
-      | 'bicublin'
-      | 'gauss'
-      | 'sinc'
-      | 'lanczos'
-      | 'spline'
-  }
-  'target-colorspace-hint': {
-    read: 'auto' | true | false
-    write: 'auto' | 'no' | 'yes' | true | false
-  }
-  'target-colorspace-hint-mode': {
-    read: 'target' | 'source' | 'source-dynamic'
-    write: 'target' | 'source' | 'source-dynamic'
-  }
-  'target-colorspace-hint-strict': { read: boolean; write: boolean }
-  'target-contrast': { read: 'auto' | 'inf' | bigint; write: 'auto' | 'inf' | IntegerArgument }
-  'target-gamut': { read: string; write: string }
-  'target-lut': { read: string; write: string }
-  'target-peak': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
-  'target-prim': {
-    read:
-      | 'auto'
-      | 'bt.601-525'
-      | 'bt.601-625'
-      | 'bt.709'
-      | 'bt.2020'
-      | 'bt.470m'
-      | 'apple'
-      | 'adobe'
-      | 'prophoto'
-      | 'cie1931'
-      | 'dci-p3'
-      | 'display-p3'
-      | 'v-gamut'
-      | 's-gamut'
-      | 'ebu3213'
-      | 'film-c'
-      | 'aces-ap0'
-      | 'aces-ap1'
-    write:
-      | 'auto'
-      | 'bt.601-525'
-      | 'bt.601-625'
-      | 'bt.709'
-      | 'bt.2020'
-      | 'bt.470m'
-      | 'apple'
-      | 'adobe'
-      | 'prophoto'
-      | 'cie1931'
-      | 'dci-p3'
-      | 'display-p3'
-      | 'v-gamut'
-      | 's-gamut'
-      | 'ebu3213'
-      | 'film-c'
-      | 'aces-ap0'
-      | 'aces-ap1'
-  }
-  'target-trc': {
-    read:
-      | 'auto'
-      | 'bt.1886'
-      | 'srgb'
-      | 'linear'
-      | 'gamma1.8'
-      | 'gamma2.0'
-      | 'gamma2.2'
-      | 'gamma2.4'
-      | 'gamma2.6'
-      | 'gamma2.8'
-      | 'prophoto'
-      | 'pq'
-      | 'hlg'
-      | 'v-log'
-      | 's-log1'
-      | 's-log2'
-      | 'st428'
-      | 'scrgb'
-    write:
-      | 'auto'
-      | 'bt.1886'
-      | 'srgb'
-      | 'linear'
-      | 'gamma1.8'
-      | 'gamma2.0'
-      | 'gamma2.2'
-      | 'gamma2.4'
-      | 'gamma2.6'
-      | 'gamma2.8'
-      | 'prophoto'
-      | 'pq'
-      | 'hlg'
-      | 'v-log'
-      | 's-log1'
-      | 's-log2'
-      | 'st428'
-      | 'scrgb'
-  }
-  'taskbar-progress': { read: boolean; write: boolean }
-  'teletext-page': { read: bigint; write: IntegerArgument }
-  'temporal-dither': { read: boolean; write: boolean }
-  'temporal-dither-period': { read: bigint; write: IntegerArgument }
-  'term-osd': { read: 'force' | 'auto' | false; write: 'force' | 'auto' | 'no' | false }
-  'term-osd-bar': { read: boolean; write: boolean }
-  'term-osd-bar-chars': { read: string; write: string }
-  'term-playing-msg': { read: string; write: string }
-  'term-status-msg': { read: string; write: string }
-  'term-title': { read: string; write: string }
-  terminal: { read: boolean; write: boolean }
-  title: { read: string; write: string }
-  'title-bar': { read: boolean; write: boolean }
-  'tls-ca-file': { read: string; write: string }
-  'tls-cert-file': { read: string; write: string }
-  'tls-key-file': { read: string; write: string }
-  'tls-verify': { read: boolean; write: boolean }
-  'tone-mapping': {
-    read:
-      | 'auto'
-      | 'clip'
-      | 'mobius'
-      | 'reinhard'
-      | 'hable'
+export type OptionDefinitions = {
+  [N in 'V' | 'input-cmdlist' | 'input-keylist' | 'list-protocols' | 'version']: {
+    read: ShapeValue<'value'>
+    write: ShapeValue<'string'>
+  }
+} & {
+  [N in 'ab-loop-a' | 'ab-loop-b']: {
+    read: ShapeValue<{ anyOf: ['number', { literals: ['no'] }] }>
+    write: ShapeValue<{ anyOf: ['number', 'bigint', 'string'] }>
+  }
+} & {
+  [N in 'ab-loop-count']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['inf'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['inf'] }] }>
+  }
+} & {
+  [
+    N in
+      | 'access-references'
+      | 'ad-lavc-downmix'
+      | 'ad-queue-enable'
+      | 'allow-delayed-peak-detect'
+      | 'alsa-ignore-chmap'
+      | 'alsa-non-interleaved'
+      | 'alsa-resample'
+      | 'ao-null-broken-delay'
+      | 'ao-null-broken-eof'
+      | 'ao-null-untimed'
+      | 'ao-pcm-append'
+      | 'ao-pcm-waveheader'
+      | 'audio-exclusive'
+      | 'audio-fallback-to-null'
+      | 'audio-normalize-downmix'
+      | 'audio-pitch-correction'
+      | 'audio-resample-linear'
+      | 'audio-set-media-role'
+      | 'audio-stream-silence'
+      | 'auto-window-resize'
+      | 'autoload-files'
+      | 'border'
+      | 'cache-on-disk'
+      | 'cache-pause'
+      | 'cache-pause-initial'
+      | 'clipboard-monitor'
+      | 'clipboard-xwayland'
+      | 'cocoa-cb-10bit-context'
+      | 'config'
+      | 'cookies'
+      | 'coreaudio-change-physical-format'
+      | 'coreaudio-spdif-hack'
+      | 'correct-downscaling'
+      | 'correct-pts'
+      | 'cursor-autohide-fs-only'
+      | 'd3d11-exclusive-fs'
+      | 'd3d11-flip'
+      | 'd3d11va-zero-copy'
+      | 'deband'
+      | 'demuxer-cache-wait'
+      | 'demuxer-donate-buffer'
+      | 'demuxer-lavf-allow-mimetype'
+      | 'demuxer-lavf-hacks'
+      | 'demuxer-lavf-propagate-opts'
+      | 'demuxer-mkv-crop-compat'
+      | 'demuxer-mkv-probe-start-time'
+      | 'demuxer-thread'
+      | 'disc-menu'
+      | 'embeddedfonts'
+      | 'flatten-editions'
+      | 'force-render'
+      | 'force-rgba-osd-rendering'
+      | 'force-seekable'
+      | 'force-window-position'
+      | 'fs'
+      | 'fullscreen'
+      | 'gamma-auto'
+      | 'gpu-debug'
+      | 'gpu-shader-cache'
+      | 'gpu-sw'
+      | 'hidpi-window-scale'
+      | 'hr-seek-framedrop'
+      | 'icc-cache'
+      | 'icc-profile-auto'
+      | 'icc-use-luma'
+      | 'ignore-path-in-watch-later-config'
+      | 'image-subs-video-resolution'
+      | 'initial-audio-sync'
+      | 'input-builtin-bindings'
+      | 'input-builtin-drag-and-drop'
+      | 'input-builtin-dragging'
+      | 'input-cursor'
+      | 'input-cursor-passthrough'
+      | 'input-default-bindings'
+      | 'input-ime'
+      | 'input-media-keys'
+      | 'input-preprocess-wheel'
+      | 'input-right-alt-gr'
+      | 'input-tablet-emulate-mouse'
+      | 'input-terminal'
+      | 'input-test'
+      | 'input-touch-emulate-mouse'
+      | 'input-vo-keyboard'
+      | 'interpolation'
+      | 'interpolation-preserve'
+      | 'inverse-tone-mapping'
+      | 'js-memory-report'
+      | 'keep-open-pause'
+      | 'keepaspect'
+      | 'keepaspect-window'
+      | 'linear-downscaling'
+      | 'linear-upscaling'
+      | 'list-options'
+      | 'list-properties'
+      | 'load-commands'
+      | 'load-console'
+      | 'load-context-menu'
+      | 'load-osd-console'
+      | 'load-positioning'
+      | 'load-scripts'
+      | 'load-select'
+      | 'load-stats-overlay'
+      | 'load-unsafe-playlists'
+      | 'macos-force-dedicated-gpu'
+      | 'macos-menu-shortcuts'
+      | 'media-controls'
+      | 'merge-files'
+      | 'msg-color'
+      | 'msg-module'
+      | 'msg-time'
+      | 'mute'
+      | 'native-fs'
+      | 'native-keyrepeat'
+      | 'native-touch'
+      | 'ocopy-metadata'
+      | 'on-all-workspaces'
+      | 'ontop'
+      | 'opengl-glfinish'
+      | 'opengl-pbo'
+      | 'opengl-rectangle-textures'
+      | 'opengl-waitvsync'
+      | 'orawts'
+      | 'ordered-chapters'
+      | 'osc'
+      | 'osd-bar'
+      | 'osd-bold'
+      | 'osd-fractions'
+      | 'osd-italic'
+      | 'osd-scale-by-window'
+      | 'pause'
+      | 'prefetch-playlist'
+      | 'pulse-allow-suspended'
+      | 'pulse-latency-hacks'
+      | 'quiet'
+      | 'really-quiet'
+      | 'rebase-start-time'
+      | 'register'
+      | 'replaygain-clip'
+      | 'resume-playback'
+      | 'resume-playback-check-mtime'
+      | 'save-position-on-quit'
+      | 'save-watch-history'
+      | 'scaler-resizes-only'
+      | 'screenshot-high-bit-depth'
+      | 'screenshot-jpeg-source-chroma'
+      | 'screenshot-sw'
+      | 'screenshot-tag-colorspace'
+      | 'screenshot-webp-lossless'
+      | 'secondary-sub-visibility'
+      | 'show-dependent-tracks'
+      | 'show-in-taskbar'
+      | 'shuffle'
+      | 'sigmoid-upscaling'
+      | 'snap-window'
+      | 'stop-playback-on-init-failure'
+      | 'stretch-dvd-subs'
+      | 'stretch-image-subs-to-screen'
+      | 'sub-ass'
+      | 'sub-ass-force-margins'
+      | 'sub-ass-justify'
+      | 'sub-ass-scale-with-window'
+      | 'sub-bold'
+      | 'sub-clear-on-seek'
+      | 'sub-create-cc-track'
+      | 'sub-filter-regex-enable'
+      | 'sub-filter-regex-plain'
+      | 'sub-filter-regex-warn'
+      | 'sub-filter-sdh'
+      | 'sub-filter-sdh-harder'
+      | 'sub-fix-timing'
+      | 'sub-forced-events-only'
+      | 'sub-gray'
+      | 'sub-italic'
+      | 'sub-past-video-end'
+      | 'sub-scale-by-window'
+      | 'sub-scale-signs'
+      | 'sub-scale-with-window'
+      | 'sub-stretch-durations'
+      | 'sub-use-margins'
+      | 'sub-visibility'
+      | 'sub-vsfilter-bidi-compat'
+      | 'subs-match-os-language'
+      | 'sws-allow-zimg'
+      | 'sws-bitexact'
+      | 'sws-fast'
+      | 'target-colorspace-hint-strict'
+      | 'taskbar-progress'
+      | 'temporal-dither'
+      | 'term-osd-bar'
+      | 'terminal'
+      | 'title-bar'
+      | 'tls-verify'
+      | 'tone-mapping-visualize'
+      | 'track-auto-selection'
+      | 'unregister'
+      | 'untimed'
+      | 'use-embedded-icc-profile'
+      | 'use-filedir-conf'
+      | 'v'
+      | 'vd-apply-cropping'
+      | 'vd-lavc-assume-old-x264'
+      | 'vd-lavc-bitexact'
+      | 'vd-lavc-check-hw-profile'
+      | 'vd-lavc-fast'
+      | 'vd-lavc-show-all'
+      | 'vd-queue-enable'
+      | 'video-latency-hacks'
+      | 'video-osd'
+      | 'video-recenter'
+      | 'vo-image-high-bit-depth'
+      | 'vo-image-jpeg-source-chroma'
+      | 'vo-image-tag-colorspace'
+      | 'vo-image-webp-lossless'
+      | 'vo-kitty-alt-screen'
+      | 'vo-kitty-auto-multiplexer-passthrough'
+      | 'vo-kitty-config-clear'
+      | 'vo-kitty-use-shm'
+      | 'vo-tct-256'
+      | 'vulkan-async-compute'
+      | 'vulkan-async-transfer'
+      | 'window-dragging'
+      | 'window-maximized'
+      | 'window-minimized'
+      | 'write-filename-in-watch-later-config'
+      | 'ytdl'
+      | '{'
+      | '}'
+  ]: { read: ShapeValue<'boolean'>; write: ShapeValue<'boolean'> }
+} & {
+  [
+    N in
+      | 'ad'
+      | 'alsa-mixer-device'
+      | 'alsa-mixer-name'
+      | 'ao-null-channel-layouts'
+      | 'ao-null-format'
+      | 'ao-pcm-file'
+      | 'audio-channels'
+      | 'audio-client-name'
+      | 'audio-demuxer'
+      | 'audio-device'
+      | 'audio-format'
+      | 'audio-spdif'
+      | 'autofit'
+      | 'autofit-larger'
+      | 'autofit-smaller'
+      | 'background-color'
+      | 'background-tile-color-0'
+      | 'background-tile-color-1'
+      | 'chapters-file'
+      | 'config-dir'
+      | 'cookies-file'
+      | 'd3d11-adapter'
+      | 'd3d11-composition-size'
+      | 'demuxer'
+      | 'demuxer-cache-dir'
+      | 'demuxer-lavf-format'
+      | 'demuxer-rawaudio-channels'
+      | 'demuxer-rawvideo-codec'
+      | 'demuxer-rawvideo-format'
+      | 'demuxer-rawvideo-mp-format'
+      | 'drm-connector'
+      | 'drm-device'
+      | 'drm-draw-surface-size'
+      | 'drm-mode'
+      | 'dump-stats'
+      | 'end'
+      | 'error-diffusion'
+      | 'fbo-format'
+      | 'force-media-title'
+      | 'fs-screen-name'
+      | 'geometry'
+      | 'gpu-hwdec-interop'
+      | 'gpu-shader-cache-dir'
+      | 'h'
+      | 'help'
+      | 'http-proxy'
+      | 'hwdec-codecs'
+      | 'hwdec-image-format'
+      | 'icc-3dlut-size'
+      | 'icc-cache-dir'
+      | 'icc-profile'
+      | 'image-lut'
+      | 'include'
+      | 'input-conf'
+      | 'input-ipc-client'
+      | 'input-ipc-server'
+      | 'lavfi-complex'
+      | 'length'
+      | 'log-file'
+      | 'lut'
+      | 'macos-title-bar-color'
+      | 'metadata-codepage'
+      | 'mf-type'
+      | 'o'
+      | 'oac'
+      | 'of'
+      | 'ordered-chapters-files'
+      | 'osd-back-color'
+      | 'osd-border-color'
+      | 'osd-color'
+      | 'osd-font'
+      | 'osd-fonts-dir'
+      | 'osd-msg1'
+      | 'osd-msg2'
+      | 'osd-msg3'
+      | 'osd-outline-color'
+      | 'osd-playing-msg'
+      | 'osd-selected-color'
+      | 'osd-selected-outline-color'
+      | 'osd-shadow-color'
+      | 'osd-status-msg'
+      | 'ovc'
+      | 'playlist'
+      | 'pulse-host'
+      | 'referrer'
+      | 'register-rpath'
+      | 'screen-name'
+      | 'screenshot-avif-encoder'
+      | 'screenshot-avif-pixfmt'
+      | 'screenshot-dir'
+      | 'screenshot-directory'
+      | 'screenshot-template'
+      | 'show-profile'
+      | 'start'
+      | 'stream-dump'
+      | 'stream-record'
+      | 'sub-ass-styles'
+      | 'sub-back-color'
+      | 'sub-border-color'
+      | 'sub-codepage'
+      | 'sub-color'
+      | 'sub-demuxer'
+      | 'sub-font'
+      | 'sub-fonts-dir'
+      | 'sub-outline-color'
+      | 'sub-shadow-color'
+      | 'target-gamut'
+      | 'target-lut'
+      | 'term-osd-bar-chars'
+      | 'term-playing-msg'
+      | 'term-status-msg'
+      | 'term-title'
+      | 'title'
+      | 'tls-ca-file'
+      | 'tls-cert-file'
+      | 'tls-key-file'
+      | 'user-agent'
+      | 'vaapi-device'
+      | 'vd'
+      | 'video-crop'
+      | 'vo-image-avif-encoder'
+      | 'vo-image-avif-pixfmt'
+      | 'vo-image-outdir'
+      | 'vo-mmcss-profile'
+      | 'vulkan-device'
+      | 'watch-history-path'
+      | 'watch-later-dir'
+      | 'watch-later-directory'
+      | 'wayland-app-id'
+      | 'x11-name'
+      | 'ytdl-format'
+  ]: { read: ShapeValue<'string'>; write: ShapeValue<'string'> }
+} & {
+  [
+    N in
+      | 'ad-lavc-ac3drc'
+      | 'ad-queue-max-secs'
+      | 'ao-null-buffer'
+      | 'ao-null-latency'
+      | 'ao-null-speed'
+      | 'audio-buffer'
+      | 'audio-delay'
+      | 'audio-resample-cutoff'
+      | 'audio-resample-max-output-size'
+      | 'audio-wait-open'
+      | 'background-blur-radius'
+      | 'brightness'
+      | 'cache-pause-wait'
+      | 'cache-secs'
+      | 'chapter-seek-threshold'
+      | 'container-fps-override'
+      | 'contrast'
+      | 'corner-rounding'
+      | 'cscale-antiring'
+      | 'cscale-blur'
+      | 'cscale-clamp'
+      | 'cscale-radius'
+      | 'cscale-taper'
+      | 'cscale-wtaper'
+      | 'deband-grain'
+      | 'deband-range'
+      | 'deband-threshold'
+      | 'demuxer-backward-playback-step'
+      | 'demuxer-hysteresis-secs'
+      | 'demuxer-lavf-analyzeduration'
+      | 'demuxer-mkv-subtitle-preroll-secs'
+      | 'demuxer-mkv-subtitle-preroll-secs-index'
+      | 'demuxer-rawvideo-fps'
+      | 'demuxer-readahead-secs'
+      | 'demuxer-termination-timeout'
+      | 'display-fps-override'
+      | 'dscale-antiring'
+      | 'dscale-blur'
+      | 'dscale-clamp'
+      | 'dscale-radius'
+      | 'dscale-taper'
+      | 'dscale-wtaper'
       | 'gamma'
-      | 'linear'
-      | 'spline'
-      | 'bt.2390'
-      | 'bt.2446a'
-      | 'st2094-40'
-      | 'st2094-10'
-    write:
-      | 'auto'
-      | 'clip'
-      | 'mobius'
-      | 'reinhard'
-      | 'hable'
-      | 'gamma'
-      | 'linear'
-      | 'spline'
-      | 'bt.2390'
-      | 'bt.2446a'
-      | 'st2094-40'
-      | 'st2094-10'
+      | 'gamma-factor'
+      | 'hdr-contrast-recovery'
+      | 'hdr-contrast-smoothness'
+      | 'hdr-film-strength'
+      | 'hdr-mastering-clip'
+      | 'hdr-peak-decay-rate'
+      | 'hdr-peak-percentile'
+      | 'hdr-scene-threshold-high'
+      | 'hdr-scene-threshold-low'
+      | 'hr-seek-demuxer-offset'
+      | 'hue'
+      | 'interpolation-threshold'
+      | 'mc'
+      | 'mf-fps'
+      | 'monitoraspect'
+      | 'monitorpixelaspect'
+      | 'network-timeout'
+      | 'osd-bar-align-x'
+      | 'osd-bar-align-y'
+      | 'osd-bar-border-size'
+      | 'osd-bar-h'
+      | 'osd-bar-marker-min-size'
+      | 'osd-bar-marker-scale'
+      | 'osd-bar-outline-size'
+      | 'osd-bar-w'
+      | 'osd-blur'
+      | 'osd-border-size'
+      | 'osd-font-size'
+      | 'osd-outline-size'
+      | 'osd-prune-delay'
+      | 'osd-scale'
+      | 'osd-shadow-offset'
+      | 'osd-spacing'
+      | 'override-display-fps'
+      | 'panscan'
+      | 'pitch'
+      | 'replaygain-fallback'
+      | 'replaygain-preamp'
+      | 'saturation'
+      | 'scale-antiring'
+      | 'scale-blur'
+      | 'scale-clamp'
+      | 'scale-radius'
+      | 'scale-taper'
+      | 'scale-wtaper'
+      | 'screenshot-jxl-distance'
+      | 'secondary-sub-delay'
+      | 'secondary-sub-pos'
+      | 'secondary-sub-scale'
+      | 'sharpen'
+      | 'sigmoid-center'
+      | 'sigmoid-slope'
+      | 'speed'
+      | 'sstep'
+      | 'sub-ass-line-spacing'
+      | 'sub-ass-prune-delay'
+      | 'sub-blur'
+      | 'sub-border-size'
+      | 'sub-delay'
+      | 'sub-font-size'
+      | 'sub-fps'
+      | 'sub-gauss'
+      | 'sub-line-spacing'
+      | 'sub-outline-size'
+      | 'sub-pos'
+      | 'sub-scale'
+      | 'sub-shadow-offset'
+      | 'sub-spacing'
+      | 'sub-speed'
+      | 'sws-cgb'
+      | 'sws-cs'
+      | 'sws-lgb'
+      | 'sws-ls'
+      | 'tone-mapping-exposure'
+      | 'tone-mapping-knee-adaptation'
+      | 'tone-mapping-knee-default'
+      | 'tone-mapping-knee-maximum'
+      | 'tone-mapping-knee-minimum'
+      | 'tone-mapping-knee-offset'
+      | 'tone-mapping-linear-knee'
+      | 'tone-mapping-max-boost'
+      | 'tone-mapping-reinhard-contrast'
+      | 'tone-mapping-slope-offset'
+      | 'tone-mapping-slope-tuning'
+      | 'tone-mapping-spline-contrast'
+      | 'tscale-antiring'
+      | 'tscale-blur'
+      | 'tscale-clamp'
+      | 'tscale-radius'
+      | 'tscale-taper'
+      | 'tscale-wtaper'
+      | 'vd-queue-max-secs'
+      | 'video-align-x'
+      | 'video-align-y'
+      | 'video-margin-ratio-bottom'
+      | 'video-margin-ratio-left'
+      | 'video-margin-ratio-right'
+      | 'video-margin-ratio-top'
+      | 'video-pan-x'
+      | 'video-pan-y'
+      | 'video-scale-x'
+      | 'video-scale-y'
+      | 'video-sync-max-audio-change'
+      | 'video-sync-max-video-change'
+      | 'video-timing-offset'
+      | 'video-zoom'
+      | 'vo-image-jxl-distance'
+      | 'vo-null-fps'
+      | 'volume'
+      | 'volume-gain'
+      | 'volume-gain-max'
+      | 'volume-gain-min'
+      | 'volume-max'
+      | 'window-scale'
+  ]: { read: ShapeValue<'number'>; write: ShapeValue<'number'> }
+} & {
+  [
+    N in
+      | 'ad-lavc-o'
+      | 'audio-swresample-o'
+      | 'demuxer-lavf-o'
+      | 'glsl-shader-opts'
+      | 'libplacebo-opts'
+      | 'msg-level'
+      | 'oacopts'
+      | 'ofopts'
+      | 'oset-metadata'
+      | 'ovcopts'
+      | 'screenshot-avif-opts'
+      | 'script-opts'
+      | 'stream-lavf-o'
+      | 'sub-lavc-o'
+      | 'vd-lavc-o'
+      | 'vo-image-avif-opts'
+      | 'ytdl-raw-options'
+  ]: {
+    read: ShapeValue<{ dictionary: 'string' }>
+    write: ShapeValue<{ anyOf: ['string', { dictionary: 'string' }] }>
   }
-  'tone-mapping-desaturate': { read: MpvValue; write: MpvValue }
-  'tone-mapping-desaturate-exponent': { read: MpvValue; write: MpvValue }
-  'tone-mapping-exposure': { read: number; write: number }
-  'tone-mapping-knee-adaptation': { read: number; write: number }
-  'tone-mapping-knee-default': { read: number; write: number }
-  'tone-mapping-knee-maximum': { read: number; write: number }
-  'tone-mapping-knee-minimum': { read: number; write: number }
-  'tone-mapping-knee-offset': { read: number; write: number }
-  'tone-mapping-linear-knee': { read: number; write: number }
-  'tone-mapping-max-boost': { read: number; write: number }
-  'tone-mapping-param': { read: number; write: number }
-  'tone-mapping-reinhard-contrast': { read: number; write: number }
-  'tone-mapping-slope-offset': { read: number; write: number }
-  'tone-mapping-slope-tuning': { read: number; write: number }
-  'tone-mapping-spline-contrast': { read: number; write: number }
-  'tone-mapping-visualize': { read: boolean; write: boolean }
-  'track-auto-selection': { read: boolean; write: boolean }
-  'treat-srgb-as-power22': {
-    read: 'input' | 'output' | 'both' | 'auto' | false
-    write: 'no' | 'input' | 'output' | 'both' | 'auto' | false
+} & {
+  [
+    N in
+      | 'ad-lavc-threads'
+      | 'ad-queue-max-samples'
+      | 'alsa-buffer-time'
+      | 'alsa-mixer-index'
+      | 'alsa-periods'
+      | 'ao-null-outburst'
+      | 'audio-backward-batch'
+      | 'audio-resample-filter-size'
+      | 'audio-resample-phase-shift'
+      | 'audio-samplerate'
+      | 'background-tile-size'
+      | 'chapter-merge-threshold'
+      | 'd3d11-sync-interval'
+      | 'deband-iterations'
+      | 'demuxer-lavf-probescore'
+      | 'demuxer-rawaudio-rate'
+      | 'demuxer-rawvideo-h'
+      | 'demuxer-rawvideo-size'
+      | 'demuxer-rawvideo-w'
+      | 'dither-size-fruit'
+      | 'egl-config-id'
+      | 'gpu-tex-pad-x'
+      | 'gpu-tex-pad-y'
+      | 'hwdec-threads'
+      | 'icc-intent'
+      | 'input-ar-delay'
+      | 'input-ar-rate'
+      | 'input-doubleclick-time'
+      | 'input-dragging-deadzone'
+      | 'input-key-fifo-size'
+      | 'opengl-check-pattern-a'
+      | 'opengl-check-pattern-b'
+      | 'opengl-swapinterval'
+      | 'osd-bitmap-max-size'
+      | 'osd-duration'
+      | 'osd-glyph-limit'
+      | 'osd-margin-x'
+      | 'osd-margin-y'
+      | 'osd-margin-y-offset'
+      | 'osd-playing-msg-duration'
+      | 'screenshot-jpeg-quality'
+      | 'screenshot-jxl-effort'
+      | 'screenshot-png-compression'
+      | 'screenshot-png-filter'
+      | 'screenshot-webp-compression'
+      | 'screenshot-webp-quality'
+      | 'sub-bitmap-max-size'
+      | 'sub-fix-timing-keep'
+      | 'sub-fix-timing-threshold'
+      | 'sub-glyph-limit'
+      | 'sub-margin-x'
+      | 'sub-margin-y'
+      | 'sub-margin-y-offset'
+      | 'swapchain-depth'
+      | 'sws-chs'
+      | 'sws-cvs'
+      | 'teletext-page'
+      | 'temporal-dither-period'
+      | 'vd-lavc-threads'
+      | 'vd-queue-max-samples'
+      | 'video-backward-batch'
+      | 'video-sync-max-factor'
+      | 'vo-image-jpeg-quality'
+      | 'vo-image-jxl-effort'
+      | 'vo-image-png-compression'
+      | 'vo-image-png-filter'
+      | 'vo-image-webp-compression'
+      | 'vo-image-webp-quality'
+      | 'vo-kitty-cols'
+      | 'vo-kitty-height'
+      | 'vo-kitty-left'
+      | 'vo-kitty-rows'
+      | 'vo-kitty-top'
+      | 'vo-kitty-width'
+      | 'vo-tct-height'
+      | 'vo-tct-width'
+      | 'vulkan-display-display'
+      | 'vulkan-display-mode'
+      | 'vulkan-display-plane'
+      | 'vulkan-queue-count'
+      | 'wid'
+  ]: { read: ShapeValue<'bigint'>; write: ShapeValue<'integerInput'> }
+} & {
+  [
+    N in
+      | 'ad-queue-max-bytes'
+      | 'audio-reversal-buffer'
+      | 'demuxer-hysteresis-bytes'
+      | 'demuxer-lavf-buffersize'
+      | 'demuxer-lavf-probesize'
+      | 'demuxer-max-back-bytes'
+      | 'demuxer-max-bytes'
+      | 'stream-buffer-size'
+      | 'vd-queue-max-bytes'
+      | 'video-reversal-buffer'
+  ]: { read: ShapeValue<'bigint'>; write: ShapeValue<{ anyOf: ['bigint', 'string'] }> }
+} & {
+  [N in 'af' | 'ao' | 'clipboard-backends' | 'gpu-api' | 'gpu-context' | 'vf' | 'vo']: {
+    read: ShapeValue<{
+      list: {
+        fields: { name: 'string' }
+        optional: { label: 'string'; enabled: 'boolean'; params: { dictionary: 'string' } }
+      }
+    }>
+    write: ShapeValue<{
+      anyOf: [
+        'string',
+        {
+          list: {
+            fields: { name: 'string' }
+            optional: { label: 'string'; enabled: 'boolean'; params: { dictionary: 'string' } }
+          }
+        },
+      ]
+    }>
   }
-  tscale: {
-    read:
-      | 'oversample'
-      | 'linear'
-      | 'spline16'
-      | 'spline36'
-      | 'spline64'
-      | 'sinc'
-      | 'lanczos'
-      | 'ginseng'
-      | 'bicubic'
-      | 'hermite'
-      | 'catmull_rom'
-      | 'mitchell'
-      | 'robidoux'
-      | 'robidouxsharp'
-      | 'box'
-      | 'nearest'
-      | 'triangle'
-      | 'gaussian'
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
-    write:
-      | 'oversample'
-      | 'linear'
-      | 'spline16'
-      | 'spline36'
-      | 'spline64'
-      | 'sinc'
-      | 'lanczos'
-      | 'ginseng'
-      | 'bicubic'
-      | 'hermite'
-      | 'catmull_rom'
-      | 'mitchell'
-      | 'robidoux'
-      | 'robidouxsharp'
-      | 'box'
-      | 'nearest'
-      | 'triangle'
-      | 'gaussian'
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
+} & {
+  [N in 'aid' | 'audio' | 'dither-depth' | 'secondary-sid' | 'sid' | 'sub' | 'vid' | 'video']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: [false, 'auto'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['no', false, 'auto'] }] }>
   }
-  'tscale-antiring': { read: number; write: number }
-  'tscale-blur': { read: number; write: number }
-  'tscale-clamp': { read: number; write: number }
-  'tscale-param1': { read: number; write: number }
-  'tscale-param2': { read: number; write: number }
-  'tscale-radius': { read: number; write: number }
-  'tscale-taper': { read: number; write: number }
-  'tscale-window': {
-    read:
-      | ''
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
-    write:
-      | ''
-      | 'bartlett'
-      | 'cosine'
-      | 'hanning'
-      | 'tukey'
-      | 'hamming'
-      | 'quadric'
-      | 'welch'
-      | 'kaiser'
-      | 'blackman'
-      | 'sphinx'
-      | 'jinc'
+} & {
+  [
+    N in
+      | 'alang'
+      | 'archive-exts'
+      | 'audio-exts'
+      | 'audio-file-auto-exts'
+      | 'audio-file-paths'
+      | 'audio-files'
+      | 'cover-art-auto-exts'
+      | 'cover-art-files'
+      | 'cover-art-whitelist'
+      | 'directory-filter-types'
+      | 'display-tags'
+      | 'external-files'
+      | 'glsl-shaders'
+      | 'http-header-fields'
+      | 'hwdec'
+      | 'image-exts'
+      | 'input-commands'
+      | 'macos-bundle-path'
+      | 'oremove-metadata'
+      | 'playlist-exts'
+      | 'profile'
+      | 'reset-on-next-file'
+      | 'scripts'
+      | 'slang'
+      | 'sub-ass-force-style'
+      | 'sub-ass-style-overrides'
+      | 'sub-auto-exts'
+      | 'sub-file-paths'
+      | 'sub-files'
+      | 'sub-filter-jsre'
+      | 'sub-filter-regex'
+      | 'sub-filter-sdh-enclosures'
+      | 'video-exts'
+      | 'vlang'
+      | 'watch-later-options'
+  ]: {
+    read: ShapeValue<{ list: 'string' }>
+    write: ShapeValue<{ anyOf: ['string', { list: 'string' }] }>
   }
-  'tscale-wparam': { read: number; write: number }
-  'tscale-wtaper': { read: number; write: number }
-  unregister: { read: boolean; write: boolean }
-  untimed: { read: boolean; write: boolean }
-  'use-embedded-icc-profile': { read: boolean; write: boolean }
-  'use-filedir-conf': { read: boolean; write: boolean }
-  'user-agent': { read: string; write: string }
-  v: { read: boolean; write: boolean }
-  'vaapi-device': { read: string; write: string }
-  vd: { read: string; write: string }
-  'vd-apply-cropping': { read: boolean; write: boolean }
-  'vd-lavc-assume-old-x264': { read: boolean; write: boolean }
-  'vd-lavc-bitexact': { read: boolean; write: boolean }
-  'vd-lavc-check-hw-profile': { read: boolean; write: boolean }
-  'vd-lavc-dr': { read: 'auto' | true | false; write: 'auto' | 'no' | 'yes' | true | false }
-  'vd-lavc-fast': { read: boolean; write: boolean }
-  'vd-lavc-film-grain': { read: 'auto' | 'cpu' | 'gpu'; write: 'auto' | 'cpu' | 'gpu' }
-  'vd-lavc-framedrop': {
-    read: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
-    write: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
+} & {
+  [
+    N in
+      | 'audio-backward-overlap'
+      | 'edition'
+      | 'hdr-reference-white'
+      | 'hwdec-extra-frames'
+      | 'target-peak'
+      | 'video-backward-overlap'
+  ]: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['auto'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['auto'] }] }>
   }
-  'vd-lavc-o': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
+} & {
+  [N in 'audio-display']: {
+    read: ShapeValue<{ literals: [false, 'embedded-first', 'external-first'] }>
+    write: ShapeValue<{ literals: ['no', false, 'embedded-first', 'external-first'] }>
   }
-  'vd-lavc-show-all': { read: boolean; write: boolean }
-  'vd-lavc-skipframe': {
-    read: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
-    write: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
+} & {
+  [
+    N in
+      | 'audio-file'
+      | 'cover-art-file'
+      | 'external-file'
+      | 'focus-on-open'
+      | 'gamut-clipping'
+      | 'gamut-warning'
+      | 'glsl-shader'
+      | 'script'
+      | 'script-opt'
+      | 'sub-ass-vsfilter-aspect-compat'
+      | 'sub-ass-vsfilter-blur-compat'
+      | 'sub-file'
+      | 'tone-mapping-desaturate'
+      | 'tone-mapping-desaturate-exponent'
+  ]: { read: ShapeValue<'value'>; write: ShapeValue<'value'> }
+} & {
+  [N in 'audio-file-auto' | 'cover-art-auto' | 'sub-auto']: {
+    read: ShapeValue<{ literals: [false, 'exact', 'fuzzy', 'all'] }>
+    write: ShapeValue<{ literals: ['no', false, 'exact', 'fuzzy', 'all'] }>
   }
-  'vd-lavc-skipidct': {
-    read: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
-    write: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
+} & {
+  [N in 'autocreate-playlist']: {
+    read: ShapeValue<{ literals: [false, 'filter', 'same'] }>
+    write: ShapeValue<{ literals: ['no', false, 'filter', 'same'] }>
   }
-  'vd-lavc-skiploopfilter': {
-    read: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
-    write: 'none' | 'default' | 'nonref' | 'bidir' | 'nonkey' | 'all'
+} & {
+  [N in 'autosync' | 'video-rotate']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: [false] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['no', false] }] }>
   }
-  'vd-lavc-software-fallback': {
-    read: true | false | bigint
-    write: 'no' | 'yes' | true | false | IntegerArgument
+} & {
+  [N in 'backdrop-type']: {
+    read: ShapeValue<{ literals: ['auto', 'none', 'mica', 'acrylic', 'mica-alt'] }>
+    write: ShapeValue<{ literals: ['auto', 'none', 'mica', 'acrylic', 'mica-alt'] }>
   }
-  'vd-lavc-threads': { read: bigint; write: IntegerArgument }
-  'vd-queue-enable': { read: boolean; write: boolean }
-  'vd-queue-max-bytes': { read: bigint; write: bigint | string }
-  'vd-queue-max-samples': { read: bigint; write: IntegerArgument }
-  'vd-queue-max-secs': { read: number; write: number }
-  version: { read: MpvValue; write: string }
-  vf: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  vid: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  video: { read: 'auto' | false | bigint; write: 'no' | 'auto' | false | IntegerArgument }
-  'video-align-x': { read: number; write: number }
-  'video-align-y': { read: number; write: number }
-  'video-aspect-method': {
-    read: 'bitstream' | 'container' | 'ignore'
-    write: 'bitstream' | 'container' | 'ignore'
+} & {
+  [N in 'background']: {
+    read: ShapeValue<{ literals: ['none', 'color', 'tiles'] }>
+    write: ShapeValue<{ literals: ['none', 'color', 'tiles'] }>
   }
-  'video-aspect-override': { read: number; write: number | bigint | string }
-  'video-backward-batch': { read: bigint; write: IntegerArgument }
-  'video-backward-overlap': { read: 'auto' | bigint; write: 'auto' | IntegerArgument }
-  'video-crop': { read: string; write: string }
-  'video-exts': { read: readonly string[]; write: string | readonly string[] }
-  'video-latency-hacks': { read: boolean; write: boolean }
-  'video-margin-ratio-bottom': { read: number; write: number }
-  'video-margin-ratio-left': { read: number; write: number }
-  'video-margin-ratio-right': { read: number; write: number }
-  'video-margin-ratio-top': { read: number; write: number }
-  'video-osd': { read: boolean; write: boolean }
-  'video-output-levels': { read: 'auto' | 'limited' | 'full'; write: 'auto' | 'limited' | 'full' }
-  'video-pan-x': { read: number; write: number }
-  'video-pan-y': { read: number; write: number }
-  'video-recenter': { read: boolean; write: boolean }
-  'video-reversal-buffer': { read: bigint; write: bigint | string }
-  'video-rotate': { read: false | bigint; write: 'no' | false | IntegerArgument }
-  'video-scale-x': { read: number; write: number }
-  'video-scale-y': { read: number; write: number }
-  'video-sync': {
-    read:
-      | 'audio'
-      | 'display-resample'
-      | 'display-resample-vdrop'
-      | 'display-resample-desync'
-      | 'display-tempo'
-      | 'display-adrop'
-      | 'display-vdrop'
-      | 'display-desync'
-      | 'desync'
-    write:
-      | 'audio'
-      | 'display-resample'
-      | 'display-resample-vdrop'
-      | 'display-resample-desync'
-      | 'display-tempo'
-      | 'display-adrop'
-      | 'display-vdrop'
-      | 'display-desync'
-      | 'desync'
+} & {
+  [N in 'blend-subtitles']: {
+    read: ShapeValue<{ literals: [false, true, 'video'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'video'] }>
   }
-  'video-sync-max-audio-change': { read: number; write: number }
-  'video-sync-max-factor': { read: bigint; write: IntegerArgument }
-  'video-sync-max-video-change': { read: number; write: number }
-  'video-timing-offset': { read: number; write: number }
-  'video-unscaled': {
-    read: 'downscale-big' | true | false
-    write: 'no' | 'yes' | 'downscale-big' | true | false
+} & {
+  [N in 'border-background']: {
+    read: ShapeValue<{ literals: ['none', 'color', 'tiles', 'blur'] }>
+    write: ShapeValue<{ literals: ['none', 'color', 'tiles', 'blur'] }>
   }
-  'video-zoom': { read: number; write: number }
-  vlang: { read: readonly string[]; write: string | readonly string[] }
-  vo: { read: readonly ObjectSetting[]; write: string | readonly ObjectSetting[] }
-  'vo-image-avif-encoder': { read: string; write: string }
-  'vo-image-avif-opts': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
+} & {
+  [N in 'cache' | 'demuxer-lavf-linearize-timestamps']: {
+    read: ShapeValue<{ literals: [false, 'auto', true] }>
+    write: ShapeValue<{ literals: ['no', false, 'auto', 'yes', true] }>
   }
-  'vo-image-avif-pixfmt': { read: string; write: string }
-  'vo-image-format': {
-    read: 'jpg' | 'jpeg' | 'png' | 'webp' | 'jxl' | 'avif'
-    write: 'jpg' | 'jpeg' | 'png' | 'webp' | 'jxl' | 'avif'
+} & {
+  [N in 'cocoa-cb-output-csp']: {
+    read: ShapeValue<{
+      literals: [
+        'auto',
+        'display-p3',
+        'display-p3-hlg',
+        'display-p3-pq',
+        'display-p3-linear',
+        'dci-p3',
+        'bt.2020',
+        'bt.2020-linear',
+        'bt.2100-hlg',
+        'bt.2100-pq',
+        'bt.709',
+        'srgb',
+        'srgb-linear',
+        'rgb-linear',
+        'adobe',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'auto',
+        'display-p3',
+        'display-p3-hlg',
+        'display-p3-pq',
+        'display-p3-linear',
+        'dci-p3',
+        'bt.2020',
+        'bt.2020-linear',
+        'bt.2100-hlg',
+        'bt.2100-pq',
+        'bt.709',
+        'srgb',
+        'srgb-linear',
+        'rgb-linear',
+        'adobe',
+      ]
+    }>
   }
-  'vo-image-high-bit-depth': { read: boolean; write: boolean }
-  'vo-image-jpeg-quality': { read: bigint; write: IntegerArgument }
-  'vo-image-jpeg-source-chroma': { read: boolean; write: boolean }
-  'vo-image-jxl-distance': { read: number; write: number }
-  'vo-image-jxl-effort': { read: bigint; write: IntegerArgument }
-  'vo-image-outdir': { read: string; write: string }
-  'vo-image-png-compression': { read: bigint; write: IntegerArgument }
-  'vo-image-png-filter': { read: bigint; write: IntegerArgument }
-  'vo-image-tag-colorspace': { read: boolean; write: boolean }
-  'vo-image-webp-compression': { read: bigint; write: IntegerArgument }
-  'vo-image-webp-lossless': { read: boolean; write: boolean }
-  'vo-image-webp-quality': { read: bigint; write: IntegerArgument }
-  'vo-kitty-alt-screen': { read: boolean; write: boolean }
-  'vo-kitty-auto-multiplexer-passthrough': { read: boolean; write: boolean }
-  'vo-kitty-cols': { read: bigint; write: IntegerArgument }
-  'vo-kitty-config-clear': { read: boolean; write: boolean }
-  'vo-kitty-height': { read: bigint; write: IntegerArgument }
-  'vo-kitty-left': { read: bigint; write: IntegerArgument }
-  'vo-kitty-rows': { read: bigint; write: IntegerArgument }
-  'vo-kitty-top': { read: bigint; write: IntegerArgument }
-  'vo-kitty-use-shm': { read: boolean; write: boolean }
-  'vo-kitty-width': { read: bigint; write: IntegerArgument }
-  'vo-mmcss-profile': { read: string; write: string }
-  'vo-null-fps': { read: number; write: number }
-  'vo-tct-256': { read: boolean; write: boolean }
-  'vo-tct-algo': { read: 'plain' | 'half-blocks'; write: 'plain' | 'half-blocks' }
-  'vo-tct-buffering': { read: 'pixel' | 'line' | 'frame'; write: 'pixel' | 'line' | 'frame' }
-  'vo-tct-height': { read: bigint; write: IntegerArgument }
-  'vo-tct-width': { read: bigint; write: IntegerArgument }
-  volume: { read: number; write: number }
-  'volume-gain': { read: number; write: number }
-  'volume-gain-max': { read: number; write: number }
-  'volume-gain-min': { read: number; write: number }
-  'volume-max': { read: number; write: number }
-  'vulkan-async-compute': { read: boolean; write: boolean }
-  'vulkan-async-transfer': { read: boolean; write: boolean }
-  'vulkan-device': { read: string; write: string }
-  'vulkan-display-display': { read: bigint; write: IntegerArgument }
-  'vulkan-display-mode': { read: bigint; write: IntegerArgument }
-  'vulkan-display-plane': { read: bigint; write: IntegerArgument }
-  'vulkan-queue-count': { read: bigint; write: IntegerArgument }
-  'vulkan-swap-mode': {
-    read: 'auto' | 'fifo' | 'fifo-relaxed' | 'mailbox' | 'immediate'
-    write: 'auto' | 'fifo' | 'fifo-relaxed' | 'mailbox' | 'immediate'
+} & {
+  [
+    N in
+      | 'cocoa-cb-sw-renderer'
+      | 'd3d11-warp'
+      | 'demuxer-seekable-cache'
+      | 'target-colorspace-hint'
+      | 'vd-lavc-dr'
+  ]: {
+    read: ShapeValue<{ literals: ['auto', false, true] }>
+    write: ShapeValue<{ literals: ['auto', 'no', false, 'yes', true] }>
   }
-  'wasapi-exclusive-buffer': {
-    read: 'default' | 'min' | bigint
-    write: 'default' | 'min' | IntegerArgument
+} & {
+  [N in 'cscale' | 'dscale']: {
+    read: ShapeValue<{
+      anyOf: [
+        { integer: '0' },
+        {
+          literals: [
+            'bilinear',
+            'bicubic_fast',
+            'oversample',
+            'spline16',
+            'spline36',
+            'spline64',
+            'sinc',
+            'lanczos',
+            'ginseng',
+            'bicubic',
+            'hermite',
+            'catmull_rom',
+            'mitchell',
+            'robidoux',
+            'robidouxsharp',
+            'box',
+            'nearest',
+            'triangle',
+            'gaussian',
+            'jinc',
+            'ewa_lanczos',
+            'ewa_hanning',
+            'ewa_ginseng',
+            'ewa_lanczossharp',
+            'ewa_lanczos4sharpest',
+            'ewa_lanczossoft',
+            'haasnsoft',
+            'ewa_robidoux',
+            'ewa_robidouxsharp',
+            'bartlett',
+            'cosine',
+            'hanning',
+            'tukey',
+            'hamming',
+            'quadric',
+            'welch',
+            'kaiser',
+            'blackman',
+            'sphinx',
+          ]
+        },
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        '',
+        'bilinear',
+        'bicubic_fast',
+        'oversample',
+        'spline16',
+        'spline36',
+        'spline64',
+        'sinc',
+        'lanczos',
+        'ginseng',
+        'bicubic',
+        'hermite',
+        'catmull_rom',
+        'mitchell',
+        'robidoux',
+        'robidouxsharp',
+        'box',
+        'nearest',
+        'triangle',
+        'gaussian',
+        'jinc',
+        'ewa_lanczos',
+        'ewa_hanning',
+        'ewa_ginseng',
+        'ewa_lanczossharp',
+        'ewa_lanczos4sharpest',
+        'ewa_lanczossoft',
+        'haasnsoft',
+        'ewa_robidoux',
+        'ewa_robidouxsharp',
+        'bartlett',
+        'cosine',
+        'hanning',
+        'tukey',
+        'hamming',
+        'quadric',
+        'welch',
+        'kaiser',
+        'blackman',
+        'sphinx',
+      ]
+    }>
   }
-  'watch-history-path': { read: string; write: string }
-  'watch-later-dir': { read: string; write: string }
-  'watch-later-directory': { read: string; write: string }
-  'watch-later-options': { read: readonly string[]; write: string | readonly string[] }
-  'wayland-app-id': { read: string; write: string }
-  wid: { read: bigint; write: IntegerArgument }
-  'window-affinity': {
-    read: 'default' | 'excludefromcapture' | 'monitor'
-    write: 'default' | 'excludefromcapture' | 'monitor'
+} & {
+  [
+    N in
+      | 'cscale-param1'
+      | 'cscale-param2'
+      | 'cscale-wparam'
+      | 'dscale-param1'
+      | 'dscale-param2'
+      | 'dscale-wparam'
+      | 'scale-param1'
+      | 'scale-param2'
+      | 'scale-wparam'
+      | 'tone-mapping-param'
+      | 'tscale-param1'
+      | 'tscale-param2'
+      | 'tscale-wparam'
+  ]: {
+    read: ShapeValue<{ anyOf: ['number', { literals: ['default'] }] }>
+    write: ShapeValue<{ anyOf: ['number', { literals: ['default'] }] }>
   }
-  'window-corners': {
-    read: 'default' | 'donotround' | 'round' | 'roundsmall'
-    write: 'default' | 'donotround' | 'round' | 'roundsmall'
+} & {
+  [N in 'cscale-window' | 'dscale-window' | 'scale-window' | 'tscale-window']: {
+    read: ShapeValue<{
+      anyOf: [
+        { integer: '0' },
+        {
+          literals: [
+            'bartlett',
+            'cosine',
+            'hanning',
+            'tukey',
+            'hamming',
+            'quadric',
+            'welch',
+            'kaiser',
+            'blackman',
+            'sphinx',
+            'jinc',
+          ]
+        },
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        '',
+        'bartlett',
+        'cosine',
+        'hanning',
+        'tukey',
+        'hamming',
+        'quadric',
+        'welch',
+        'kaiser',
+        'blackman',
+        'sphinx',
+        'jinc',
+      ]
+    }>
   }
-  'window-dragging': { read: boolean; write: boolean }
-  'window-maximized': { read: boolean; write: boolean }
-  'window-minimized': { read: boolean; write: boolean }
-  'window-scale': { read: number; write: number }
-  'write-filename-in-watch-later-config': { read: boolean; write: boolean }
-  'x11-name': { read: string; write: string }
-  ytdl: { read: boolean; write: boolean }
-  'ytdl-format': { read: string; write: string }
-  'ytdl-raw-options': {
-    read: Readonly<Record<string, string>>
-    write: string | Readonly<Record<string, string>>
+} & {
+  [N in 'cursor-autohide']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: [false, 'always'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['no', false, 'always'] }] }>
   }
-  '{': { read: boolean; write: boolean }
-  '}': { read: boolean; write: boolean }
+} & {
+  [N in 'd3d11-feature-level']: {
+    read: ShapeValue<{
+      literals: ['12_1', '12_0', '11_1', '11_0', '10_1', '10_0', '9_3', '9_2', '9_1']
+    }>
+    write: ShapeValue<{
+      literals: ['12_1', '12_0', '11_1', '11_0', '10_1', '10_0', '9_3', '9_2', '9_1']
+    }>
+  }
+} & {
+  [N in 'd3d11-output-csp']: {
+    read: ShapeValue<{ literals: ['auto', 'srgb', 'linear', 'pq', 'bt.2020'] }>
+    write: ShapeValue<{ literals: ['auto', 'srgb', 'linear', 'pq', 'bt.2020'] }>
+  }
+} & {
+  [N in 'd3d11-output-format']: {
+    read: ShapeValue<{ literals: ['auto', 'rgba8', 'bgra8', 'rgb10_a2', 'rgba16f'] }>
+    write: ShapeValue<{ literals: ['auto', 'rgba8', 'bgra8', 'rgb10_a2', 'rgba16f'] }>
+  }
+} & {
+  [N in 'd3d11-output-mode']: {
+    read: ShapeValue<{ literals: ['auto', 'window', 'composition'] }>
+    write: ShapeValue<{ literals: ['auto', 'window', 'composition'] }>
+  }
+} & {
+  [N in 'deinterlace' | 'drm-vrr-enabled' | 'load-auto-profiles' | 'opengl-early-flush']: {
+    read: ShapeValue<{ literals: [false, true, 'auto'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'auto'] }>
+  }
+} & {
+  [N in 'deinterlace-field-parity']: {
+    read: ShapeValue<{ literals: ['tff', 'bff', 'auto'] }>
+    write: ShapeValue<{ literals: ['tff', 'bff', 'auto'] }>
+  }
+} & {
+  [N in 'demuxer-cache-unlink-files']: {
+    read: ShapeValue<{ literals: ['immediate', 'whendone', false] }>
+    write: ShapeValue<{ literals: ['immediate', 'whendone', 'no', false] }>
+  }
+} & {
+  [N in 'demuxer-lavf-probe-info']: {
+    read: ShapeValue<{ literals: [false, true, 'auto', 'nostreams'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'auto', 'nostreams'] }>
+  }
+} & {
+  [N in 'demuxer-mkv-probe-video-duration']: {
+    read: ShapeValue<{ literals: [false, true, 'full'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'full'] }>
+  }
+} & {
+  [N in 'demuxer-mkv-subtitle-preroll']: {
+    read: ShapeValue<{ literals: [false, true, 'index'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'index'] }>
+  }
+} & {
+  [N in 'demuxer-rawaudio-format']: {
+    read: ShapeValue<{
+      literals: [
+        'u8',
+        's8',
+        'u16le',
+        'u16be',
+        's16le',
+        's16be',
+        'u24le',
+        'u24be',
+        's24le',
+        's24be',
+        'u32le',
+        'u32be',
+        's32le',
+        's32be',
+        'floatle',
+        'floatbe',
+        'doublele',
+        'doublebe',
+        'u16',
+        's16',
+        'u24',
+        's24',
+        'u32',
+        's32',
+        'float',
+        'double',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'u8',
+        's8',
+        'u16le',
+        'u16be',
+        's16le',
+        's16be',
+        'u24le',
+        'u24be',
+        's24le',
+        's24be',
+        'u32le',
+        'u32be',
+        's32le',
+        's32be',
+        'floatle',
+        'floatbe',
+        'doublele',
+        'doublebe',
+        'u16',
+        's16',
+        'u24',
+        's24',
+        'u32',
+        's32',
+        'float',
+        'double',
+      ]
+    }>
+  }
+} & {
+  [N in 'directory-mode']: {
+    read: ShapeValue<{ literals: ['auto', 'lazy', 'recursive', 'ignore'] }>
+    write: ShapeValue<{ literals: ['auto', 'lazy', 'recursive', 'ignore'] }>
+  }
+} & {
+  [N in 'dither']: {
+    read: ShapeValue<{ literals: ['fruit', 'ordered', 'error-diffusion', false] }>
+    write: ShapeValue<{ literals: ['fruit', 'ordered', 'error-diffusion', 'no', false] }>
+  }
+} & {
+  [N in 'drag-and-drop']: {
+    read: ShapeValue<{ literals: [false, 'auto', 'replace', 'append', 'insert-next'] }>
+    write: ShapeValue<{ literals: ['no', false, 'auto', 'replace', 'append', 'insert-next'] }>
+  }
+} & {
+  [N in 'drm-draw-plane' | 'drm-drmprime-video-plane']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['primary', 'overlay'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['primary', 'overlay'] }] }>
+  }
+} & {
+  [N in 'drm-format']: {
+    read: ShapeValue<{
+      literals: ['xrgb8888', 'xrgb2101010', 'xbgr8888', 'xbgr2101010', 'rgb565', 'yuyv']
+    }>
+    write: ShapeValue<{
+      literals: ['xrgb8888', 'xrgb2101010', 'xbgr8888', 'xbgr2101010', 'rgb565', 'yuyv']
+    }>
+  }
+} & {
+  [N in 'egl-output-format']: {
+    read: ShapeValue<{
+      literals: [
+        'auto',
+        'rgb8',
+        'rgba8',
+        'rgb10',
+        'rgb10_a2',
+        'rgb16',
+        'rgba16',
+        'rgb16f',
+        'rgba16f',
+        'rgb32f',
+        'rgba32f',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'auto',
+        'rgb8',
+        'rgba8',
+        'rgb10',
+        'rgb10_a2',
+        'rgb16',
+        'rgba16',
+        'rgb16f',
+        'rgba16f',
+        'rgb32f',
+        'rgba32f',
+      ]
+    }>
+  }
+} & {
+  [N in 'focus-on']: {
+    read: ShapeValue<{ literals: ['never', 'open', 'all'] }>
+    write: ShapeValue<{ literals: ['never', 'open', 'all'] }>
+  }
+} & {
+  [N in 'force-window']: {
+    read: ShapeValue<{ literals: [false, true, 'immediate'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'immediate'] }>
+  }
+} & {
+  [N in 'framedrop']: {
+    read: ShapeValue<{ literals: [false, 'vo', 'decoder', 'decoder+vo'] }>
+    write: ShapeValue<{ literals: ['no', false, 'vo', 'decoder', 'decoder+vo'] }>
+  }
+} & {
+  [N in 'frames']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['all'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['all'] }] }>
+  }
+} & {
+  [N in 'fs-screen']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['all', 'current'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['all', 'current'] }] }>
+  }
+} & {
+  [N in 'gamut-mapping-mode']: {
+    read: ShapeValue<{
+      literals: [
+        'auto',
+        'clip',
+        'perceptual',
+        'relative',
+        'saturation',
+        'absolute',
+        'desaturate',
+        'darken',
+        'warn',
+        'linear',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'auto',
+        'clip',
+        'perceptual',
+        'relative',
+        'saturation',
+        'absolute',
+        'desaturate',
+        'darken',
+        'warn',
+        'linear',
+      ]
+    }>
+  }
+} & {
+  [N in 'gapless-audio']: {
+    read: ShapeValue<{ literals: [false, true, 'weak'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'weak'] }>
+  }
+} & {
+  [N in 'gpu-dumb-mode' | 'hdr-compute-peak' | 'opengl-es' | 'sdr-adjust-gamma']: {
+    read: ShapeValue<{ literals: ['auto', true, false] }>
+    write: ShapeValue<{ literals: ['auto', 'yes', true, 'no', false] }>
+  }
+} & {
+  [N in 'hls-bitrate']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: [false, 'min', 'max'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['no', false, 'min', 'max'] }] }>
+  }
+} & {
+  [N in 'hr-seek']: {
+    read: ShapeValue<{ literals: [false, 'absolute', true, 'always', 'default'] }>
+    write: ShapeValue<{ literals: ['no', false, 'absolute', 'yes', true, 'always', 'default'] }>
+  }
+} & {
+  [N in 'hwdec-software-fallback' | 'vd-lavc-software-fallback']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: [false, true] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['no', false, 'yes', true] }] }>
+  }
+} & {
+  [N in 'icc-force-contrast']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: [false, 'inf'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['no', false, 'inf'] }] }>
+  }
+} & {
+  [N in 'idle']: {
+    read: ShapeValue<{ literals: [false, 'once', true] }>
+    write: ShapeValue<{ literals: ['no', false, 'once', 'yes', true] }>
+  }
+} & {
+  [N in 'image-display-duration']: {
+    read: ShapeValue<'number'>
+    write: ShapeValue<{ anyOf: ['number', { literals: ['inf'] }] }>
+  }
+} & {
+  [N in 'image-lut-type' | 'lut-type']: {
+    read: ShapeValue<{ literals: ['auto', 'native', 'normalized', 'conversion'] }>
+    write: ShapeValue<{ literals: ['auto', 'native', 'normalized', 'conversion'] }>
+  }
+} & {
+  [N in 'image-subs-hdr-peak']: {
+    read: ShapeValue<{
+      anyOf: ['bigint', { literals: ['sdr', 'video', 'video-static', 'video-dynamic'] }]
+    }>
+    write: ShapeValue<{
+      anyOf: ['integerInput', { literals: ['sdr', 'video', 'video-static', 'video-dynamic'] }]
+    }>
+  }
+} & {
+  [N in 'index']: {
+    read: ShapeValue<{ literals: ['default', 'recreate'] }>
+    write: ShapeValue<{ literals: ['default', 'recreate'] }>
+  }
+} & {
+  [N in 'keep-open' | 'stop-screensaver' | 'subs-fallback-forced']: {
+    read: ShapeValue<{ literals: [false, true, 'always'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'always'] }>
+  }
+} & {
+  [N in 'loop' | 'loop-file']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: [false, 'inf', true] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['no', false, 'inf', 'yes', true] }] }>
+  }
+} & {
+  [N in 'loop-playlist']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: [false, 'inf', true, 'force'] }] }>
+    write: ShapeValue<{
+      anyOf: ['integerInput', { literals: ['no', false, 'inf', 'yes', true, 'force'] }]
+    }>
+  }
+} & {
+  [N in 'macos-app-activation-policy']: {
+    read: ShapeValue<{ literals: ['regular', 'accessory', 'prohibited'] }>
+    write: ShapeValue<{ literals: ['regular', 'accessory', 'prohibited'] }>
+  }
+} & {
+  [N in 'macos-fs-animation-duration' | 'screen']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['default'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['default'] }] }>
+  }
+} & {
+  [N in 'macos-geometry-calculation']: {
+    read: ShapeValue<{ literals: ['visible', 'whole'] }>
+    write: ShapeValue<{ literals: ['visible', 'whole'] }>
+  }
+} & {
+  [N in 'macos-render-timer']: {
+    read: ShapeValue<{ literals: ['callback', 'precise', 'system', 'feedback'] }>
+    write: ShapeValue<{ literals: ['callback', 'precise', 'system', 'feedback'] }>
+  }
+} & {
+  [N in 'macos-title-bar-appearance']: {
+    read: ShapeValue<{
+      literals: [
+        'auto',
+        'aqua',
+        'darkAqua',
+        'vibrantLight',
+        'vibrantDark',
+        'aquaHighContrast',
+        'darkAquaHighContrast',
+        'vibrantLightHighContrast',
+        'vibrantDarkHighContrast',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'auto',
+        'aqua',
+        'darkAqua',
+        'vibrantLight',
+        'vibrantDark',
+        'aquaHighContrast',
+        'darkAquaHighContrast',
+        'vibrantLightHighContrast',
+        'vibrantDarkHighContrast',
+      ]
+    }>
+  }
+} & {
+  [N in 'macos-title-bar-material']: {
+    read: ShapeValue<{
+      literals: [
+        'titlebar',
+        'selection',
+        'menu',
+        'popover',
+        'sidebar',
+        'headerView',
+        'sheet',
+        'windowBackground',
+        'hudWindow',
+        'fullScreen',
+        'toolTip',
+        'contentBackground',
+        'underWindowBackground',
+        'underPageBackground',
+        'dark',
+        'light',
+        'mediumLight',
+        'ultraDark',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'titlebar',
+        'selection',
+        'menu',
+        'popover',
+        'sidebar',
+        'headerView',
+        'sheet',
+        'windowBackground',
+        'hudWindow',
+        'fullScreen',
+        'toolTip',
+        'contentBackground',
+        'underWindowBackground',
+        'underPageBackground',
+        'dark',
+        'light',
+        'mediumLight',
+        'ultraDark',
+      ]
+    }>
+  }
+} & {
+  [N in 'ontop-level']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['window', 'system', 'desktop'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['window', 'system', 'desktop'] }] }>
+  }
+} & {
+  [N in 'osd-align-x' | 'sub-align-x']: {
+    read: ShapeValue<{ literals: ['left', 'center', 'right'] }>
+    write: ShapeValue<{ literals: ['left', 'center', 'right'] }>
+  }
+} & {
+  [N in 'osd-align-y' | 'sub-align-y']: {
+    read: ShapeValue<{ literals: ['top', 'center', 'bottom'] }>
+    write: ShapeValue<{ literals: ['top', 'center', 'bottom'] }>
+  }
+} & {
+  [N in 'osd-bar-marker-style']: {
+    read: ShapeValue<{ literals: ['none', 'triangle', 'line'] }>
+    write: ShapeValue<{ literals: ['none', 'triangle', 'line'] }>
+  }
+} & {
+  [N in 'osd-border-style' | 'sub-border-style']: {
+    read: ShapeValue<{ literals: ['outline-and-shadow', 'opaque-box', 'background-box'] }>
+    write: ShapeValue<{ literals: ['outline-and-shadow', 'opaque-box', 'background-box'] }>
+  }
+} & {
+  [N in 'osd-font-provider' | 'sub-font-provider']: {
+    read: ShapeValue<{ literals: ['auto', 'none', 'fontconfig'] }>
+    write: ShapeValue<{ literals: ['auto', 'none', 'fontconfig'] }>
+  }
+} & {
+  [N in 'osd-justify' | 'sub-justify']: {
+    read: ShapeValue<{ literals: ['auto', 'left', 'center', 'right'] }>
+    write: ShapeValue<{ literals: ['auto', 'left', 'center', 'right'] }>
+  }
+} & {
+  [N in 'osd-level']: {
+    read: ShapeValue<{
+      anyOf: [{ integer: '0' }, { integer: '1' }, { integer: '2' }, { integer: '3' }]
+    }>
+    write: ShapeValue<{
+      anyOf: [
+        { integer: '0' },
+        { integer: '1' },
+        { integer: '2' },
+        { integer: '3' },
+        { literals: ['0', '1', '2', '3'] },
+      ]
+    }>
+  }
+} & {
+  [N in 'osd-on-seek']: {
+    read: ShapeValue<{ literals: [false, 'bar', 'msg', 'msg-bar'] }>
+    write: ShapeValue<{ literals: ['no', false, 'bar', 'msg', 'msg-bar'] }>
+  }
+} & {
+  [N in 'osd-playlist-entry']: {
+    read: ShapeValue<{ literals: ['title', 'filename', 'both'] }>
+    write: ShapeValue<{ literals: ['title', 'filename', 'both'] }>
+  }
+} & {
+  [N in 'osd-shaper' | 'sub-ass-shaper' | 'sub-shaper']: {
+    read: ShapeValue<{ literals: ['simple', 'complex'] }>
+    write: ShapeValue<{ literals: ['simple', 'complex'] }>
+  }
+} & {
+  [N in 'play-dir' | 'play-direction']: {
+    read: ShapeValue<{ literals: ['forward', '+', 'backward', '-'] }>
+    write: ShapeValue<{ literals: ['forward', '+', 'backward', '-'] }>
+  }
+} & {
+  [N in 'player-operation-mode']: {
+    read: ShapeValue<{ literals: ['cplayer', 'pseudo-gui'] }>
+    write: ShapeValue<{ literals: ['cplayer', 'pseudo-gui'] }>
+  }
+} & {
+  [N in 'playlist-inherit-options']: {
+    read: ShapeValue<{ literals: [false, true, 'current'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'current'] }>
+  }
+} & {
+  [N in 'playlist-start']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['auto', false] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['auto', 'no', false] }] }>
+  }
+} & {
+  [N in 'priority']: {
+    read: ShapeValue<{
+      literals: [false, 'realtime', 'high', 'abovenormal', 'normal', 'belownormal', 'idle']
+    }>
+    write: ShapeValue<{
+      literals: ['no', false, 'realtime', 'high', 'abovenormal', 'normal', 'belownormal', 'idle']
+    }>
+  }
+} & {
+  [N in 'pulse-buffer']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['native'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['native'] }] }>
+  }
+} & {
+  [N in 'replaygain']: {
+    read: ShapeValue<{ literals: [false, 'track', 'album'] }>
+    write: ShapeValue<{ literals: ['no', false, 'track', 'album'] }>
+  }
+} & {
+  [N in 'rtsp-transport']: {
+    read: ShapeValue<{ literals: ['lavf', 'udp', 'tcp', 'http', 'udp_multicast'] }>
+    write: ShapeValue<{ literals: ['lavf', 'udp', 'tcp', 'http', 'udp_multicast'] }>
+  }
+} & {
+  [N in 'scale']: {
+    read: ShapeValue<{
+      literals: [
+        'bilinear',
+        'bicubic_fast',
+        'oversample',
+        'spline16',
+        'spline36',
+        'spline64',
+        'sinc',
+        'lanczos',
+        'ginseng',
+        'bicubic',
+        'hermite',
+        'catmull_rom',
+        'mitchell',
+        'robidoux',
+        'robidouxsharp',
+        'box',
+        'nearest',
+        'triangle',
+        'gaussian',
+        'jinc',
+        'ewa_lanczos',
+        'ewa_hanning',
+        'ewa_ginseng',
+        'ewa_lanczossharp',
+        'ewa_lanczos4sharpest',
+        'ewa_lanczossoft',
+        'haasnsoft',
+        'ewa_robidoux',
+        'ewa_robidouxsharp',
+        'bartlett',
+        'cosine',
+        'hanning',
+        'tukey',
+        'hamming',
+        'quadric',
+        'welch',
+        'kaiser',
+        'blackman',
+        'sphinx',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'bilinear',
+        'bicubic_fast',
+        'oversample',
+        'spline16',
+        'spline36',
+        'spline64',
+        'sinc',
+        'lanczos',
+        'ginseng',
+        'bicubic',
+        'hermite',
+        'catmull_rom',
+        'mitchell',
+        'robidoux',
+        'robidouxsharp',
+        'box',
+        'nearest',
+        'triangle',
+        'gaussian',
+        'jinc',
+        'ewa_lanczos',
+        'ewa_hanning',
+        'ewa_ginseng',
+        'ewa_lanczossharp',
+        'ewa_lanczos4sharpest',
+        'ewa_lanczossoft',
+        'haasnsoft',
+        'ewa_robidoux',
+        'ewa_robidouxsharp',
+        'bartlett',
+        'cosine',
+        'hanning',
+        'tukey',
+        'hamming',
+        'quadric',
+        'welch',
+        'kaiser',
+        'blackman',
+        'sphinx',
+      ]
+    }>
+  }
+} & {
+  [N in 'screenshot-format' | 'vo-image-format']: {
+    read: ShapeValue<{ literals: ['jpg', 'jpeg', 'png', 'webp', 'jxl', 'avif'] }>
+    write: ShapeValue<{ literals: ['jpg', 'jpeg', 'png', 'webp', 'jxl', 'avif'] }>
+  }
+} & {
+  [N in 'secondary-sub-ass-override' | 'sub-ass-override']: {
+    read: ShapeValue<{ literals: [false, true, 'scale', 'force', 'strip'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'scale', 'force', 'strip'] }>
+  }
+} & {
+  [N in 'spirv-compiler']: {
+    read: ShapeValue<{ literals: ['auto', 'shaderc'] }>
+    write: ShapeValue<{ literals: ['auto', 'shaderc'] }>
+  }
+} & {
+  [N in 'sub-ass-hinting' | 'sub-hinting']: {
+    read: ShapeValue<{ literals: ['none', 'light', 'normal', 'native'] }>
+    write: ShapeValue<{ literals: ['none', 'light', 'normal', 'native'] }>
+  }
+} & {
+  [N in 'sub-ass-use-video-data']: {
+    read: ShapeValue<{ literals: ['none', 'aspect-ratio', 'all'] }>
+    write: ShapeValue<{ literals: ['none', 'aspect-ratio', 'all'] }>
+  }
+} & {
+  [N in 'sub-ass-video-aspect-override' | 'video-aspect-override']: {
+    read: ShapeValue<'number'>
+    write: ShapeValue<{ anyOf: ['number', 'bigint', 'string'] }>
+  }
+} & {
+  [N in 'sub-ass-vsfilter-color-compat']: {
+    read: ShapeValue<{ literals: [false, 'basic', 'full', 'force-601'] }>
+    write: ShapeValue<{ literals: ['no', false, 'basic', 'full', 'force-601'] }>
+  }
+} & {
+  [N in 'sub-hdr-peak']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['auto', 'sdr'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['auto', 'sdr'] }] }>
+  }
+} & {
+  [N in 'subs-fallback']: {
+    read: ShapeValue<{ literals: [false, 'default', true] }>
+    write: ShapeValue<{ literals: ['no', false, 'default', 'yes', true] }>
+  }
+} & {
+  [N in 'subs-with-matching-audio']: {
+    read: ShapeValue<{ literals: [false, 'forced', true] }>
+    write: ShapeValue<{ literals: ['no', false, 'forced', 'yes', true] }>
+  }
+} & {
+  [N in 'sws-scaler']: {
+    read: ShapeValue<{
+      literals: [
+        'fast-bilinear',
+        'bilinear',
+        'bicubic',
+        'x',
+        'point',
+        'area',
+        'bicublin',
+        'gauss',
+        'sinc',
+        'lanczos',
+        'spline',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'fast-bilinear',
+        'bilinear',
+        'bicubic',
+        'x',
+        'point',
+        'area',
+        'bicublin',
+        'gauss',
+        'sinc',
+        'lanczos',
+        'spline',
+      ]
+    }>
+  }
+} & {
+  [N in 'target-colorspace-hint-mode']: {
+    read: ShapeValue<{ literals: ['target', 'source', 'source-dynamic'] }>
+    write: ShapeValue<{ literals: ['target', 'source', 'source-dynamic'] }>
+  }
+} & {
+  [N in 'target-contrast']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['auto', 'inf'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['auto', 'inf'] }] }>
+  }
+} & {
+  [N in 'target-prim']: {
+    read: ShapeValue<{
+      literals: [
+        'auto',
+        'bt.601-525',
+        'bt.601-625',
+        'bt.709',
+        'bt.2020',
+        'bt.470m',
+        'apple',
+        'adobe',
+        'prophoto',
+        'cie1931',
+        'dci-p3',
+        'display-p3',
+        'v-gamut',
+        's-gamut',
+        'ebu3213',
+        'film-c',
+        'aces-ap0',
+        'aces-ap1',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'auto',
+        'bt.601-525',
+        'bt.601-625',
+        'bt.709',
+        'bt.2020',
+        'bt.470m',
+        'apple',
+        'adobe',
+        'prophoto',
+        'cie1931',
+        'dci-p3',
+        'display-p3',
+        'v-gamut',
+        's-gamut',
+        'ebu3213',
+        'film-c',
+        'aces-ap0',
+        'aces-ap1',
+      ]
+    }>
+  }
+} & {
+  [N in 'target-trc']: {
+    read: ShapeValue<{
+      literals: [
+        'auto',
+        'bt.1886',
+        'srgb',
+        'linear',
+        'gamma1.8',
+        'gamma2.0',
+        'gamma2.2',
+        'gamma2.4',
+        'gamma2.6',
+        'gamma2.8',
+        'prophoto',
+        'pq',
+        'hlg',
+        'v-log',
+        's-log1',
+        's-log2',
+        'st428',
+        'scrgb',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'auto',
+        'bt.1886',
+        'srgb',
+        'linear',
+        'gamma1.8',
+        'gamma2.0',
+        'gamma2.2',
+        'gamma2.4',
+        'gamma2.6',
+        'gamma2.8',
+        'prophoto',
+        'pq',
+        'hlg',
+        'v-log',
+        's-log1',
+        's-log2',
+        'st428',
+        'scrgb',
+      ]
+    }>
+  }
+} & {
+  [N in 'term-osd']: {
+    read: ShapeValue<{ literals: ['force', 'auto', false] }>
+    write: ShapeValue<{ literals: ['force', 'auto', 'no', false] }>
+  }
+} & {
+  [N in 'tone-mapping']: {
+    read: ShapeValue<{
+      literals: [
+        'auto',
+        'clip',
+        'mobius',
+        'reinhard',
+        'hable',
+        'gamma',
+        'linear',
+        'spline',
+        'bt.2390',
+        'bt.2446a',
+        'st2094-40',
+        'st2094-10',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'auto',
+        'clip',
+        'mobius',
+        'reinhard',
+        'hable',
+        'gamma',
+        'linear',
+        'spline',
+        'bt.2390',
+        'bt.2446a',
+        'st2094-40',
+        'st2094-10',
+      ]
+    }>
+  }
+} & {
+  [N in 'treat-srgb-as-power22']: {
+    read: ShapeValue<{ literals: [false, 'input', 'output', 'both', 'auto'] }>
+    write: ShapeValue<{ literals: ['no', false, 'input', 'output', 'both', 'auto'] }>
+  }
+} & {
+  [N in 'tscale']: {
+    read: ShapeValue<{
+      literals: [
+        'oversample',
+        'linear',
+        'spline16',
+        'spline36',
+        'spline64',
+        'sinc',
+        'lanczos',
+        'ginseng',
+        'bicubic',
+        'hermite',
+        'catmull_rom',
+        'mitchell',
+        'robidoux',
+        'robidouxsharp',
+        'box',
+        'nearest',
+        'triangle',
+        'gaussian',
+        'bartlett',
+        'cosine',
+        'hanning',
+        'tukey',
+        'hamming',
+        'quadric',
+        'welch',
+        'kaiser',
+        'blackman',
+        'sphinx',
+        'jinc',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'oversample',
+        'linear',
+        'spline16',
+        'spline36',
+        'spline64',
+        'sinc',
+        'lanczos',
+        'ginseng',
+        'bicubic',
+        'hermite',
+        'catmull_rom',
+        'mitchell',
+        'robidoux',
+        'robidouxsharp',
+        'box',
+        'nearest',
+        'triangle',
+        'gaussian',
+        'bartlett',
+        'cosine',
+        'hanning',
+        'tukey',
+        'hamming',
+        'quadric',
+        'welch',
+        'kaiser',
+        'blackman',
+        'sphinx',
+        'jinc',
+      ]
+    }>
+  }
+} & {
+  [N in 'vd-lavc-film-grain']: {
+    read: ShapeValue<{ literals: ['auto', 'cpu', 'gpu'] }>
+    write: ShapeValue<{ literals: ['auto', 'cpu', 'gpu'] }>
+  }
+} & {
+  [
+    N in 'vd-lavc-framedrop' | 'vd-lavc-skipframe' | 'vd-lavc-skipidct' | 'vd-lavc-skiploopfilter'
+  ]: {
+    read: ShapeValue<{ literals: ['none', 'default', 'nonref', 'bidir', 'nonkey', 'all'] }>
+    write: ShapeValue<{ literals: ['none', 'default', 'nonref', 'bidir', 'nonkey', 'all'] }>
+  }
+} & {
+  [N in 'video-aspect-method']: {
+    read: ShapeValue<{ literals: ['bitstream', 'container', 'ignore'] }>
+    write: ShapeValue<{ literals: ['bitstream', 'container', 'ignore'] }>
+  }
+} & {
+  [N in 'video-output-levels']: {
+    read: ShapeValue<{ literals: ['auto', 'limited', 'full'] }>
+    write: ShapeValue<{ literals: ['auto', 'limited', 'full'] }>
+  }
+} & {
+  [N in 'video-sync']: {
+    read: ShapeValue<{
+      literals: [
+        'audio',
+        'display-resample',
+        'display-resample-vdrop',
+        'display-resample-desync',
+        'display-tempo',
+        'display-adrop',
+        'display-vdrop',
+        'display-desync',
+        'desync',
+      ]
+    }>
+    write: ShapeValue<{
+      literals: [
+        'audio',
+        'display-resample',
+        'display-resample-vdrop',
+        'display-resample-desync',
+        'display-tempo',
+        'display-adrop',
+        'display-vdrop',
+        'display-desync',
+        'desync',
+      ]
+    }>
+  }
+} & {
+  [N in 'video-unscaled']: {
+    read: ShapeValue<{ literals: [false, true, 'downscale-big'] }>
+    write: ShapeValue<{ literals: ['no', false, 'yes', true, 'downscale-big'] }>
+  }
+} & {
+  [N in 'vo-tct-algo']: {
+    read: ShapeValue<{ literals: ['plain', 'half-blocks'] }>
+    write: ShapeValue<{ literals: ['plain', 'half-blocks'] }>
+  }
+} & {
+  [N in 'vo-tct-buffering']: {
+    read: ShapeValue<{ literals: ['pixel', 'line', 'frame'] }>
+    write: ShapeValue<{ literals: ['pixel', 'line', 'frame'] }>
+  }
+} & {
+  [N in 'vulkan-swap-mode']: {
+    read: ShapeValue<{ literals: ['auto', 'fifo', 'fifo-relaxed', 'mailbox', 'immediate'] }>
+    write: ShapeValue<{ literals: ['auto', 'fifo', 'fifo-relaxed', 'mailbox', 'immediate'] }>
+  }
+} & {
+  [N in 'wasapi-exclusive-buffer']: {
+    read: ShapeValue<{ anyOf: ['bigint', { literals: ['default', 'min'] }] }>
+    write: ShapeValue<{ anyOf: ['integerInput', { literals: ['default', 'min'] }] }>
+  }
+} & {
+  [N in 'window-affinity']: {
+    read: ShapeValue<{ literals: ['default', 'excludefromcapture', 'monitor'] }>
+    write: ShapeValue<{ literals: ['default', 'excludefromcapture', 'monitor'] }>
+  }
+} & {
+  [N in 'window-corners']: {
+    read: ShapeValue<{ literals: ['default', 'donotround', 'round', 'roundsmall'] }>
+    write: ShapeValue<{ literals: ['default', 'donotround', 'round', 'roundsmall'] }>
+  }
 }
 export type PropertyName =
   | 'ab-loop-a'

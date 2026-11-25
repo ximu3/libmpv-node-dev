@@ -1,3 +1,5 @@
+import { callSignal } from './options.js'
+import { commandShape, checkedValue, propertyValue, validateWrite } from '../catalog/validation.js'
 import { addAbortListener } from 'node:events'
 import { isAbsolute } from 'node:path'
 import {
@@ -36,6 +38,7 @@ import {
   type MpvValue,
   type MpvNode,
   type ValueRepresentation,
+  type ChargeInput,
 } from '../values.js'
 import type {
   Name,
@@ -72,10 +75,8 @@ export class Control {
 
   async #request(
     operation: MpvOperation,
-    name: Uint8Array,
-    value: MpvNode,
-    format: number,
-    signal?: AbortSignal,
+    signal: AbortSignal | undefined,
+    prepare: (charge: ChargeInput) => { name: Uint8Array; value: MpvNode; format: number },
   ) {
     this.streams.check(operation)
     if (this.#closed || this.native.closing) {
@@ -86,7 +87,24 @@ export class Control {
     }
     const id = this.#nextId
     this.#nextId = id === 0xffffffff ? 1 : id + 1
-    const waiting = this.native.request(id, operation, name, format, value)
+    const denied = this.native.beginInput(id)
+    if (denied) {
+      return throwNativeFailure(denied, operation, signal)
+    }
+    let waiting: ReturnType<NativeClient['request']>
+    try {
+      const { name, value, format } = prepare((bytes) => {
+        if (!this.native.chargeInput(id, bytes)) {
+          throw new MpvBindingError(this.native.closing ? 'closed' : 'resourceLimit', operation)
+        }
+      })
+      if (signal?.aborted) {
+        throw new MpvAbortError(operation, false, signal.reason)
+      }
+      waiting = this.native.request(id, operation, name, format, value)
+    } finally {
+      this.native.releaseInput(id)
+    }
     const cancellation = signal && addAbortListener(signal, () => this.native.abort(id))
     try {
       const reply = await waiting
@@ -115,44 +133,37 @@ export class Control {
     name: Name,
     options: Options & { format?: Format; output?: ValueRepresentation } = {},
   ) {
-    const format = options.format ?? 'node'
+    const signal = callSignal(options, 'getProperty')
+    const format = options.format === undefined ? 'node' : options.format
     const output = valueMode(options.output, 'getProperty')
-    if (!Object.hasOwn(formats, format)) {
+    if (typeof format !== 'string' || !Object.hasOwn(formats, format)) {
       throw new MpvBindingError('invalidArgument', 'getProperty')
     }
-    const node = await this.#request(
-      'getProperty',
-      nameBytes(name, 'getProperty'),
-      none,
-      formats[format],
-      options.signal,
-    )
+    const node = await this.#request('getProperty', signal, (charge) => ({
+      name: nameBytes(name, 'getProperty', charge),
+      value: none,
+      format: formats[format],
+    }))
     if (output === 'native') {
       return node
     }
-    const value = toJavaScript(node, 'getProperty')
-    if (format === 'node' && typeof name === 'string') {
-      const expected = propertyType(name)
-      if (expected && typeof value !== expected) {
-        throw new MpvConversionError('unexpectedShape', 'getProperty', node)
-      }
-    }
-    return value
+    return format === 'node'
+      ? propertyValue(name, node, 'getProperty')
+      : toJavaScript(node, 'getProperty')
   }
 
   async getPropertyText(name: Name, options: PropertyTextOptions = {}) {
+    const signal = callSignal(options, 'getPropertyText')
     const output = valueMode(options.output, 'getPropertyText')
-    const format = options.format ?? 'plain'
+    const format = options.format === undefined ? 'plain' : options.format
     if (format !== 'plain' && format !== 'osd') {
       throw new MpvBindingError('invalidArgument', 'getPropertyText')
     }
-    const node = await this.#request(
-      'getPropertyText',
-      nameBytes(name, 'getPropertyText'),
-      none,
-      format === 'osd' ? 2 : 1,
-      options.signal,
-    )
+    const node = await this.#request('getPropertyText', signal, (charge) => ({
+      name: nameBytes(name, 'getPropertyText', charge),
+      value: none,
+      format: format === 'osd' ? 2 : 1,
+    }))
     if (node.format !== 'string') {
       throw new MpvConversionError('unexpectedShape', 'getPropertyText', node)
     }
@@ -164,42 +175,52 @@ export class Control {
     value: MpvValue | MpvNode,
     options: Options & { input?: ValueRepresentation } = {},
   ) {
+    const signal = callSignal(options, 'setProperty')
     const input = valueMode(options.input, 'setProperty')
-    if (input === 'javascript' && typeof name === 'string') {
-      const expected = propertyType(name)
-      if (expected && typeof value !== expected) {
-        throw new MpvBindingError('invalidArgument', 'setProperty')
+    await this.#request('setProperty', signal, (charge) => {
+      const key = nameBytes(name, 'setProperty', charge)
+      const node = inputNode(value, input, 'setProperty', charge)
+      if (input === 'javascript') {
+        validateWrite(name, node, 'setProperty')
       }
-    }
-    await this.#request(
-      'setProperty',
-      nameBytes(name, 'setProperty'),
-      inputNode(value, input, 'setProperty'),
-      6,
-      options.signal,
-    )
+      return { name: key, value: node, format: 6 }
+    })
   }
 
   async command(
     args: Command | NativeCommand,
     options: Options & { input?: ValueRepresentation; output?: ValueRepresentation } = {},
   ) {
+    const signal = callSignal(options, 'command')
     const input = valueMode(options.input, 'command')
     const output = valueMode(options.output, 'command')
-    const node = inputNode(args, input, 'command')
-    if (node.format !== 'map' && node.format !== 'array') {
-      throw new MpvBindingError('invalidArgument', 'command')
-    }
-    const result = await this.#request('command', empty, node, 6, options.signal)
-    return output === 'native' ? result : toJavaScript(result, 'command')
+    let shape: ReturnType<typeof commandShape>
+    const result = await this.#request('command', signal, (charge) => {
+      const node = inputNode(args, input, 'command', charge)
+      if (node.format !== 'map' && node.format !== 'array') {
+        throw new MpvBindingError('invalidArgument', 'command')
+      }
+      if (output === 'javascript') {
+        shape = commandShape(node)
+      }
+      return { name: empty, value: node, format: 6 }
+    })
+    return output === 'native' ? result : checkedValue(result, shape, 'command')
   }
 
   async loadConfigFile(path: Name, options: Options = {}) {
-    const bytes = nameBytes(path, 'loadConfigFile')
-    if (!isAbsolute(Buffer.from(bytes).toString('latin1'))) {
-      throw new MpvBindingError('invalidArgument', 'loadConfigFile')
-    }
-    await this.#request('loadConfigFile', bytes, none, 0, options.signal)
+    const signal = callSignal(options, 'loadConfigFile')
+    await this.#request('loadConfigFile', signal, (charge) => {
+      const bytes = nameBytes(path, 'loadConfigFile', charge)
+      if (
+        !isAbsolute(
+          Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength).toString('latin1'),
+        )
+      ) {
+        throw new MpvBindingError('invalidArgument', 'loadConfigFile')
+      }
+      return { name: bytes, value: none, format: 0 }
+    })
   }
 
   async observeProperty(
@@ -207,9 +228,11 @@ export class Control {
     observer: MpvObserver<PropertyState<MpvValue | MpvNode> | void>,
     options: Options & { format?: Format | 'none'; output?: ValueRepresentation } = {},
   ) {
+    const signal = callSignal(options, 'observeProperty')
     const op = 'observeProperty'
-    const format = options.format ?? 'node'
+    const format = options.format === undefined ? 'node' : options.format
     if (
+      typeof format !== 'string' ||
       (!Object.hasOwn(formats, format) && format !== 'none') ||
       (format === 'none' && options.output !== undefined)
     ) {
@@ -223,7 +246,7 @@ export class Control {
       (wake, gate) =>
         this.native.observe(propertyName, format === 'none' ? 0 : formats[format], [], wake, gate),
       observer,
-      options.signal,
+      signal,
       (node) => {
         if (format === 'none') {
           return
@@ -231,16 +254,13 @@ export class Control {
         if (!node) {
           return { status: 'unavailable' as const }
         }
-        const value = output === 'native' ? node : toJavaScript(node, op)
-        if (format === 'node' && output === 'javascript' && typeof name === 'string') {
-          const expected = propertyType(name)
-          if (expected && typeof value !== expected) {
-            throw new MpvConversionError('unexpectedShape', op, node)
-          }
+        let value: MpvNode | MpvValue = node
+        if (output === 'javascript') {
+          value = format === 'node' ? propertyValue(name, node, op) : toJavaScript(node, op)
         }
         return { status: 'available' as const, value }
       },
-      (failure) => throwNativeFailure(failure, op, options.signal),
+      (failure) => throwNativeFailure(failure, op, signal),
     )
   }
 
@@ -249,6 +269,7 @@ export class Control {
     observer: MpvObserver<PropertyState<string | Uint8Array<ArrayBuffer>>>,
     options: Options & { output?: ValueRepresentation } = {},
   ) {
+    const signal = callSignal(options, 'observePropertyText')
     const op = 'observePropertyText'
     const output = valueMode(options.output, op)
     if ('format' in options) {
@@ -260,7 +281,7 @@ export class Control {
       op,
       (wake, gate) => this.native.observe(propertyName, 1, [], wake, gate),
       observer,
-      options.signal,
+      signal,
       (node) => {
         if (!node) {
           return { status: 'unavailable' as const }
@@ -273,26 +294,20 @@ export class Control {
           value: output === 'native' ? node.value : (toJavaScript(node, op) as string),
         }
       },
-      (failure) => throwNativeFailure(failure, op, options.signal),
+      (failure) => throwNativeFailure(failure, op, signal),
     )
   }
 
   async addHook(name: Name, handler: MpvHookHandler, options: MpvHookOptions = {}) {
     this.streams.check('addHook')
-    return addHook(
-      this.native,
-      this.subscriptions,
-      nameBytes(name, 'addHook'),
-      handler,
-      options,
-      (failure) => throwNativeFailure(failure, 'addHook', options.signal),
-    )
+    return addHook(this.native, this.subscriptions, nameBytes(name, 'addHook'), handler, options)
   }
 
   async observeLogs(
     observer: MpvObserver<MpvLogRecord | MpvNativeLogRecord>,
     options: Options & { level?: LogLevel; output?: ValueRepresentation } = {},
   ) {
+    const signal = callSignal(options, 'observeLogs')
     const op = 'observeLogs'
     const level = logLevel(options.level, op)
     const output = valueMode(options.output, op)
@@ -301,9 +316,9 @@ export class Control {
       op,
       (wake, gate) => this.native.observeLogs(level, wake, gate),
       observer,
-      options.signal,
+      signal,
       (record) => logRecord(record!, output, op),
-      (failure) => throwNativeFailure(failure, op, options.signal),
+      (failure) => throwNativeFailure(failure, op, signal),
     )
   }
 
@@ -311,11 +326,15 @@ export class Control {
     observer: MpvObserver<MpvEvent | MpvNativeEvent>,
     options: Options & { output?: ValueRepresentation; events?: readonly MpvEventName[] } = {},
   ) {
+    const signal = callSignal(options, 'observeEvents')
     const op = 'observeEvents'
     const output = valueMode(options.output, op)
     const names =
-      options.events ??
-      (Object.keys(events) as MpvEventName[]).filter((name) => name !== 'idle' && name !== 'tick')
+      options.events === undefined
+        ? (Object.keys(events) as MpvEventName[]).filter(
+            (name) => name !== 'idle' && name !== 'tick',
+          )
+        : options.events
     if (
       !Array.isArray(names) ||
       names.some((name: unknown) => typeof name !== 'string' || !Object.hasOwn(events, name))
@@ -328,7 +347,7 @@ export class Control {
       op,
       (wake, gate) => this.native.observe(null, 0, selected, wake, gate),
       observer,
-      options.signal,
+      signal,
       (payload) => {
         const event = payload!
         if (event.type !== 'client-message' || output === 'native') {
@@ -341,7 +360,7 @@ export class Control {
           throw new MpvNotificationConversionError(op, event)
         }
       },
-      (failure) => throwNativeFailure(failure, op, options.signal),
+      (failure) => throwNativeFailure(failure, op, signal),
     )
   }
 
@@ -354,19 +373,5 @@ export class Control {
     )
     this.#closed = Promise.all([this.native.close(), ...pending]).then(() => {})
     return this.#closed
-  }
-}
-
-function propertyType(name: string) {
-  switch (name) {
-    case 'pause':
-      return 'boolean'
-    case 'volume':
-    case 'duration':
-    case 'time-pos':
-      return 'number'
-    case 'path':
-    case 'mpv-version':
-      return 'string'
   }
 }
