@@ -5,9 +5,11 @@ export default defineConfig({
   run: {
     tasks: {
       build: {
-        command: ['node tools/build.ts'],
+        dependsOn: ['build:main'],
+        command: 'node tools/build/addon.ts',
         cache: false,
       },
+      'build:main': { command: 'node tools/build/main.ts', cache: false },
       typecheck: {
         command: [
           'tsc --noEmit -p config/typescript/tsconfig.lib.json',
