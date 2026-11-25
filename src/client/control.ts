@@ -37,7 +37,14 @@ import {
   type MpvNode,
   type ValueRepresentation,
 } from '../values.js'
-import type { Name, Format, Options, Command, NativeCommand } from './contracts.js'
+import type {
+  Name,
+  Format,
+  Options,
+  Command,
+  NativeCommand,
+  PropertyTextOptions,
+} from './contracts.js'
 
 const formats = { node: 6, flag: 3, int64: 4, double: 5 } as const
 const empty = new Uint8Array(0)
@@ -133,10 +140,7 @@ export class Control {
     return value
   }
 
-  async getPropertyText(
-    name: Name,
-    options: Options & { format?: 'plain' | 'osd'; output?: ValueRepresentation } = {},
-  ) {
+  async getPropertyText(name: Name, options: PropertyTextOptions = {}) {
     const output = valueMode(options.output, 'getPropertyText')
     const format = options.format ?? 'plain'
     if (format !== 'plain' && format !== 'osd') {

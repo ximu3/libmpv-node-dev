@@ -2,7 +2,11 @@ import {
   createMpv,
   type MpvControl,
   type MpvNode,
+  type MpvCommandNode,
+  type MpvValue,
   type MpvPropertyFormat,
+  type PropertyTextOptions,
+  type ValueRepresentation,
   type GpuVideoOptions,
   type GpuVideoOutput,
 } from '@ximu3/libmpv-node'
@@ -51,4 +55,25 @@ export async function propertyFormats(
   // @ts-expect-error The ordinary volume option uses a floating-point number.
   await createMpv({ options: [['volume', 80n]] })
   return { absent, gpu, integer, tag, dynamic, converted }
+}
+
+export async function forwardOutputOptions(
+  client: MpvControl,
+  textOptions: PropertyTextOptions | undefined,
+  commandOptions: { readonly output?: ValueRepresentation } | undefined,
+  nativeCommand: MpvCommandNode,
+) {
+  const text: string | Uint8Array<ArrayBuffer> = await client.getPropertyText('path', textOptions)
+  const expanded: string | MpvNode = await client.command(['expand-text', 'sample'], commandOptions)
+  const raw: MpvValue | MpvNode = await client.command(nativeCommand, {
+    ...commandOptions,
+    input: 'native',
+  })
+  // @ts-expect-error A dynamic text representation can also return bytes.
+  const onlyText: string = await client.getPropertyText('path', textOptions)
+  // @ts-expect-error A dynamic command representation can also return a native node.
+  const onlyString: string = await client.command(['expand-text', 'sample'], commandOptions)
+  // @ts-expect-error Output selection does not make the required URL optional.
+  await client.command(['loadfile'], commandOptions)
+  return { text, expanded, raw, onlyText, onlyString }
 }
