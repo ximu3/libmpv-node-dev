@@ -41,6 +41,7 @@ export type Options = { readonly signal?: AbortSignal }
 export type ObserveOptions = Options & { readonly output?: ValueRepresentation }
 export type ObserveEventsOptions = ObserveOptions & { readonly events?: readonly MpvEventName[] }
 export type ObserveLogsOptions = ObserveOptions & { readonly level?: LogLevel }
+export type PropertyOptions<F extends Format = Format> = ObserveOptions & { readonly format?: F }
 export type PropertyTextOptions = ObserveOptions & { readonly format?: 'plain' | 'osd' }
 export type NativeCommand = Extract<MpvNode, { readonly format: 'array' | 'map' }>
 
@@ -79,23 +80,6 @@ export interface MpvControl {
     observer: MpvObserver<MpvLogRecord | MpvNativeLogRecord>,
     options: ObserveLogsOptions | undefined,
   ): Promise<MpvSubscription>
-  observeProperty<N extends Name>(
-    name: N,
-    observer: MpvObserver<PropertyState<PropertyRead<NoInfer<N>>>>,
-    options?: Options & { readonly format?: 'node'; readonly output?: 'javascript' },
-  ): Promise<MpvSubscription>
-  observeProperty<N extends Name>(
-    name: N,
-    observer: MpvObserver<PropertyState<MpvNode>>,
-    options: Options & { readonly format?: 'node'; readonly output: 'native' },
-  ): Promise<MpvSubscription>
-  observeProperty<N extends Name>(
-    name: N,
-    observer: MpvObserver<PropertyState<PropertyRead<NoInfer<N>> | MpvNode>>,
-    options:
-      | (Options & { readonly format?: 'node'; readonly output?: ValueRepresentation })
-      | undefined,
-  ): Promise<MpvSubscription>
   observeProperty<N extends Name, F extends Format>(
     name: N,
     observer: MpvObserver<PropertyState<MpvPropertyValue<NoInfer<F>, PropertyRead<NoInfer<N>>>>>,
@@ -114,6 +98,25 @@ export interface MpvControl {
       >
     >,
     options: Options & { readonly format: F; readonly output?: ValueRepresentation },
+  ): Promise<MpvSubscription>
+  observeProperty<N extends Name, F extends Format = 'node'>(
+    name: N,
+    observer: MpvObserver<
+      PropertyState<MpvPropertyValue<NoInfer<F> | 'node', PropertyRead<NoInfer<N>>>>
+    >,
+    options?: PropertyOptions<F> & { readonly output?: 'javascript' },
+  ): Promise<MpvSubscription>
+  observeProperty<N extends Name>(
+    name: N,
+    observer: MpvObserver<PropertyState<MpvNode>>,
+    options: PropertyOptions & { readonly output: 'native' },
+  ): Promise<MpvSubscription>
+  observeProperty<N extends Name, F extends Format = 'node'>(
+    name: N,
+    observer: MpvObserver<
+      PropertyState<MpvPropertyValue<NoInfer<F> | 'node', PropertyRead<NoInfer<N>>> | MpvNode>
+    >,
+    options: PropertyOptions<F> | undefined,
   ): Promise<MpvSubscription>
   observeProperty(
     name: Name,
@@ -150,20 +153,6 @@ export interface MpvControl {
   readonly clientName: string
   readonly clientId: bigint
   getTimeNs(): bigint
-  getProperty<N extends Name>(
-    name: N,
-    options?: Options & { readonly format?: 'node'; readonly output?: 'javascript' },
-  ): Promise<PropertyRead<N>>
-  getProperty<N extends Name>(
-    name: N,
-    options: Options & { readonly format?: 'node'; readonly output: 'native' },
-  ): Promise<MpvNode>
-  getProperty<N extends Name>(
-    name: N,
-    options:
-      | (Options & { readonly format?: 'node'; readonly output?: ValueRepresentation })
-      | undefined,
-  ): Promise<PropertyRead<N> | MpvNode>
   getProperty<N extends Name, F extends Format>(
     name: N,
     options: Options & { readonly format: F; readonly output?: 'javascript' },
@@ -176,6 +165,18 @@ export interface MpvControl {
     name: N,
     options: Options & { readonly format: F; readonly output?: ValueRepresentation },
   ): Promise<MpvPropertyValue<F, PropertyRead<N>> | MpvPropertyNode<F>>
+  getProperty<N extends Name, F extends Format = 'node'>(
+    name: N,
+    options?: PropertyOptions<F> & { readonly output?: 'javascript' },
+  ): Promise<MpvPropertyValue<F | 'node', PropertyRead<N>>>
+  getProperty<N extends Name>(
+    name: N,
+    options: PropertyOptions & { readonly output: 'native' },
+  ): Promise<MpvNode>
+  getProperty<N extends Name, F extends Format = 'node'>(
+    name: N,
+    options: PropertyOptions<F> | undefined,
+  ): Promise<MpvPropertyValue<F | 'node', PropertyRead<N>> | MpvNode>
   getPropertyText(
     name: Name,
     options?: PropertyTextOptions & { readonly output?: 'javascript' },

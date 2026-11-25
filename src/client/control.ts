@@ -46,6 +46,7 @@ import type {
   Options,
   Command,
   NativeCommand,
+  PropertyOptions,
   PropertyTextOptions,
 } from './contracts.js'
 
@@ -129,10 +130,7 @@ export class Control {
     return time
   }
 
-  async getProperty(
-    name: Name,
-    options: Options & { format?: Format; output?: ValueRepresentation } = {},
-  ) {
+  async getProperty(name: Name, options: PropertyOptions = {}) {
     const signal = callSignal(options, 'getProperty')
     const format = options.format === undefined ? 'node' : options.format
     const output = valueMode(options.output, 'getProperty')

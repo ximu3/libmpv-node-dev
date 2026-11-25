@@ -26,6 +26,8 @@ Use `getProperty` and `setProperty` for structured values. A native integer maps
 
 Ordinary initialization options and property writes use the declared value shapes. For example, `mute` accepts a boolean and `scale-param1` accepts a number or `'default'`. Unset A–B loop endpoints read back as `'no'`.
 
+`getProperty` and `observeProperty` accept the same `PropertyOptions` for reading values. If a caller forwards an optional `format`, the value type includes the property's default node-format result. An optional `output` can select the JavaScript or native representation.
+
 Calls accept an optional `AbortSignal`. A submitted command may have taken effect when its wait ends in cancellation. Errors expose `operation`, `submitted`, and a native or binding error code. Repeated calls to `close()` await the same shutdown. `unref()` lets an idle Node environment exit while the player is open.
 
 Use `createClient({ name, signal })` for a separate control channel on the same player. It has its own client identity and directed messages. `dispose()` releases that channel. Closing the player also ends its channels.

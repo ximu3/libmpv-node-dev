@@ -14,6 +14,7 @@ export type {
   ObserveOptions,
   ObserveEventsOptions,
   ObserveLogsOptions,
+  PropertyOptions,
   PropertyTextOptions,
   VideoOutputOptions,
   VideoOutput,
