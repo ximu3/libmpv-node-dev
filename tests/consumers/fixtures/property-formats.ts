@@ -5,6 +5,8 @@ import {
   type MpvCommandNode,
   type MpvValue,
   type MpvPropertyFormat,
+  type PropertyOptions,
+  type PropertyState,
   type PropertyTextOptions,
   type ValueRepresentation,
   type GpuVideoOptions,
@@ -76,4 +78,29 @@ export async function forwardOutputOptions(
   // @ts-expect-error Output selection does not make the required URL optional.
   await client.command(['loadfile'], commandOptions)
   return { text, expanded, raw, onlyText, onlyString }
+}
+
+export async function forwardPropertyOptions(
+  client: MpvControl,
+  options?: PropertyOptions,
+  integer?: { readonly format?: 'int64' },
+) {
+  const volume: number | bigint | boolean | MpvNode = await client.getProperty('volume', options)
+  const scalar: number | bigint = await client.getProperty('volume', integer)
+  const subscription = await client.observeProperty(
+    'volume',
+    {
+      next(state: PropertyState<typeof volume>) {
+        void state
+      },
+      error() {},
+    },
+    options,
+  )
+  // @ts-expect-error The caller can omit int64 and receive the ordinary volume value.
+  const onlyInteger: bigint = await client.getProperty('volume', integer)
+  const onlyIntegers = { next(_state: PropertyState<bigint>) {}, error() {} }
+  // @ts-expect-error The observer must also accept the ordinary volume value.
+  await client.observeProperty('volume', onlyIntegers, integer)
+  return { volume, scalar, subscription, onlyInteger }
 }
