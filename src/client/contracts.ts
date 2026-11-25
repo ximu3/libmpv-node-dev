@@ -127,6 +127,11 @@ export interface MpvControl {
     observer: MpvObserver<PropertyState<Uint8Array<ArrayBuffer>>>,
     options: Options & { output: 'native' },
   ): Promise<MpvSubscription>
+  observePropertyText(
+    name: Name,
+    observer: MpvObserver<PropertyState<string | Uint8Array<ArrayBuffer>>>,
+    options: ObserveOptions | undefined,
+  ): Promise<MpvSubscription>
   observeEvents(
     observer: MpvObserver<MpvEvent>,
     options?: Options & { output?: 'javascript'; events?: readonly MpvEventName[] },
@@ -138,11 +143,6 @@ export interface MpvControl {
   observeEvents(
     observer: MpvObserver<MpvEvent | MpvNativeEvent>,
     options: ObserveEventsOptions | undefined,
-  ): Promise<MpvSubscription>
-  observePropertyText(
-    name: Name,
-    observer: MpvObserver<PropertyState<string | Uint8Array<ArrayBuffer>>>,
-    options: (Options & { output?: ValueRepresentation }) | undefined,
   ): Promise<MpvSubscription>
   readonly clientName: string
   readonly clientId: bigint
@@ -175,12 +175,16 @@ export interface MpvControl {
   ): Promise<MpvPropertyValue<F, PropertyRead<N>> | MpvPropertyNode<F>>
   getPropertyText(
     name: Name,
-    options?: Options & { format?: 'plain' | 'osd'; output?: 'javascript' },
+    options?: PropertyTextOptions & { readonly output?: 'javascript' },
   ): Promise<string>
   getPropertyText<M extends ValueRepresentation>(
     name: Name,
-    options: Options & { format?: 'plain' | 'osd'; output: M },
+    options: PropertyTextOptions & { readonly output: M },
   ): Promise<M extends 'native' ? Uint8Array<ArrayBuffer> : string>
+  getPropertyText(
+    name: Name,
+    options: PropertyTextOptions | undefined,
+  ): Promise<string | Uint8Array<ArrayBuffer>>
   setProperty<N extends Name>(
     name: N,
     value: PropertyWrite<NoInfer<N>>,
@@ -195,6 +199,12 @@ export interface MpvControl {
     args: A & CheckedCommand<NoInfer<A>>,
     options: Options & { input?: 'javascript'; output: M },
   ): Promise<Output<CommandResult<A>, M>>
+  command<const A extends Command>(
+    args: A & CheckedCommand<NoInfer<A>>,
+    options:
+      | (Options & { readonly input?: 'javascript'; readonly output?: ValueRepresentation })
+      | undefined,
+  ): Promise<CommandResult<A> | MpvNode>
   command(
     args: NativeCommand,
     options: Options & { input: 'native'; output?: 'javascript' },
@@ -203,6 +213,10 @@ export interface MpvControl {
     args: NativeCommand,
     options: Options & { input: 'native'; output: M },
   ): Promise<Output<MpvValue, M>>
+  command(
+    args: NativeCommand,
+    options: Options & { readonly input: 'native'; readonly output?: ValueRepresentation },
+  ): Promise<MpvValue | MpvNode>
   loadConfigFile(path: Name, options?: Options): Promise<void>
 }
 
