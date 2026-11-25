@@ -1,5 +1,5 @@
 import { collectMaterials } from './materials.ts'
-import { copyFile, mkdir, readFile, readdir } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, readdir, stat } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import settings from '../../../engine/windows/configuration.json' with { type: 'json' }
 import { inputs, target, tuple } from './settings.ts'
@@ -58,7 +58,8 @@ export async function collectRuntime(
     throw new Error('Unexpected mpv GPL configuration')
   }
 
-  const files: Record<string, { sha256: string; imports: string[]; source: string }> = {}
+  const files: Record<string, { size: number; sha256: string; imports: string[]; source: string }> =
+    {}
   const known: Record<string, { sha256: string; archive: string }> = target.dependencies
   const pending = [mpv]
   await mkdir(output, { recursive: true })
@@ -87,8 +88,14 @@ export async function collectRuntime(
         throw new Error(`Unclassified import of ${name}: ${dependency}`)
       }
     }
-    await copyFile(path, join(output, name))
-    files[name] = { sha256: await digest(join(output, name)), imports: dependencies, source }
+    const file = join(output, name)
+    await copyFile(path, file)
+    files[name] = {
+      size: (await stat(file)).size,
+      sha256: await digest(file),
+      imports: dependencies,
+      source,
+    }
   }
   const archives = new Set(
     Object.values(files)

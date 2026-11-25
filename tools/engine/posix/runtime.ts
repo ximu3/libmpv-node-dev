@@ -110,7 +110,10 @@ export async function assembleUnix(
   if (!mac) {
     await mediaSymbols(entries.values(), id, symbols)
   }
-  const files: Record<string, { sha256: string; source: string; input: string }> = {}
+  const files: Record<
+    string,
+    { size: number; sha256: string; source: string; input: string; imports: string[] }
+  > = {}
   for (const entry of entries.values()) {
     const name = outputName(entry.name)
     const file = join(runtime, name)
@@ -139,7 +142,13 @@ export async function assembleUnix(
       run(patch, [...args, file])
       run(patch, ['--rename-dynamic-symbols', symbols, file])
     }
-    files[name] = { sha256: await digest(file), source: entry.owner, input: entry.input }
+    files[name] = {
+      size: (await stat(file)).size,
+      sha256: await digest(file),
+      source: entry.owner,
+      input: entry.input,
+      imports: dependencies(file),
+    }
   }
   if (!mac) {
     if (!certificates) {
@@ -149,11 +158,23 @@ export async function assembleUnix(
     const cert = join(runtime, 'cacert.pem')
     await copyFile(join(build.deps, 'ssl/cacert.pem'), cert)
     const caHash = await digest(cert)
-    files['cacert.pem'] = { sha256: caHash, input: caHash, source: certificates.name }
+    files['cacert.pem'] = {
+      size: (await stat(cert)).size,
+      sha256: caHash,
+      input: caHash,
+      source: certificates.name,
+      imports: [],
+    }
     const config = join(runtime, 'fonts.conf')
     await copyFile(join(projectRoot, 'engine/posix/fontconfig/fonts.conf'), config)
     const hash = await digest(config)
-    files['fonts.conf'] = { sha256: hash, input: hash, source: 'libmpv-node' }
+    files['fonts.conf'] = {
+      size: (await stat(config)).size,
+      sha256: hash,
+      input: hash,
+      source: 'libmpv-node',
+      imports: [],
+    }
   }
   await materials(build, runtime, used.values(), mac ? undefined : symbols)
   await writeJson(join(runtime, 'engine.json'), {
