@@ -1,20 +1,10 @@
 import fontPatch from '../../../engine/posix/fontconfig/source.json' with { type: 'json' }
 import metadata from '../../../package.json' with { type: 'json' }
 import { execFileSync } from 'node:child_process'
-import { createWriteStream } from 'node:fs'
-import {
-  chmod,
-  copyFile,
-  mkdir,
-  readFile,
-  readdir,
-  stat,
-  symlink,
-  writeFile,
-} from 'node:fs/promises'
+import { chmod, copyFile, mkdir, readFile, readdir, symlink, writeFile } from 'node:fs/promises'
 import { availableParallelism } from 'node:os'
-import { basename, delimiter, join } from 'node:path'
-import { pipeline } from 'node:stream/promises'
+import { delimiter, join } from 'node:path'
+import { fetchArchive } from '../archives.ts'
 import { projectRoot, verifyDigest } from '../../files.ts'
 import inputs from '../../../engine/media-sources.json' with { type: 'json' }
 import bootstraps from '../../../engine/posix/micromamba.json' with { type: 'json' }
@@ -28,24 +18,6 @@ export function target(): Target {
   }
   return name as Target
 }
-async function archive(
-  url: string,
-  checksum: string,
-  cache: string,
-  name = basename(new URL(url).pathname),
-) {
-  const path = join(cache, name)
-  if (!(await stat(path, { throwIfNoEntry: false }))) {
-    const response = await fetch(url, { signal: AbortSignal.timeout(180000) })
-    if (!response.ok || !response.body) {
-      throw new Error(`Download failed: ${response.status} ${url}`)
-    }
-    await pipeline(response.body, createWriteStream(path))
-  }
-  await verifyDigest(path, checksum)
-  return path
-}
-
 export async function buildUnix(work: string, cache: string) {
   const platform = target()
   const mac = process.platform === 'darwin'
@@ -54,7 +26,7 @@ export async function buildUnix(work: string, cache: string) {
   await mkdir(cache, { recursive: true })
   await mkdir(work, { recursive: true })
   const bootstrap = bootstraps[platform]
-  const manager = await archive(bootstrap.url, bootstrap.sha256, cache)
+  const manager = await fetchArchive(cache, bootstrap)
   await chmod(manager, 0o755)
   const lock = join(projectRoot, 'engine/posix/locks', platform + '.lock')
   execFileSync(
@@ -92,7 +64,7 @@ export async function buildUnix(work: string, cache: string) {
   const sources = join(work, 'sources')
   await mkdir(sources)
   for (const item of inputs) {
-    const file = await archive(item.url, item.sha256, cache)
+    const file = await fetchArchive(cache, item)
     const directory = join(sources, item.name)
     await mkdir(directory)
     execFileSync('tar', ['-xf', file, '--strip-components=1', '-C', directory], {
