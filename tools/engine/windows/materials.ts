@@ -6,7 +6,8 @@ import { inputs, target } from './settings.ts'
 import sourcePackages from '../../../engine/windows/sources.json' with { type: 'json' }
 import upstream from '../../../engine/mpv/source.json' with { type: 'json' }
 import { digest, projectRoot, writeJson } from '../../files.ts'
-import { fetchArchive, packageUrl } from './archives.ts'
+import { packageUrl } from './archives.ts'
+import { fetchArchive } from '../archives.ts'
 
 const nested: Record<string, { archive: string; files: string[] }> = {
   'mingw-w64-libvorbis': {

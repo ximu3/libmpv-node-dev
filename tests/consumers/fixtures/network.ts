@@ -65,6 +65,12 @@ async function checkAudio(url: string, backend: string) {
   })
   const playing = Promise.withResolvers<void>()
   const ended = Promise.withResolvers<void>()
+  const started = Promise.race([
+    playing.promise,
+    ended.promise.then(() => {
+      throw new Error('Audio output ended before playback started')
+    }),
+  ])
   await using watch = await player.observeEvents(
     {
       next(event) {
@@ -74,18 +80,15 @@ async function checkAudio(url: string, backend: string) {
           if (event.reason === 'eof') {
             ended.resolve()
           } else {
-            const reason = new Error('Audio output ended: ' + event.reason)
-            playing.reject(reason)
-            ended.resolve()
+            ended.reject(new Error('Audio output ended: ' + event.reason))
           }
         }
       },
-      error: playing.reject,
+      error: ended.reject,
     },
     { events: ['playback-restart', 'end-file'] },
   )
-  await player.command(['loadfile', url])
-  await playing.promise
+  await Promise.all([started, player.command(['loadfile', url])])
   assert.equal(await player.getProperty('current-ao'), backend)
   const rate = await player.getProperty('audio-out-params/samplerate')
   assert.ok(typeof rate === 'bigint' && rate > 0n)

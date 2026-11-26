@@ -62,7 +62,10 @@ impl Display for Cgl {
         let mut actual = 0;
         let context = NonNull::new(unsafe { libmpv_cgl_open(requested, &mut actual) })
             .ok_or(Failure::Creation)?;
-        let device=available.into_iter().find(|device|matches!(device.selection,DeviceSelection::Macos(id) if unsafe{libmpv_cgl_matches(id,actual)}));
+        let device = available.into_iter().find(|device| match device.selection {
+            DeviceSelection::Macos(id) => unsafe { libmpv_cgl_matches(id, actual) },
+            _ => false,
+        });
         if let Some(device) = device {
             return Ok(Self { context, device });
         }

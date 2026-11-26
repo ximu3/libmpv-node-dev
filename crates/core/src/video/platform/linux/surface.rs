@@ -262,7 +262,13 @@ impl Display for Egl {
             };
             let requested =
                 std::fs::canonicalize(path).map_err(|_| Failure::UnsupportedCapability)?;
-            let device=available.into_iter().find(|device|matches!(&device.selection,DeviceSelection::Linux(node) if std::path::Path::new(node)==requested)).ok_or(Failure::UnsupportedCapability)?;
+            let device = available
+                .into_iter()
+                .find(|device| match &device.selection {
+                    DeviceSelection::Linux(node) => std::path::Path::new(node) == requested,
+                    _ => false,
+                })
+                .ok_or(Failure::UnsupportedCapability)?;
             return Self::on(device);
         }
         // The kernel identifies the boot adapter where the platform exposes one.
